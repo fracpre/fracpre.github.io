@@ -1086,12 +1086,14 @@
                 </div>
 
 
-                <div class="visitor-counter">
-                    <svg class="visitor-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <div class="visitor-counter" id="visitor-counter">
+                    <svg class="visitor-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" title="Visualizaciones (doble click dentro del ojo para editar)">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
                     </svg>
-                    <span id="visitor-count">19</span>
+                    <span id="visitor-count">--</span>
+                    <!-- El editor está escondido dentro del ojo: doble click en el SVG o Ctrl/Cmd+click -->
+                    <!-- (no botón visible para que no sea cantoso) -->
                     <span class="tooltip">Visualizaciones</span>
                 </div>
             </div>
@@ -1225,6 +1227,121 @@
     </script>
 </body>
 </html>
+<script>
+/*
+  Visitor counter using CountAPI (https://countapi.xyz).
+  - Increments on each page load (hit).
+  - Shows current count.
+  - Edit option hidden: double-click the eye icon (o Ctrl/Cmd+click) to edit (pide contraseña).
+  - If CountAPI is unavailable, falls back to localStorage.
+*/
+
+(function(){
+    const NAMESPACE = 'fracpre.github.io';
+    const KEY = 'visits';
+    const API_BASE = 'https://api.countapi.xyz';
+    const ADMIN_PASS = 'fracpre-edit'; // cambia esto si quieres otra pass
+
+    const span = document.getElementById('visitor-count');
+    const eye = document.querySelector('#visitor-counter .visitor-icon');
+
+    function show(v){
+        if(!span) return;
+        span.textContent = typeof v === 'number' ? v.toString() : v;
+    }
+
+    async function fetchCount(){
+        try {
+            // increment (hit) and get updated value
+            const res = await fetch(`${API_BASE}/hit/${encodeURIComponent(NAMESPACE)}/${encodeURIComponent(KEY)}`);
+            if(!res.ok) throw new Error('count api error');
+            const json = await res.json();
+            if(json && typeof json.value === 'number'){
+                localStorage.setItem('visitor_count_fallback', String(json.value));
+                show(json.value);
+                return json.value;
+            }
+        } catch(e){
+            // fallback to get or localStorage
+            try {
+                const res2 = await fetch(`${API_BASE}/get/${encodeURIComponent(NAMESPACE)}/${encodeURIComponent(KEY)}`);
+                if(res2.ok){
+                    const j2 = await res2.json();
+                    if(j2 && typeof j2.value === 'number'){
+                        localStorage.setItem('visitor_count_fallback', String(j2.value));
+                        show(j2.value);
+                        return j2.value;
+                    }
+                }
+            } catch(_) {}
+            const fallback = parseInt(localStorage.getItem('visitor_count_fallback') || '0', 10) || 0;
+            const newVal = fallback + 1;
+            localStorage.setItem('visitor_count_fallback', String(newVal));
+            show(newVal + ' (local)');
+            return newVal;
+        }
+    }
+
+    async function setCountManual(value){
+        try {
+            const v = Number(value);
+            if(Number.isNaN(v) || v < 0) return alert('Introduce un número válido (>= 0).');
+            // set using CountAPI
+            const res = await fetch(`${API_BASE}/set/${encodeURIComponent(NAMESPACE)}/${encodeURIComponent(KEY)}?value=${v}`);
+            if(!res.ok) throw new Error('set failed');
+            const json = await res.json();
+            if(json && typeof json.value === 'number'){
+                localStorage.setItem('visitor_count_fallback', String(json.value));
+                show(json.value);
+                alert('Contador actualizado: ' + json.value);
+                return;
+            }
+            throw new Error('set error');
+        } catch(e){
+            // fallback to localStorage
+            localStorage.setItem('visitor_count_fallback', String(value));
+            show(value + ' (local)');
+            alert('Contador actualizado localmente: ' + value);
+        }
+    }
+
+    // initial increment & display
+    document.addEventListener('DOMContentLoaded', () => {
+        if(span) show('...');
+        fetchCount();
+    });
+
+    // hidden edit trigger: double-click the eye or Ctrl/Cmd+click it
+    function openEditPrompt(){
+        const pass = prompt('Contraseña para editar el contador:');
+        if(pass !== ADMIN_PASS){
+            alert('Contraseña incorrecta.');
+            return;
+        }
+        const v = prompt('Nuevo valor de visualizaciones (número entero >= 0):');
+        if(v === null) return;
+        setCountManual(v);
+    }
+
+    if(eye){
+        // double-click
+        eye.addEventListener('dblclick', () => openEditPrompt());
+        // click with ctrl/cmd or alt
+        eye.addEventListener('click', (e) => {
+            if(e.ctrlKey || e.metaKey || e.altKey) openEditPrompt();
+        });
+        // small accessibility: keyboard activation when focused on counter container
+        const counter = document.getElementById('visitor-counter');
+        if(counter){
+            counter.tabIndex = 0;
+            counter.addEventListener('keydown', (e) => {
+                // Ctrl/Cmd+Enter to open editor
+                if((e.ctrlKey || e.metaKey) && e.key === 'Enter') openEditPrompt();
+            });
+        }
+    }
+})();
+</script>
 
 
 
