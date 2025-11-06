@@ -27,7 +27,7 @@ body {
   position: fixed;
   width: 32px;
   height: 32px;
-  background: url('assets/custom_cursor.png') no-repeat center center;
+  background: url('assets/custom_cursor.cur') no-repeat center center;
   background-size: contain;
   pointer-events: none;
   z-index: 10000;
