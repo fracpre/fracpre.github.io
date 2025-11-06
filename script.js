@@ -202,7 +202,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
   const name = "FRACPRE";
-  let nameText = '';
+  let nameText = 'a';
   let nameIndex = 0;
   let isNameDeleting = false;
   let nameCursorVisible = true;
@@ -236,8 +236,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
   const bioMessages = [
-    "Fu*k Guns.lol & Fakecrime.bio got banned too often, so I created my own.",
-    "\"Hello, World!\""
+    "Que buscas pillin? sigueme en ig anda",
+    "Beny Jr lover"
   ];
   let bioText = '';
   let bioIndex = 0;
@@ -669,5 +669,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   typeWriterStart();
 });
+
 
 
