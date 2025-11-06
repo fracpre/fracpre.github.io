@@ -970,19 +970,48 @@
         function startReveal(){
             const s = document.getElementById('start-screen');
             const container = document.querySelector('.container');
-            if(!s) return;
-            s.style.display = 'none';
-            if(container) container.style.visibility = 'visible';
-            try {
-                if(document.activeElement && typeof document.activeElement.blur === 'function'){
-                    document.activeElement.blur();
+
+            const finalize = () => {
+                if (s) { s.style.display = 'none'; s.classList.remove('visible','fade-out'); }
+                if (container) container.style.visibility = 'visible';
+
+                // asegurar que el profile-block sea visible
+                const pb = document.getElementById('profile-block');
+                if (pb) {
+                    pb.style.opacity = '1';
+                    pb.style.pointerEvents = 'auto';
                 }
-                if(window.getSelection) window.getSelection().removeAllRanges();
-                const b = document.body;
-                b.setAttribute('tabindex', '-1');
-                b.focus({preventScroll: true});
-                setTimeout(() => b.removeAttribute('tabindex'), 0);
-            } catch (e) { }
+
+                // reintentar reproducir todos los medios (user gesture necesario en móviles)
+                Array.from(document.querySelectorAll('video, audio')).forEach(m => {
+                    try { m.play().catch(()=>{}); } catch(e){}
+                });
+
+                // limpiar foco/selección para evitar carets
+                try {
+                    if (document.activeElement && typeof document.activeElement.blur === 'function') document.activeElement.blur();
+                    if (window.getSelection) window.getSelection().removeAllRanges();
+                    const b = document.body;
+                    b.setAttribute('tabindex', '-1');
+                    b.focus({preventScroll: true});
+                    setTimeout(() => b.removeAttribute('tabindex'), 0);
+                } catch (e) {}
+            };
+
+            // si hay transición de fade, esperar a que termine antes de finalizar
+            if (s && getComputedStyle(s).transitionDuration !== '0s') {
+                s.classList.remove('visible');
+                s.classList.add('fade-out');
+                const onEnd = (ev) => {
+                    if (ev.target === s && ev.propertyName === 'opacity') {
+                        s.removeEventListener('transitionend', onEnd);
+                        finalize();
+                    }
+                };
+                s.addEventListener('transitionend', onEnd);
+            } else {
+                finalize();
+            }
         }
     </script>
 
@@ -1062,7 +1091,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
                     </svg>
-                    <span id="visitor-count">22</span>
+                    <span id="visitor-count">19</span>
                     <span class="tooltip">Visualizaciones</span>
                 </div>
             </div>
@@ -1196,8 +1225,6 @@
     </script>
 </body>
 </html>
-
-
 
 
 
