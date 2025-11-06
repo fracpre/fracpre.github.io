@@ -96,7 +96,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
   const startMessage = "Bendiciones";
-  let startTextContent = 'hola';
+  let startTextContent = '';
   let startIndex = 0;
   let startCursorVisible = true;
 
@@ -104,9 +104,15 @@ document.addEventListener('DOMContentLoaded', () => {
     if (startIndex < startMessage.length) {
       startTextContent = startMessage.slice(0, startIndex + 1);
       startIndex++;
+      
+      // ¡ERROR CORREGIDO!
+      // La función solo se llama a sí misma si FALTAN letras por escribir.
+      // También hemos eliminado la línea 'startText.textContent = ...' de aquí
+      // para que no luche con el 'setInterval'.
+      setTimeout(typeWriterStart, 100); 
     }
-    startText.textContent = startTextContent + (startCursorVisible ? '|' : 'hola');
-    setTimeout(typeWriterStart, 100);
+    // Si la frase está completa, la función simplemente deja de ejecutarse
+    // y el 'setInterval' (Línea 149) se encarga del parpadeo.
   }
 
 
@@ -669,6 +675,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   typeWriterStart();
 });
+
 
 
 
