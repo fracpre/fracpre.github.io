@@ -1141,9 +1141,57 @@
 
 
     <script src="script.js"></script>
+
+    <script>
+        // máquina de escribir que cicla títulos en la pestaña (más tiempo y borrado más suave)
+        (function(){
+            const messages = [
+                'guillevgo on ig ;)',
+                'I am #notlikehim #lol'
+            ];
+            const typeSpeedBase = 70;      // velocidad base de escritura (ms por carácter)
+            const eraseSpeedBase = 60;     // velocidad base de borrado (ms por carácter)
+            const pauseAfterFull = 3000;   // tiempo que permanece el texto completo (ms)
+            const pauseAfterErase = 900;   // pausa antes de comenzar el siguiente (ms)
+            let idx = 0;
+
+            function typeMessage(msg, i = 0){
+                if (i <= msg.length) {
+                    // mostrar caret mientras escribe
+                    document.title = msg.slice(0, i) + (i < msg.length ? '|' : '');
+                    // pequeña variación natural en el ritmo
+                    const jitter = Math.round((Math.random() - 0.5) * 18);
+                    setTimeout(() => typeMessage(msg, i + 1), Math.max(30, typeSpeedBase + jitter));
+                } else {
+                    // texto completo - quitar caret y esperar antes de borrar
+                    document.title = msg;
+                    setTimeout(() => eraseMessage(msg, msg.length - 1), pauseAfterFull);
+                }
+            }
+
+            function eraseMessage(msg, i){
+                if (i >= 0) {
+                    // borrado con retardo que aumenta al acercarse al final (más "suave")
+                    document.title = msg.slice(0, i);
+                    const progress = 1 - (i / Math.max(1, msg.length));
+                    // cuanto más bajo i, mayor el factor para ralentizar
+                    const dynamicDelay = Math.round(eraseSpeedBase * (1 + Math.pow(progress, 1.6) * 1.4));
+                    setTimeout(() => eraseMessage(msg, i - 1), Math.max(25, dynamicDelay));
+                } else {
+                    idx = (idx + 1) % messages.length;
+                    setTimeout(() => typeMessage(messages[idx], 0), pauseAfterErase);
+                }
+            }
+
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', () => setTimeout(() => typeMessage(messages[idx], 0), 350));
+            } else {
+                setTimeout(() => typeMessage(messages[idx], 0), 350);
+            }
+        })();
+    </script>
 </body>
 </html>
-
 
 
 
