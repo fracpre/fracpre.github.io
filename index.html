@@ -1,4 +1,4 @@
-ca<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -39,6 +39,7 @@ ca<!DOCTYPE html>
             width: 100%;
             height: 100vh;
             position: relative;
+            visibility: hidden; /* ocultar todo el contenido hasta hacer click */
         }
 
         #background {
@@ -207,7 +208,7 @@ ca<!DOCTYPE html>
             border-radius: 50%;
             background: radial-gradient(
                 circle at 10px 10px,
-                var(--primary-color, #00CED1) 10%,
+                var(--primary-color, #e70000) 10%,
                 transparent 15%
             );
             animation: orbit 3s linear infinite;
@@ -228,6 +229,33 @@ ca<!DOCTYPE html>
             cursor: pointer;
             pointer-events: auto;
             opacity: 1 !important;
+        }
+
+        /* sticker overlay encima de la foto de perfil */
+        .overlay-sticker {
+            position: absolute;
+            width: 56px;
+            height: 56px;
+            object-fit: cover;
+            top: -6px;      /* más arriba */
+            right: -8px;    /* más a la derecha (puede quedar fuera del borde) */
+            background: transparent;
+            border: none;
+            box-shadow: none;
+            border-radius: 0;
+            transform: rotate(-12deg);
+            pointer-events: none;
+            z-index: 4;
+        }
+
+        /* ajuste para móviles */
+        @media (max-width: 430px) {
+            .overlay-sticker {
+                width: 42px;
+                height: 42px;
+                top: -4px;
+                right: -6px;
+            }
         }
 
         .profile-info {
@@ -251,15 +279,39 @@ ca<!DOCTYPE html>
             font-style: normal;
         }
 
-        #profile-name {
-            font-family: 'Angel Wish', sans-serif;
-            font-size: 32px;
-            font-weight: bold;
-            letter-spacing: 3px;
-            color: #fff;
-            filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.7));
-            opacity: 1 !important;
-        }
+        /* permitir animación en el nombre pero quitar animaciones en sus hijos */
+#profile-name * {
+    animation: none !important;
+    transition: none !important;
+    transform: none !important;
+}
+
+/* texto FRACPRE con efecto rainbow (gradiente animado) */
+#profile-name {
+    font-family: 'Angel Wish', sans-serif;
+    font-size: 32px;
+    font-weight: bold;
+    letter-spacing: 3px;
+
+    /* gradiente animado */
+    background: linear-gradient(90deg,
+        #ff0000, #ff7a00, #ffef00, #00ff6a, #00caff, #4b00ff, #ff00d4, #ff0000);
+    background-size: 300% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+
+    filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.7));
+    animation: rainbow-text 6s linear infinite;
+}
+
+/* animación que desplaza el gradiente para dar efecto de cambio de color */
+@keyframes rainbow-text {
+    0%   { background-position: 0% 50%; }
+    50%  { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
 
         .badge-group {
             display: flex;
@@ -412,8 +464,34 @@ ca<!DOCTYPE html>
             opacity: 1 !important;
         }
 
-        .social-icon:hover {
-            transform: scale(1.4) rotateY(15deg);
+        /* tooltip for social icons */
+        .social-icon-container {
+            position: relative;
+            display: inline-block;
+        }
+        .social-tooltip {
+            visibility: hidden;
+            opacity: 0;
+            transition: opacity 0.18s ease, transform 0.18s ease;
+            transform: translateY(6px);
+            position: absolute;
+            bottom: calc(100% + 8px);
+            left: 50%;
+            transform-origin: center;
+            transform: translateX(-50%) translateY(6px);
+            background: rgba(0,0,0,0.8);
+            color: #fff;
+            padding: 6px 8px;
+            border-radius: 6px;
+            font-size: 12px;
+            white-space: nowrap;
+            z-index: 60;
+            pointer-events: none;
+        }
+        .social-icon-container:hover .social-tooltip {
+            visibility: visible;
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
         }
 
         
@@ -634,23 +712,38 @@ ca<!DOCTYPE html>
             left: 0;
             width: 100%;
             height: 100vh;
-            background: rgba(0, 0, 0, 0.9);
+            background: rgba(0, 0, 0, 0.95);
             backdrop-filter: blur(10px);
             display: flex;
             align-items: center;
             justify-content: center;
-            z-index: 30;
+            z-index: 9999; /* asegurar que esté por encima de todo */
             cursor: pointer;
+            user-select: none;
         }
 
+        /* style visible start text */
         #start-text {
             font-family: 'Courier New', monospace;
-            font-size: 24px;
+            font-size: 26px;
             color: #fff;
             text-align: center;
+            text-shadow: 0 4px 18px rgba(0,0,0,0.7);
+            padding: 12px 20px;
+            border-radius: 8px;
+            background: rgba(0,0,0,0.3);
+            pointer-events: none;
         }
 
         
+        /* evitar cualquier caret en toda la página */
+        * {
+            caret-color: transparent !important;
+        }
+        [contenteditable] {
+            caret-color: transparent !important;
+        }
+
         @media (max-width: 430px) {
             
             #profile-block, #skills-block {
@@ -825,16 +918,73 @@ ca<!DOCTYPE html>
             }
         }
     </style>
-    <link href="https://fonts.googleapis.com/css2?family=Retro+Gaming&display=swap" rel="stylesheet">
 </head>
 <body class="home-theme" onload="initMedia()">
     
     <div class="custom-cursor"></div>
 
-    
-    <div id="start-screen">
-        <div id="start-text"></div>
+    <div id="start-screen" role="button" aria-label="Click para revelar ;)" onclick="startReveal();" tabindex="0">
+        <div id="start-text">Click para revelar ;)</div>
     </div>
+    
+    <script>
+        // proteger y fijar el texto de inicio inmediatamente y quitar cualquier contenteditable
+        document.addEventListener('DOMContentLoaded', () => {
+            // quitar atributo contenteditable de toda la página (evita aparición de caret)
+            document.querySelectorAll('[contenteditable]').forEach(el => el.removeAttribute('contenteditable'));
+
+            const st = document.getElementById('start-text');
+            if(!st) return;
+            const fixedText = 'Click para revelar ;)';
+            // CSS hardening
+            st.style.caretColor = 'transparent';
+            st.style.userSelect = 'none';
+            st.style.pointerEvents = 'none';
+            st.textContent = fixedText;
+
+            // observar cambios y restaurar el texto si alguien lo reemplaza por '|' u vacío
+            const mo = new MutationObserver(() => {
+                if(st.textContent.trim() === '|' || st.textContent.trim() === '') {
+                    st.textContent = fixedText;
+                }
+            });
+            mo.observe(st, { characterData: true, childList: true, subtree: true });
+
+            // además observar todo el documento para eliminar cualquier nodo de texto que solo contenga '|'
+            const bodyMo = new MutationObserver(muts => {
+                muts.forEach(m => {
+                    // comprobar nuevos textNodes
+                    if(m.addedNodes && m.addedNodes.length){
+                        m.addedNodes.forEach(node => {
+                            if(node.nodeType === Node.TEXT_NODE && node.textContent.trim() === '|'){
+                                node.textContent = '';
+                            }
+                        });
+                    }
+                });
+            });
+            bodyMo.observe(document.body, { childList: true, subtree: true });
+        });
+
+        // ocultar overlay solo al hacer click y eliminar foco/selección residual
+        function startReveal(){
+            const s = document.getElementById('start-screen');
+            const container = document.querySelector('.container');
+            if(!s) return;
+            s.style.display = 'none';
+            if(container) container.style.visibility = 'visible';
+            try {
+                if(document.activeElement && typeof document.activeElement.blur === 'function'){
+                    document.activeElement.blur();
+                }
+                if(window.getSelection) window.getSelection().removeAllRanges();
+                const b = document.body;
+                b.setAttribute('tabindex', '-1');
+                b.focus({preventScroll: true});
+                setTimeout(() => b.removeAttribute('tabindex'), 0);
+            } catch (e) { }
+        }
+    </script>
 
     <div class="container">
         
@@ -855,8 +1005,9 @@ ca<!DOCTYPE html>
         <div id="profile-block">
             <div class="profile-header">
                 <div class="profile-container">
-                    <img src="assets/profile.gif" alt="Profile" class="profile-picture">
-                </div>
+                <img src="assets/profile.gif" alt="Profile" class="profile-picture">
+                <img src="assets/sticker.gif" alt="Sticker" class="overlay-sticker">
+            </div>
                 <div class="profile-info">
                     <div class="name-and-badges">
                         <div id="profile-name">FRACPRE</div>
@@ -864,36 +1015,24 @@ ca<!DOCTYPE html>
                             <div class="badge-box-inner">
                                 <div class="badge-group">
                                     <div class="badge-container">
-                                        <img src="assets/staff.gif" alt="Staff" class="badge">
-                                        <span class="tooltip">Staff Member</span>
-                                    </div>
-                                    <div class="badge-container">
                                         <img src="assets/owner.png" alt="Owner" class="badge">
-                                        <span class="tooltip">Owner</span>
-                                    </div>
-                                    <div class="badge-container">
-                                        <img src="assets/partner.png" alt="Partner" class="badge">
-                                        <span class="tooltip">Partner</span>
+                                        <span class="tooltip"></span>
                                     </div>
                                     <div class="badge-container">
                                         <img src="assets/developer.png" alt="Developer" class="badge">
-                                        <span class="tooltip">Developer</span>
+                                        <span class="tooltip">Junior :s</span>
                                     </div>
                                     <div class="badge-container">
                                         <img src="assets/boy.png" alt="boy" class="badge">
                                         <span class="tooltip">18y <3</span>
                                     </div>
                                     <div class="badge-container">
-                                        <img src="assets/bff.gif" alt="BestFriend" class="badge">
-                                        <span class="tooltip">Hated by Fakecrime.bio1</span>
+                                        <img src="assets/ascendant.png" alt="Valorant" class="badge">
+                                        <span class="tooltip">Asc 1 Ez</span>
                                     </div>
                                     <div class="badge-container">
                                         <img src="assets/verified.gif" alt="Verified" class="badge">
-                                        <span class="tooltip">Verificado</span>
-                                    </div>
-                                    <div class="badge-container">
-                                        <img src="assets/rule_maker.gif" alt="Rule Maker" class="badge">
-                                        <span class="tooltip">Rule Maker</span>
+                                        <span class="tooltip"></span>
                                     </div>
                                 </div>
                             </div>
@@ -908,18 +1047,16 @@ ca<!DOCTYPE html>
             <div class="profile-footer">
 
                 <div class="social-links">
-                    <a href="https://discord.gg/motiongoats" target="_blank">
-                        <img src="assets/discord.png" alt="Discord" class="social-icon">
-                    </a>
-                    <a href="https://github.com/FRACPRE" target="_blank">
-                        <img src="assets/github.png" alt="GitHub" class="social-icon">
-                    </a>
-                    <a href="https://www.youtube.com/@fracpre" target="_blank">
-                        <img src="assets/youtube.png" alt="YouTube" class="social-icon">
-                    </a>
-                    <a href="https://www.tiktok.com/@fracpre" target="_blank">
-                        <img src="assets/tiktok.png" alt="TikTok" class="social-icon">
-                    </a>
+                    <div class="social-icon-container" aria-label="Discord">
+                        <img src="assets/discord.png" alt="Discord" class="social-icon" />
+                        <span class="social-tooltip">@fracpre</span>
+                    </div>
+                     <a href="https://instagram.com/guillevgo" target="_blank">
+                         <img src="assets/instagram.png" alt="Instagram" class="social-icon">
+                     </a>
+                     <a href="https://www.tiktok.com/@fracpre" target="_blank">
+                         <img src="assets/tiktok.png" alt="TikTok" class="social-icon">
+                     </a>
                 </div>
 
 
@@ -976,7 +1113,13 @@ ca<!DOCTYPE html>
         </div>
 
 
-        
+        <div class="controlss">
+            <div id="home-theme" class="theme-button">1</div>
+            <div id="hacker-theme" class="theme-button">2</div>
+            <div id="rain-theme" class="theme-button">3</div>
+            <div id="anime-theme" class="theme-button">4</div>
+            <div id="car-theme" class="theme-button">5</div>
+        </div>
     </div>
 
 
@@ -1003,7 +1146,6 @@ ca<!DOCTYPE html>
     <script src="script.js"></script>
 </body>
 </html>
-
 
 
 

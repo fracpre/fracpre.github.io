@@ -531,6 +531,10 @@ body.car-theme {
     height: 80px;
   }
 
+  .accesory-picture {
+    width: 20px;
+    height: 20px;
+  }
 
   #profile-name {
     font-size: 18px;
@@ -786,3 +790,7 @@ body.car-theme {
   }
 }
 
+#accesory-sticker{
+   top:-30px;
+   right:-50px;
+}
