@@ -637,10 +637,22 @@ body.car-theme {
 
 
   #start-text {
-    font-size: 18px;
+  /* 1. SOLUCIÓN AL ERROR DE SINTAXIS: Elimina la llave final flotante si no es necesaria. */
+  
+  /* 2. SOLUCIÓN AL PROBLEMA DE VISIBILIDAD: Define un color CLARO para el texto. */
+  color: #00ff00; /* Color verde brillante, muy común para efectos "hacker" */
+  
+  /* O un color simple que contraste con el fondo. */
+  /* color: white; */ 
+  
+  font-size: 18px;
+  
+  /* Esto asegura que el texto no se vea hasta que el JS lo "escribe" */
+  white-space: nowrap; 
+  
+  /* Esto asegura que solo se vea el texto a medida que se escribe */
+  overflow: hidden; 
   }
-}
-
 
 @keyframes led-glow {
   0% {
@@ -773,3 +785,4 @@ body.car-theme {
     clip: rect(65px, 9999px, 45px, 0);
   }
 }
+
