@@ -966,91 +966,129 @@
             bodyMo.observe(document.body, { childList: true, subtree: true });
         });
 
-        // ocultar overlay solo al hacer click y eliminar foco/selección residual
-        function startReveal(){
-            const s = document.getElementById('start-screen');
-            const container = document.querySelector('.container');
-            const bg = document.getElementById('background');
-            const pb = document.getElementById('profile-block');
+        // Reemplaza la función startReveal existente por esta versión más robusta.
+    // - escucha touchstart (iOS) además de click
+    // - fuerza mostrar el contenido, oculta overlays problemáticos
+    // - pausa/oculta el vídeo en iOS y crea un fallback imagen si es necesario
+    // - intenta reproducir la música con el gesto del usuario
+    document.addEventListener('DOMContentLoaded', () => {
+        const s = document.getElementById('start-screen');
+        if (!s) return;
+        // permitir activar por click, touch o teclado
+        s.addEventListener('click', startReveal, { passive: true });
+        s.addEventListener('touchstart', (e) => { e.preventDefault(); startReveal(); }, { passive: false });
+        s.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); startReveal(); } });
+    });
 
-            // detect iOS (iPhone / iPad on Safari-based browsers)
-            const isIOS = /iP(ad|hone|od)/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    function startReveal(){
+        const s = document.getElementById('start-screen');
+        const container = document.querySelector('.container');
+        const bg = document.getElementById('background');
+        const music = document.getElementById('background-music');
+        const overlays = document.querySelectorAll('.glitch-overlay, #hacker-overlay, #snow-overlay');
 
-            const finalize = () => {
-                if (s) { s.style.display = 'none'; s.classList.remove('visible','fade-out'); }
-                if (container) {
-                    container.style.visibility = 'visible';
-                    container.style.display = 'block';
-                    container.style.opacity = '1';
-                }
-                if (pb) {
-                    pb.style.opacity = '1';
-                    pb.style.pointerEvents = 'auto';
-                    // asegurar transform correcto
-                    pb.style.transform = 'translate(-50%, -50%)';
-                }
+        // detectar iOS (iPhone/iPad)
+        const isIOS = /iP(ad|hone|od)/.test(navigator.userAgent) ||
+                      (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
 
-                // Manejo del vídeo de fondo en móviles iOS: evitar que quede en negro
-                try {
-                    if (bg) {
-                        if (isIOS) {
-                            // ocultar / pausar vídeo y usar imagen fallback
-                            bg.pause();
-                            bg.style.display = 'none';
-                            if (!document.getElementById('background-fallback')) {
-                                const img = document.createElement('img');
-                                img.id = 'background-fallback';
-                                img.src = 'assets/background.jpg'; // añade este archivo si no existe
-                                img.alt = '';
-                                img.style.position = 'fixed';
-                                img.style.top = '0';
-                                img.style.left = '0';
-                                img.style.width = '100%';
-                                img.style.height = '100%';
-                                img.style.objectFit = 'cover';
-                                img.style.zIndex = '1';
-                                img.style.pointerEvents = 'none';
-                                document.body.appendChild(img);
-                            } else {
-                                document.getElementById('background-fallback').style.display = 'block';
-                            }
-                        } else {
-                            // en no-iOS intentar reproducir normalmente e insistir en inline
-                            bg.style.display = 'block';
-                            bg.playsInline = true;
-                            bg.setAttribute('playsinline','');
-                            bg.setAttribute('webkit-playsinline','');
-                            bg.play().catch(()=>{ /* ignore */ });
-                        }
-                    }
-                } catch(e){ /* ignore */ }
-
-                // limpiar foco/selección para evitar caret
-                try {
-                    if (document.activeElement && typeof document.activeElement.blur === 'function') document.activeElement.blur();
-                    if (window.getSelection) window.getSelection().removeAllRanges();
-                    const b = document.body;
-                    b.setAttribute('tabindex', '-1');
-                    b.focus({preventScroll: true});
-                    setTimeout(() => b.removeAttribute('tabindex'), 0);
-                } catch (e) {}
-            };
-
-            // si hay transición de fade, esperar a que termine antes de finalizar
-            if (s && getComputedStyle(s).transitionDuration !== '0s') {
-                s.classList.remove('visible');
-                s.classList.add('fade-out');
-                const onEnd = (ev) => {
-                    if (ev.target === s && ev.propertyName === 'opacity') {
-                        s.removeEventListener('transitionend', onEnd);
-                        finalize();
-                    }
-                };
-                s.addEventListener('transitionend', onEnd);
-            } else {
-                finalize();
-            }
+        // fade out del start-screen (si está visible)
+        if (s) {
+            s.style.transition = s.style.transition || 'opacity 320ms ease';
+            s.style.opacity = '0';
+            s.style.pointerEvents = 'none';
+            setTimeout(() => { if (s.parentNode) s.style.display = 'none'; }, 360);
         }
+
+        // mostrar el contenido principal
+        if (container) {
+            container.style.visibility = 'visible';
+            container.style.display = 'block';
+            container.style.opacity = '1';
+            container.style.zIndex = '10';
+        }
+
+        // ocultar overlays que puedan tapar todo
+        overlays.forEach(o => { if (o) { o.style.display = 'none'; o.style.opacity = '0'; } });
+
+        // Asegurar que el profile-block esté por encima
+        const pb = document.getElementById('profile-block');
+        if (pb) {
+            pb.style.opacity = '1';
+            pb.style.pointerEvents = 'auto';
+            pb.style.transform = 'translate(-50%, -50%)';
+            pb.style.zIndex = '30';
+        }
+
+        // Manejo del vídeo de fondo: en iOS lo ocultamos y ponemos fallback imagen para evitar pantalla negra
+        try {
+            if (bg) {
+                // garantizar atributos inline para móviles
+                bg.setAttribute('playsinline', '');
+                bg.setAttribute('webkit-playsinline', '');
+                bg.playsInline = true;
+
+                if (isIOS) {
+                    try { bg.pause(); } catch(e){}
+                    bg.style.display = 'none';
+                    // crear fallback si no existe
+                    if (!document.getElementById('background-fallback')) {
+                        const img = document.createElement('img');
+                        img.id = 'background-fallback';
+                        img.src = 'assets/background.jpg'; // añade este archivo al repo si no existe
+                        img.alt = '';
+                        Object.assign(img.style, {
+                            position: 'fixed',
+                            top: '0',
+                            left: '0',
+                            width: '100%',
+                            height: '100%',
+                            objectFit: 'cover',
+                            zIndex: '1',
+                            pointerEvents: 'none'
+                        });
+                        document.body.appendChild(img);
+                    } else {
+                        document.getElementById('background-fallback').style.display = 'block';
+                    }
+                } else {
+                    // en no-iOS intentar reproducir, si falla ocultar vídeo (no bloquear UI)
+                    bg.muted = true;
+                    bg.currentTime = 0;
+                    bg.style.display = 'block';
+                    bg.play().catch(() => { bg.pause(); bg.style.display = 'none'; });
+                }
+            }
+        } catch (e) { /* no crítico */ }
+
+        // Intentar reproducir la música (user gesture provista por el click/touch)
+        try {
+            if (music) {
+                music.muted = false;
+                music.play().catch(() => { /* algunos navegadores pueden requerir interacción adicional */ });
+            }
+        } catch (e) {}
+
+        // limpiar focos y selección para evitar carets/solapamientos
+        try {
+            if (document.activeElement && typeof document.activeElement.blur === 'function') document.activeElement.blur();
+            if (window.getSelection) window.getSelection().removeAllRanges();
+            document.body.setAttribute('tabindex', '-1');
+            document.body.focus({ preventScroll: true });
+            setTimeout(() => document.body.removeAttribute('tabindex'), 0);
+        } catch (e) {}
+
+        // pequeña comprobación final: si tras 300ms sigue todo negro, quitar video y mostrar fallback
+        setTimeout(() => {
+            // si container todavía no visible por algún estilo externo, forzarlo
+            if (container && getComputedStyle(container).visibility !== 'visible') {
+                container.style.visibility = 'visible';
+                container.style.display = 'block';
+            }
+            // si todavía se ve un fondo negro y existe fallback oculto, mostrarlo
+            const fallback = document.getElementById('background-fallback');
+            if (fallback) fallback.style.display = 'block';
+        }, 300);
+    }
     </script>
 
     <div class="container">
