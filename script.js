@@ -95,7 +95,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
 
-  const startMessage = "Bendiciones 🙏";
+  const startMessage = "Bendiciones";
   let startTextContent = '';
   let startIndex = 0;
   let startCursorVisible = true;
@@ -669,6 +669,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   typeWriterStart();
 });
+
 
 
 
