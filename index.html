@@ -1174,7 +1174,7 @@
     <script src="script.js"></script>
 
     <script>
-        // máquina de escribir que cicla títulos en la pestaña (más tiempo y borrado más suave)
+        // máquina de escribir mejorada: ritmo más suave y natural (ease-in/out)
         (function(){
             const messages = [
                 'guillevgo on ig ;)',
@@ -1182,36 +1182,38 @@
                 'guillevgo on ig ;)',
                 'guillevgo on ig ;)',
                 'guillevgo on ig ;)',
+                'guillevgo on ig ;)',
                 'I am #notlikehim #lol'
             ];
-            const typeSpeedBase = 70;      // velocidad base de escritura (ms por carácter)
-            const eraseSpeedBase = 60;     // velocidad base de borrado (ms por carácter)
-            const pauseAfterFull = 3000;   // tiempo que permanece el texto completo (ms)
-            const pauseAfterErase = 900;   // pausa antes de comenzar el siguiente (ms)
+            const baseType = 60;      // base ms por carácter al escribir
+            const baseErase = 45;     // base ms por carácter al borrar
+            const pauseAfterFull = 3800;   // ms que permanece el texto completo
+            const pauseAfterErase = 700;   // pausa antes de siguiente mensaje
             let idx = 0;
+
+            const easeInOutQuad = t => t < 0.5 ? 2*t*t : -1 + (4 - 2*t)*t;
 
             function typeMessage(msg, i = 0){
                 if (i <= msg.length) {
-                    // mostrar caret mientras escribe
+                    // caret mientras escribe
                     document.title = msg.slice(0, i) + (i < msg.length ? '|' : '');
-                    // pequeña variación natural en el ritmo
-                    const jitter = Math.round((Math.random() - 0.5) * 18);
-                    setTimeout(() => typeMessage(msg, i + 1), Math.max(30, typeSpeedBase + jitter));
+                    // delay con easing según progreso del mensaje (más lento al inicio/fin)
+                    const progress = i / Math.max(1, msg.length);
+                    const delay = Math.max(18, Math.round(baseType * (1 - 0.45 * easeInOutQuad(progress))));
+                    setTimeout(() => typeMessage(msg, i + 1), delay);
                 } else {
-                    // texto completo - quitar caret y esperar antes de borrar
-                    document.title = msg;
+                    document.title = msg; // texto completo sin caret
                     setTimeout(() => eraseMessage(msg, msg.length - 1), pauseAfterFull);
                 }
             }
 
             function eraseMessage(msg, i){
                 if (i >= 0) {
-                    // borrado con retardo que aumenta al acercarse al final (más "suave")
+                    // borrado más fluido: ralentiza al final usando easing inverso
                     document.title = msg.slice(0, i);
-                    const progress = 1 - (i / Math.max(1, msg.length));
-                    // cuanto más bajo i, mayor el factor para ralentizar
-                    const dynamicDelay = Math.round(eraseSpeedBase * (1 + Math.pow(progress, 1.6) * 1.4));
-                    setTimeout(() => eraseMessage(msg, i - 1), Math.max(25, dynamicDelay));
+                    const progress = 1 - (i / Math.max(1, msg.length)); // from 0 -> 1 as we erase
+                    const delay = Math.max(16, Math.round(baseErase * (1 + 0.9 * easeInOutQuad(progress))));
+                    setTimeout(() => eraseMessage(msg, i - 1), delay);
                 } else {
                     idx = (idx + 1) % messages.length;
                     setTimeout(() => typeMessage(messages[idx], 0), pauseAfterErase);
@@ -1219,9 +1221,9 @@
             }
 
             if (document.readyState === 'loading') {
-                document.addEventListener('DOMContentLoaded', () => setTimeout(() => typeMessage(messages[idx], 0), 350));
+                document.addEventListener('DOMContentLoaded', () => setTimeout(() => typeMessage(messages[idx], 0), 300));
             } else {
-                setTimeout(() => typeMessage(messages[idx], 0), 350);
+                setTimeout(() => typeMessage(messages[idx], 0), 300);
             }
         })();
     </script>
@@ -1230,7 +1232,7 @@
         /* Contador estático visible públicamente.
            Cambia DEFAULT_COUNT a 22 (u otro número) directamente en este archivo para actualizarlo. */
         (function(){
-            const DEFAULT_COUNT = 22; // <- cambia aquí el número visible globalmente
+            const DEFAULT_COUNT = 25; // <- cambia aquí el número visible globalmente
             document.addEventListener('DOMContentLoaded', () => {
                 const span = document.getElementById('visitor-count');
                 if(span) span.textContent = String(DEFAULT_COUNT);
