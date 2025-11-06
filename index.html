@@ -970,24 +970,62 @@
         function startReveal(){
             const s = document.getElementById('start-screen');
             const container = document.querySelector('.container');
+            const bg = document.getElementById('background');
+            const pb = document.getElementById('profile-block');
+
+            // detect iOS (iPhone / iPad on Safari-based browsers)
+            const isIOS = /iP(ad|hone|od)/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
 
             const finalize = () => {
                 if (s) { s.style.display = 'none'; s.classList.remove('visible','fade-out'); }
-                if (container) container.style.visibility = 'visible';
-
-                // asegurar que el profile-block sea visible
-                const pb = document.getElementById('profile-block');
+                if (container) {
+                    container.style.visibility = 'visible';
+                    container.style.display = 'block';
+                    container.style.opacity = '1';
+                }
                 if (pb) {
                     pb.style.opacity = '1';
                     pb.style.pointerEvents = 'auto';
+                    // asegurar transform correcto
+                    pb.style.transform = 'translate(-50%, -50%)';
                 }
 
-                // reintentar reproducir todos los medios (user gesture necesario en móviles)
-                Array.from(document.querySelectorAll('video, audio')).forEach(m => {
-                    try { m.play().catch(()=>{}); } catch(e){}
-                });
+                // Manejo del vídeo de fondo en móviles iOS: evitar que quede en negro
+                try {
+                    if (bg) {
+                        if (isIOS) {
+                            // ocultar / pausar vídeo y usar imagen fallback
+                            bg.pause();
+                            bg.style.display = 'none';
+                            if (!document.getElementById('background-fallback')) {
+                                const img = document.createElement('img');
+                                img.id = 'background-fallback';
+                                img.src = 'assets/background.jpg'; // añade este archivo si no existe
+                                img.alt = '';
+                                img.style.position = 'fixed';
+                                img.style.top = '0';
+                                img.style.left = '0';
+                                img.style.width = '100%';
+                                img.style.height = '100%';
+                                img.style.objectFit = 'cover';
+                                img.style.zIndex = '1';
+                                img.style.pointerEvents = 'none';
+                                document.body.appendChild(img);
+                            } else {
+                                document.getElementById('background-fallback').style.display = 'block';
+                            }
+                        } else {
+                            // en no-iOS intentar reproducir normalmente e insistir en inline
+                            bg.style.display = 'block';
+                            bg.playsInline = true;
+                            bg.setAttribute('playsinline','');
+                            bg.setAttribute('webkit-playsinline','');
+                            bg.play().catch(()=>{ /* ignore */ });
+                        }
+                    }
+                } catch(e){ /* ignore */ }
 
-                // limpiar foco/selección para evitar carets
+                // limpiar foco/selección para evitar caret
                 try {
                     if (document.activeElement && typeof document.activeElement.blur === 'function') document.activeElement.blur();
                     if (window.getSelection) window.getSelection().removeAllRanges();
