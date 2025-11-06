@@ -105,7 +105,7 @@ document.addEventListener('DOMContentLoaded', () => {
       startTextContent = startMessage.slice(0, startIndex + 1);
       startIndex++;
     }
-    startText.textContent = startTextContent + (startCursorVisible ? '|' : ' ');
+    startText.textContent = startTextContent + (startCursorVisible ? '|' : 'hola');
     setTimeout(typeWriterStart, 100);
   }
 
@@ -669,6 +669,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   typeWriterStart();
 });
+
 
 
 
