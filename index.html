@@ -82,19 +82,19 @@
         
         .controls {
             position: fixed !important;
-            top: 50% !important;
+            top: 12px !important;            /* pegado al techo */
             left: 50% !important;
-            transform: translate(-50%, -50%) !important;
-            display: flex;
-            gap: 10px;
-            z-index: 99999; /* por encima de todo */
-            background: rgba(0, 0, 0, 0.65);
-            padding: 10px 14px;
-            border-radius: 20px;
-            backdrop-filter: blur(6px);
-            pointer-events: auto;
-            margin: 0;
-        }
+            transform: translateX(-50%) !important; /* centrado horizontalmente */
+             display: flex;
+             gap: 10px;
+             z-index: 99999; /* por encima de todo */
+             background: rgba(0, 0, 0, 0.65);
+             padding: 10px 14px;
+             border-radius: 20px;
+             backdrop-filter: blur(6px);
+             pointer-events: auto;
+             margin: 0;
+         }
 
         .theme-button {
             width: 30px;
@@ -941,9 +941,9 @@
 
             
             .controls {
-                top: 50%;
+                top: 8px;
                 left: 50%;
-                transform: translate(-50%, -50%);
+                transform: translateX(-50%);
                 gap: 8px;
                 padding: 6px 10px;
             }
@@ -1348,9 +1348,9 @@
 
     <script>
         /* Contador estático visible públicamente.
-           Cambia DEFAULT_COUNT a 22 (u otro número) directamente en este archivo para actualizarlo. */
+           Cambia DEFAULT_COUNT aquí para actualizarlo. */
         (function(){
-            const DEFAULT_COUNT = 29; // <- cambia aquí el número visible globalmente
+            const DEFAULT_COUNT = 39; // <- ahora muestra 39 para todo el mundo
             document.addEventListener('DOMContentLoaded', () => {
                 const span = document.getElementById('visitor-count');
                 if(span) span.textContent = String(DEFAULT_COUNT);
