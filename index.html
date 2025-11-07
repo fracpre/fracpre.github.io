@@ -81,18 +81,20 @@
 
         
         .controls {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-             display: flex;
-             gap: 10px;
-             z-index: 20;
-             background: rgba(0, 0, 0, 0.7);
-            padding: 8px 12px;
-             border-radius: 20px;
-             backdrop-filter: blur(5px);
-         }
+            position: fixed !important;
+            top: 50% !important;
+            left: 50% !important;
+            transform: translate(-50%, -50%) !important;
+            display: flex;
+            gap: 10px;
+            z-index: 99999; /* por encima de todo */
+            background: rgba(0, 0, 0, 0.65);
+            padding: 10px 14px;
+            border-radius: 20px;
+            backdrop-filter: blur(6px);
+            pointer-events: auto;
+            margin: 0;
+        }
 
         .theme-button {
             width: 30px;
