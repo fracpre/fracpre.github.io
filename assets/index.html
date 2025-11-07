@@ -17,11 +17,12 @@
             position: fixed;
             width: 40px;
             height: 40px;
-            background: url('assets/custom_cursor.png') no-repeat center center;
+            background: url('assets/custom_cursor.png') no-repeat left top;
             background-size: contain;
             pointer-events: none;
             z-index: 9999;
-            transform: translate(-50%, -50%);
+            transform: none; /* hotspot en la esquina superior izquierda */
+            transform-origin: 0 0;
         }
 
         
@@ -81,18 +82,20 @@
 
         
         .controls {
-            position: fixed;
-            bottom: calc(50% - 240px - 10px);
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            gap: 10px;
-            z-index: 20;
-            background: rgba(0, 0, 0, 0.7);
-            padding: 5px 10px;
-            border-radius: 20px;
-            backdrop-filter: blur(5px);
-        }
+            position: fixed !important;
+            top: 12px !important;            /* pegado al techo */
+            left: 50% !important;
+            transform: translateX(-50%) !important; /* centrado horizontalmente */
+             display: flex;
+             gap: 10px;
+             z-index: 99999; /* por encima de todo */
+             background: rgba(0, 0, 0, 0.65);
+             padding: 10px 14px;
+             border-radius: 20px;
+             backdrop-filter: blur(6px);
+             pointer-events: auto;
+             margin: 0;
+         }
 
         .theme-button {
             width: 30px;
@@ -939,9 +942,11 @@
 
             
             .controls {
-                bottom: 20px;
+                top: 8px;
+                left: 50%;
+                transform: translateX(-50%);
                 gap: 8px;
-                padding: 5px 8px;
+                padding: 6px 10px;
             }
 
             .theme-button {
@@ -1212,10 +1217,6 @@
                                         <span class="tooltip"></span>
                                     </div>
                                     <div class="badge-container">
-                                        <img src="assets/developer.png" alt="Developer" class="badge">
-                                        <span class="tooltip">Junior :s</span>
-                                    </div>
-                                    <div class="badge-container">
                                         <img src="assets/boy.png" alt="boy" class="badge">
                                         <span class="tooltip">18y <3</span>
                                     </div>
@@ -1224,8 +1225,15 @@
                                         <span class="tooltip">Asc 1 Ez</span>
                                     </div>
                                     <div class="badge-container">
+                                        <img src="assets/developer.png" alt="Developer" class="badge">
+                                        <span class="tooltip">Junior :s</span>
+                                    </div>
+                                    <div class="badge-container">
                                         <img src="assets/verified.gif" alt="Verified" class="badge">
                                         <span class="tooltip"></span>
+                                    <div class="badge-container">
+                                        <img src="assets/tito.png" alt="<3" class="badge">
+                                        <span class="tooltip">:3</span>
                                     </div>
                                 </div>
                             </div>
@@ -1344,9 +1352,9 @@
 
     <script>
         /* Contador estático visible públicamente.
-           Cambia DEFAULT_COUNT a 22 (u otro número) directamente en este archivo para actualizarlo. */
+           Cambia DEFAULT_COUNT aquí para actualizarlo. */
         (function(){
-            const DEFAULT_COUNT = 29; // <- cambia aquí el número visible globalmente
+            const DEFAULT_COUNT = 39; // <- ahora muestra 39 para todo el mundo
             document.addEventListener('DOMContentLoaded', () => {
                 const span = document.getElementById('visitor-count');
                 if(span) span.textContent = String(DEFAULT_COUNT);
@@ -1355,6 +1363,8 @@
     </script>
 </body>
 </html>
+
+
 
 
 
