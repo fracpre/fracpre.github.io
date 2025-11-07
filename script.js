@@ -165,7 +165,6 @@ document.addEventListener('DOMContentLoaded', () => {
         console.error("Failed to initialize cursor trail effect:", err);
       }
     }
-    typeWriterName();
     typeWriterBio();
   });
 
@@ -196,48 +195,13 @@ document.addEventListener('DOMContentLoaded', () => {
         console.error("Failed to initialize cursor trail effect:", err);
       }
     }
-    typeWriterName();
     typeWriterBio();
   });
 
 
-  const name = "FRACPRE";
-  let nameText = 'a';
-  let nameIndex = 0;
-  let isNameDeleting = false;
-  let nameCursorVisible = true;
-
-  function typeWriterName() {
-    if (!isNameDeleting && nameIndex < name.length) {
-      nameText = name.slice(0, nameIndex + 1);
-      nameIndex++;
-    } else if (isNameDeleting && nameIndex > 0) {
-      nameText = name.slice(0, nameIndex - 1);
-      nameIndex--;
-    } else if (nameIndex === name.length) {
-      isNameDeleting = true;
-      setTimeout(typeWriterName, 10000);
-      return;
-    } else if (nameIndex === 0) {
-      isNameDeleting = false;
-    }
-    profileName.textContent = nameText + (nameCursorVisible ? '|' : ' ');
-    if (Math.random() < 0.1) {
-      profileName.classList.add('glitch');
-      setTimeout(() => profileName.classList.remove('glitch'), 200);
-    }
-    setTimeout(typeWriterName, isNameDeleting ? 150 : 300);
-  }
-
-  setInterval(() => {
-    nameCursorVisible = !nameCursorVisible;
-    profileName.textContent = nameText + (nameCursorVisible ? '|' : ' ');
-  }, 500);
-
-
   const bioMessages = [
-    "Que buscas pillin? sigueme en ig anda",
-    "Beny Jr lover"
+    "Que buscas pillin? sigueme en ig anda ;)",
+    "Beny Jr Lover"
   ];
   let bioText = '';
   let bioIndex = 0;
@@ -261,10 +225,6 @@ document.addEventListener('DOMContentLoaded', () => {
       bioMessageIndex = (bioMessageIndex + 1) % bioMessages.length;
     }
     profileBio.textContent = bioText + (bioCursorVisible ? '|' : ' ');
-    if (Math.random() < 0.1) {
-      profileBio.classList.add('glitch');
-      setTimeout(() => profileBio.classList.remove('glitch'), 200);
-    }
     setTimeout(typeWriterBio, isBioDeleting ? 75 : 150);
   }
 
