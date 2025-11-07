@@ -352,9 +352,10 @@
     color: #000;
     position: relative;
     margin: 0;
-    line-height: 1;
+    line-height: 1.2;
     text-shadow: none;
     filter: none;
+    overflow: visible;
 }
 
 /* capa del láser rojo que solo se ve en las letras */
@@ -369,24 +370,38 @@
     letter-spacing: 3px;
     background: linear-gradient(90deg, 
         transparent 0%, 
-        transparent 40%, 
-        #ff0000 50%, 
-        transparent 60%, 
+        transparent 30%,
+        rgba(255, 0, 0, 0.02) 33%,
+        rgba(255, 0, 0, 0.05) 36%,
+        rgba(255, 0, 0, 0.1) 39%,
+        rgba(255, 0, 0, 0.18) 42%,
+        rgba(255, 0, 0, 0.3) 45%,
+        rgba(255, 0, 0, 0.5) 47%,
+        rgba(255, 0, 0, 0.7) 49%,
+        #ff0000 50%,
+        rgba(255, 0, 0, 0.7) 51%,
+        rgba(255, 0, 0, 0.5) 53%,
+        rgba(255, 0, 0, 0.3) 55%,
+        rgba(255, 0, 0, 0.18) 58%,
+        rgba(255, 0, 0, 0.1) 61%,
+        rgba(255, 0, 0, 0.05) 64%,
+        rgba(255, 0, 0, 0.02) 67%,
+        transparent 70%, 
         transparent 100%);
-    background-size: 300% 100%;
+    background-size: 280% 100%;
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
-    animation: laser-sweep 6s linear infinite alternate;
+    animation: laser-sweep 8s ease-in-out infinite alternate;
 }
 
 /* animación que hace que el láser recorra el texto */
 @keyframes laser-sweep {
     0% {
-        background-position: 0% 0;
+        background-position: -10% 0;
     }
     100% {
-        background-position: 100% 0;
+        background-position: 110% 0;
     }
 }
 
