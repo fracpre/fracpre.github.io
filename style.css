@@ -264,8 +264,18 @@ body.car-theme {
 }
 
 
-#home-theme, #hacker-theme, #rain-theme, #anime-theme, #car-theme, #results-theme {
+#home-theme, #hacker-theme, #rain-theme, #anime-theme, #car-theme {
   background-image: linear-gradient(to bottom right, var(--primary-color), var(--secondary-color));
+  touch-action: manipulation;
+}
+
+/* botón de resultados: borde arcoíris + fondo rojo pulsante */
+#results-theme {
+  border: 3px solid transparent;
+  -webkit-border-image: conic-gradient(from 0deg, #ff0000, #ff7a00, #ffef00, #00ff6a, #00caff, #4b00ff, #ff00d4, #ff0000) 1;
+  border-image: conic-gradient(from 0deg, #ff0000, #ff7a00, #ffef00, #00ff6a, #00caff, #4b00ff, #ff00d4, #ff0000) 1;
+  background-image: linear-gradient(180deg, #8B0000 0%, #FF0000 100%);
+  animation: heartbeat 1.2s ease-in-out infinite;
   touch-action: manipulation;
 }
 
@@ -381,10 +391,15 @@ body.car-theme {
   z-index: 25;
   display: flex;
   gap: 6px;
-  background: rgba(0, 0, 0, 0.7);
-  padding: 4px 8px;
-  border-radius: 15px;
+  /* fondo rojo oscuro -> rojo vivo con pulso */
+  background-image: linear-gradient(180deg, #8B0000 0%, #FF0000 100%);
+  padding: 6px 10px;
+  border-radius: 16px;
   backdrop-filter: blur(5px);
+  border: 3px solid transparent;
+  -webkit-border-image: conic-gradient(from 0deg, #ff0000, #ff7a00, #ffef00, #00ff6a, #00caff, #4b00ff, #ff00d4, #ff0000) 1;
+  border-image: conic-gradient(from 0deg, #ff0000, #ff7a00, #ffef00, #00ff6a, #00caff, #4b00ff, #ff00d4, #ff0000) 1;
+  animation: heartbeat 1.2s ease-in-out infinite;
 }
 
 .theme-button {
@@ -413,13 +428,18 @@ body.car-theme {
   bottom: calc(50% - 280px - 60px);
   left: 50%;
   transform: translateX(-50%);
-  background: rgba(0, 0, 0, 0.7);
+  /* fondo rojo pulsante */
+  background-image: linear-gradient(180deg, #8B0000 0%, #FF0000 100%);
   backdrop-filter: blur(10px);
   border-radius: 20px;
   padding: 6px 10px;
   display: flex;
   gap: 12px;
   z-index: 25;
+  border: 3px solid transparent;
+  -webkit-border-image: conic-gradient(from 0deg, #ff0000, #ff7a00, #ffef00, #00ff6a, #00caff, #4b00ff, #ff00d4, #ff0000) 1;
+  border-image: conic-gradient(from 0deg, #ff0000, #ff7a00, #ffef00, #00ff6a, #00caff, #4b00ff, #ff00d4, #ff0000) 1;
+  animation: heartbeat 1.2s ease-in-out infinite;
 }
 
 
@@ -596,6 +616,12 @@ body.car-theme {
     padding: 4px 8px;
     left: 50%;
     transform: translateX(-50%);
+    /* mantener el pulso y borde arcoíris en móviles */
+    background-image: linear-gradient(180deg, #8B0000 0%, #FF0000 100%);
+    border: 2px solid transparent;
+    -webkit-border-image: conic-gradient(from 0deg, #ff0000, #ff7a00, #ffef00, #00ff6a, #00caff, #4b00ff, #ff00d4, #ff0000) 1;
+    border-image: conic-gradient(from 0deg, #ff0000, #ff7a00, #ffef00, #00ff6a, #00caff, #4b00ff, #ff00d4, #ff0000) 1;
+    animation: heartbeat 1.2s ease-in-out infinite;
   }
 
   .theme-button {
@@ -688,6 +714,30 @@ body.car-theme {
   }
   100% {
     transform: rotate(360deg);
+  }
+}
+
+/* animación de latido: escala sutil y cambio de brillo para simular pulso rojo oscuro -> rojo vivo */
+@keyframes heartbeat {
+  0% {
+    transform: scale(1);
+    filter: brightness(0.85);
+    box-shadow: 0 6px 18px rgba(139,0,0,0.25);
+  }
+  25% {
+    transform: scale(1.02);
+    filter: brightness(1.05);
+    box-shadow: 0 10px 28px rgba(255,0,0,0.22);
+  }
+  50% {
+    transform: scale(1.03);
+    filter: brightness(1.15);
+    box-shadow: 0 14px 36px rgba(255,0,0,0.28);
+  }
+  100% {
+    transform: scale(1);
+    filter: brightness(0.85);
+    box-shadow: 0 6px 18px rgba(139,0,0,0.25);
   }
 }
 

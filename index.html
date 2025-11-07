@@ -186,6 +186,53 @@
             pointer-events: auto;
         }
 
+        /* ---- Reemplazo: fondo del profile-block: quitado "latido" anterior.
+           Ahora el ::after mantiene un degradado rojo estático y animamos SOLO
+           el brillo/box-shadow para conseguir un latido fluido (sin cortes ni
+           cambios bruscos de gradiente). La línea rainbow se mantiene igual. */
+        #profile-block::after {
+            content: '';
+            position: absolute;
+            inset: 2px;
+            border-radius: 13px;
+            z-index: -1;
+            pointer-events: none;
+            /* degradado semitransparente para dejar ver el fondo */
+            background: linear-gradient(180deg,
+                rgba(110,0,0,0.12) 0%,
+                rgba(184,24,24,0.14) 65%);
+            /* combinar blur con brightness; los valores se animan en keyframes */
+            filter: blur(3px) brightness(0.88);
+            box-shadow: 0 8px 22px rgba(139,0,0,0.08), inset 0 -8px 22px rgba(0,0,0,0.22);
+            will-change: filter, box-shadow;
+            animation: red-beat-bright 2.6s cubic-bezier(.25,.46,.45,.94) infinite;
+        }
+
+        /* Latido fluido actualizado: animamos filter (blur+brightness) y box-shadow
+           para obtener un pulso muy suave y sin cortes, manteniendo la transparencia. */
+        @keyframes red-beat-bright {
+            0% {
+                filter: blur(3px) brightness(0.88);
+                box-shadow: 0 8px 22px rgba(139,0,0,0.08), inset 0 -8px 22px rgba(0,0,0,0.22);
+            }
+            10% {
+                filter: blur(1.8px) brightness(1.04);
+                box-shadow: 0 14px 34px rgba(255,0,0,0.14), inset 0 -10px 26px rgba(0,0,0,0.20);
+            }
+            18% { /* pico (latido) — breve y pronunciado pero suave por easing */
+                filter: blur(0.8px) brightness(1.18);
+                box-shadow: 0 22px 48px rgba(255,0,0,0.22), inset 0 -12px 30px rgba(0,0,0,0.20);
+            }
+            38% {
+                filter: blur(1.6px) brightness(1.02);
+                box-shadow: 0 14px 34px rgba(255,0,0,0.14), inset 0 -10px 26px rgba(0,0,0,0.20);
+            }
+            100% {
+                filter: blur(3px) brightness(0.88);
+                box-shadow: 0 8px 22px rgba(139,0,0,0.08), inset 0 -8px 22px rgba(0,0,0,0.22);
+            }
+        }
+
         .profile-header {
             display: flex;
             align-items: flex-start;
@@ -619,32 +666,66 @@
         }
 
         
+        /* reemplazar el borde azul por una línea morada animada (sin tocar el recuadro) */
         .home-theme #profile-block,
         .home-theme #skills-block {
-            border-color: rgba(0, 195, 255, 0.5);
+            /* ocultamos el borde original para pintar la línea mediante ::before */
+            border-color: transparent;
         }
 
-        .hacker-theme #profile-block,
-        .hacker-theme #skills-block {
-            border-color: rgba(0, 255, 0, 0.5);
+        /* línea fina morada animada:
+           - gradiente morado oscuro -> morado vivo
+           - los colores "recorren" la línea (background-position animado)
+           - la intensidad (brightness) hace un latido fluido (sin cortes) */
+        .home-theme #profile-block::before,
+        .home-theme #skills-block::before {
+            content: '';
+            position: absolute;
+            inset: -2px;              /* hace visible la línea fuera del borde */
+            border-radius: 17px;
+            z-index: -2;
+            pointer-events: none;
+
+            /* gradiente morado (oscuro -> vivo) ampliado para recorrido fluido */
+            background: linear-gradient(90deg,
+                #4b004b 0%,
+                #6f006f 25%,
+                #a000a0 50%,
+                #c653c6 75%,
+                #ff66ff 100%);
+            background-size: 300% 100%;
+            background-position: 0% 50%;
+
+            /* máscara para mostrar solo la línea (grosor = padding) */
+            -webkit-mask: linear-gradient(#000 0 0) content-box;
+                    mask: linear-gradient(#000 0 0) content-box;
+            -webkit-mask-composite: xor;
+                    mask-composite: exclude;
+            padding: 2px; /* grosor visible de la línea */
+
+            filter: saturate(120%) contrast(105%) brightness(0.95);
+            will-change: background-position, filter;
+
+            /* dos animaciones combinadas:
+               - border-move: hace que los colores recorran toda la línea (vuelta completa)
+               - border-pulse: latido fluido de intensidad (brightness) */
+            animation: border-move 18s linear infinite, border-pulse 2.8s cubic-bezier(.25,.46,.45,.94) infinite;
         }
 
-        .rain-theme #profile-block,
-        .rain-theme #skills-block {
-            border-color: rgba(100, 149, 237, 0.5);
+        @keyframes border-move {
+            0%   { background-position: 0% 50%; }
+            50%  { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
         }
 
-        .anime-theme #profile-block,
-        .anime-theme #skills-block {
-            border-color: rgba(255, 0, 255, 0.5);
+        @keyframes border-pulse {
+            0%   { filter: brightness(0.92); }
+            12%  { filter: brightness(1.08); } /* subida rápida al pico */
+            28%  { filter: brightness(1.18); } /* pico suave */
+            60%  { filter: brightness(1.02); } /* descenso */
+            100% { filter: brightness(0.92); } /* reposo */
         }
 
-        .car-theme #profile-block,
-        .car-theme #skills-block {
-            border-color: rgba(255, 165, 0, 0.5);
-        }
-
-        
         .glitch {
             animation: glitch 0.2s ease-in-out;
         }
@@ -916,6 +997,13 @@
                 font-size: 18px;
                 padding: 0 20px;
             }
+        }
+
+        /* borde fino rainbow animado (colores se desplazan a lo largo de la línea,
+           estilo idéntico al gradiente del nombre FRACPRE) */
+        #profile-block::before {
+            display: none;
+            content: '';
         }
     </style>
 </head>
