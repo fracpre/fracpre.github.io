@@ -11,7 +11,7 @@ function initMedia() {
   backgroundMusic.volume = 0.3;
   backgroundVideo.muted = true; 
 
-  
+
   backgroundVideo.play().catch(err => {
     console.error("Failed to play background video:", err);
   });
@@ -53,45 +53,36 @@ document.addEventListener('DOMContentLoaded', () => {
   const socialIcons = document.querySelectorAll('.social-icon');
   const badges = document.querySelectorAll('.badge');
 
-  
+
   const cursor = document.querySelector('.custom-cursor');
-  const isTouchDevice = window.matchMedia("(pointer: coarse)").matches;
+  if (!cursor) return;
 
-  if (isTouchDevice) {
+  // asegúrate CSS hotspot en la esquina superior izquierda
+  cursor.style.transform = 'none';
+  cursor.style.transformOrigin = '0 0';
+  cursor.style.position = 'fixed';
+  cursor.style.left = '0px';
+  cursor.style.top = '0px';
+
+  // mover el cursor colocando la esquina superior izquierda del sprite
+  function moveCursor(x, y) {
+    cursor.style.left = `${Math.round(x)}px`;
+    cursor.style.top = `${Math.round(y)}px`;
+  }
+
+  window.addEventListener('mousemove', (e) => {
+    moveCursor(e.clientX, e.clientY);
+  }, { passive: true });
+
+  window.addEventListener('touchmove', (e) => {
+    if (e.touches && e.touches[0]) {
+      moveCursor(e.touches[0].clientX, e.touches[0].clientY);
+    }
+  }, { passive: true });
+
+  // marcar dispositivo táctil para mantener cursor nativo si procede
+  if ('ontouchstart' in window) {
     document.body.classList.add('touch-device');
-    
-    document.addEventListener('touchstart', (e) => {
-      const touch = e.touches[0];
-      cursor.style.left = touch.clientX + 'px';
-      cursor.style.top = touch.clientY + 'px';
-      cursor.style.display = 'block';
-    });
-
-    document.addEventListener('touchmove', (e) => {
-      const touch = e.touches[0];
-      cursor.style.left = touch.clientX + 'px';
-      cursor.style.top = touch.clientY + 'px';
-      cursor.style.display = 'block';
-    });
-
-    document.addEventListener('touchend', () => {
-      cursor.style.display = 'none'; 
-    });
-  } else {
-
-    document.addEventListener('mousemove', (e) => {
-      cursor.style.left = e.clientX + 'px';
-      cursor.style.top = e.clientY + 'px';
-      cursor.style.display = 'block';
-    });
-
-    document.addEventListener('mousedown', () => {
-      cursor.style.transform = 'scale(0.8) translate(-50%, -50%)';
-    });
-
-    document.addEventListener('mouseup', () => {
-      cursor.style.transform = 'scale(1) translate(-50%, -50%)';
-    });
   }
 
 
@@ -470,7 +461,7 @@ document.addEventListener('DOMContentLoaded', () => {
     switchTheme('assets/car_background.mp4', carMusic, 'car-theme');
   });
 
- 
+
   function handleTilt(e, element) {
     const rect = element.getBoundingClientRect();
     const centerX = rect.left + rect.width / 2;
@@ -581,7 +572,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 500);
   });
 
- 
+
   let isShowingSkills = false;
   resultsButton.addEventListener('click', () => {
     if (!isShowingSkills) {
