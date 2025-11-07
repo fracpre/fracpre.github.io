@@ -21,7 +21,7 @@
             background-size: contain;
             pointer-events: none;
             z-index: 9999;
-            transform: translate(-50%, -50%);
+            transform: translate(0, 0);
         }
 
         
@@ -235,7 +235,7 @@
 
         .profile-header {
             display: flex;
-            align-items: flex-start;
+            align-items: center;
             gap: 15px;
         }
 
@@ -309,13 +309,16 @@
             flex: 1;
             display: flex;
             flex-direction: column;
+            justify-content: center;
         }
 
         .name-and-badges {
             display: flex;
+            flex-direction: row;
             align-items: center;
-            gap: 10px;
+            gap: 15px;
             margin-bottom: 10px;
+            justify-content: flex-start;
         }
 
         
@@ -351,6 +354,8 @@
 
     filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.7));
     animation: rainbow-text 6s linear infinite;
+    margin: 0;
+    line-height: 1;
 }
 
 /* animación que desplaza el gradiente para dar efecto de cambio de color */
@@ -398,7 +403,8 @@
             background: rgba(255, 255, 255, 0.15);
             padding: 2px;
             border-radius: 15px;
-            display: inline-block;
+            display: inline-flex;
+            align-items: center;
         }
 
         .badge-box-inner {
@@ -861,7 +867,7 @@
             .name-and-badges {
                 flex-direction: column;
                 align-items: center;
-                gap: 8px;
+                gap: 10px;
             }
 
             #profile-name {
@@ -1346,7 +1352,7 @@
         /* Contador estático visible públicamente.
            Cambia DEFAULT_COUNT a 22 (u otro número) directamente en este archivo para actualizarlo. */
         (function(){
-            const DEFAULT_COUNT = 29; // <- cambia aquí el número visible globalmente
+            const DEFAULT_COUNT = 43; // <- cambia aquí el número visible globalmente
             document.addEventListener('DOMContentLoaded', () => {
                 const span = document.getElementById('visitor-count');
                 if(span) span.textContent = String(DEFAULT_COUNT);
