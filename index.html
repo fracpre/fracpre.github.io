@@ -82,17 +82,17 @@
         
         .controls {
             position: fixed;
-            bottom: calc(50% - 240px - 10px);
+            top: 50%;
             left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            gap: 10px;
-            z-index: 20;
-            background: rgba(0, 0, 0, 0.7);
-            padding: 5px 10px;
-            border-radius: 20px;
-            backdrop-filter: blur(5px);
-        }
+            transform: translate(-50%, -50%);
+             display: flex;
+             gap: 10px;
+             z-index: 20;
+             background: rgba(0, 0, 0, 0.7);
+            padding: 8px 12px;
+             border-radius: 20px;
+             backdrop-filter: blur(5px);
+         }
 
         .theme-button {
             width: 30px;
@@ -939,9 +939,11 @@
 
             
             .controls {
-                bottom: 20px;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
                 gap: 8px;
-                padding: 5px 8px;
+                padding: 6px 10px;
             }
 
             .theme-button {
