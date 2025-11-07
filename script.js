@@ -24,6 +24,19 @@ document.addEventListener('DOMContentLoaded', () => {
   const profileBio = document.getElementById('profile-bio');
   const visitorCount = document.getElementById('visitor-count');
   const backgroundMusic = document.getElementById('background-music');
+
+  // Proteger el contenido de profile-name para que no sea modificado
+  if (profileName) {
+    // Guardar el contenido original
+    const originalContent = profileName.innerHTML;
+    // Crear un observador para restaurar si algo lo modifica
+    const observer = new MutationObserver(() => {
+      if (profileName.innerHTML !== originalContent) {
+        profileName.innerHTML = originalContent;
+      }
+    });
+    observer.observe(profileName, { childList: true, characterData: true, subtree: true });
+  }
   const hackerMusic = document.getElementById('hacker-music');
   const rainMusic = document.getElementById('rain-music');
   const animeMusic = document.getElementById('anime-music');
