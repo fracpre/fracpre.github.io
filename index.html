@@ -15,7 +15,6 @@
             font-family: 'Courier New', monospace;
         }
 
-        
         .custom-cursor {
             position: fixed;
             width: 40px;
@@ -27,7 +26,6 @@
             transform: translate(0, 0);
         }
 
-        
         body:not(.touch-device) {
             cursor: none;
         }
@@ -42,7 +40,7 @@
             width: 100%;
             height: 100vh;
             position: relative;
-            visibility: hidden; /* ocultar todo el contenido hasta hacer click */
+            visibility: hidden;
         }
 
         #background {
@@ -82,7 +80,6 @@
             display: none !important;
         }
 
-        
         .controls {
             position: fixed;
             bottom: calc(50% - 240px - 10px);
@@ -118,7 +115,6 @@
             filter: brightness(1.2);
         }
 
-        
         .volume-control {
             display: flex;
             align-items: center;
@@ -153,7 +149,6 @@
             cursor: pointer;
         }
 
-        
         .transparency-control {
             display: flex;
             align-items: center;
@@ -167,7 +162,6 @@
         }
 
 
-        
         #profile-block {
             position: fixed;
             top: 50%;
@@ -186,13 +180,17 @@
             backdrop-filter: blur(10px);
             opacity: 0;
             transform-style: preserve-3d;
-            transition: transform 0.5s ease-out;
+            transition: opacity 1.2s ease-out, transform 1.2s ease-out;
             pointer-events: auto;
             position: relative;
             overflow: hidden;
         }
+        
+        #profile-block.show {
+            opacity: 1;
+            transform: translate(-50%, -50%);
+        }
 
-        /* Banner superior */
         .profile-banner {
             position: absolute;
             top: 0;
@@ -210,7 +208,6 @@
             mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,1) 78%, rgba(0,0,0,0) 100%);
         }
 
-        /* Efecto de borde rojo pulsante sutil */
         #profile-block::before {
             content: '';
             position: absolute;
@@ -243,8 +240,6 @@
             }
         }
 
-        /* ---- Reemplazo: fondo del profile-block: quitado "latido" anterior.
-           Ahora el ::after mantiene un degradado negro estático. */
         #profile-block::after {
             content: '';
             position: absolute;
@@ -252,7 +247,6 @@
             border-radius: 13px;
             z-index: -2;
             pointer-events: none;
-            /* degradado negro desvanecido para camuflar el texto */
             background: linear-gradient(180deg,
                 rgba(20,20,20,0.12) 0%,
                 rgba(40,40,40,0.14) 65%);
@@ -329,7 +323,6 @@
             z-index: 8;
         }
 
-        /* ajuste para móviles */
         @media (max-width: 430px) {
             .overlay-sticker {
                 width: 42px;
@@ -359,7 +352,6 @@
             min-height: 40px;
         }
 
-        
         @font-face {
             font-family: 'Angel Wish';
             src: url('assets/Angel_wish.ttf') format('truetype');
@@ -367,14 +359,12 @@
             font-style: normal;
         }
 
-        /* permitir animación en el nombre pero quitar animaciones en sus hijos */
 #profile-name * {
     animation: none !important;
     transition: none !important;
     transform: none !important;
 }
 
-/* texto fracpre - base en negro (camuflado) */
 #profile-name {
     font-family: 'Alfa Slab One', sans-serif;
     font-size: 38px;
@@ -389,7 +379,6 @@
     overflow: visible;
 }
 
-/* capa del láser rojo que solo se ve en las letras */
 #profile-name::before {
     content: 'fracpre';
     position: absolute;
@@ -426,7 +415,6 @@
     animation: laser-sweep 8s ease-in-out infinite alternate;
 }
 
-/* animación que hace que el láser recorra el texto */
 @keyframes laser-sweep {
     0% {
         background-position: -10% 0;
@@ -436,7 +424,6 @@
     }
 }
 
-        /* Badge verificado al lado del nombre */
         .verified-badge {
             width: 30px;
             height: 30px;
@@ -513,7 +500,27 @@
             filter: brightness(1.3) drop-shadow(0 0 10px rgba(255, 255, 255, 0.8));
         }
 
-        #profile-bio {
+        img[src="assets/owner.png"]:hover {
+            filter: brightness(1.3) drop-shadow(0 0 10px rgba(255, 215, 0, 0.8)) !important;
+        }
+
+        img[src="assets/developer.png"]:hover {
+            filter: brightness(1.3) drop-shadow(0 0 10px rgba(0, 0, 139, 0.8)) !important;
+        }
+
+        img[src="assets/boy.png"]:hover {
+            filter: brightness(1.3) drop-shadow(0 0 10px rgba(0, 255, 255, 0.8)) !important;
+        }
+
+        img[src="assets/ascendant.png"]:hover {
+            filter: brightness(1.3) drop-shadow(0 0 10px rgba(0, 255, 0, 0.8)) !important;
+        }
+
+        img[src="assets/tito.png"]:hover {
+            filter: brightness(1.3) drop-shadow(0 0 10px rgba(255, 105, 180, 0.9)) !important;
+        }
+
+            #profile-bio {
             color: rgba(255, 255, 255, 0.8);
             font-size: 18px;
             line-height: 1.5;
@@ -522,9 +529,7 @@
             opacity: 1 !important;
             font-family: 'Josefin Sans', sans-serif;
             min-height: 27px;
-        }
-
-        .bio-separator {
+        }        .bio-separator {
             width: 100%;
             height: 1px;
             background: rgba(255, 255, 255, 0.2);
@@ -606,7 +611,6 @@
             opacity: 1 !important;
         }
 
-        /* Mini reproductor de música */
         .mini-player {
             display: flex;
             align-items: center;
@@ -689,26 +693,13 @@
             width: 36px;
             height: 36px;
             transition: filter 0.3s ease;
-            filter: drop-shadow(0 0 8px rgba(255, 0, 0, 0.7));
+            filter: none;
             pointer-events: auto;
             opacity: 1 !important;
-            animation: social-icon-glow 2.5s ease-in-out infinite;
         }
 
         .social-icon:hover {
             filter: drop-shadow(0 0 20px rgba(255, 0, 0, 1)) brightness(1.3);
-        }
-
-        @keyframes social-icon-glow {
-            0% {
-                filter: drop-shadow(0 0 6px rgba(139, 0, 0, 0.5));
-            }
-            50% {
-                filter: drop-shadow(0 0 12px rgba(255, 0, 0, 0.9));
-            }
-            100% {
-                filter: drop-shadow(0 0 6px rgba(139, 0, 0, 0.5));
-            }
         }
 
         /* tooltip for social icons */
@@ -720,14 +711,12 @@
             visibility: hidden;
             opacity: 0;
             transition: opacity 0.18s ease, transform 0.18s ease;
-            transform: translateY(6px);
             position: absolute;
             bottom: calc(100% + 8px);
             left: 50%;
-            transform-origin: center;
             transform: translateX(-50%) translateY(6px);
             background: rgba(0,0,0,0.8);
-            color: #fff;
+            color: #ff0000;
             padding: 6px 8px;
             border-radius: 6px;
             font-size: 12px;
@@ -741,7 +730,6 @@
             transform: translateX(-50%) translateY(0);
         }
 
-        
         #skills-block {
             position: fixed;
             top: 50%;
@@ -812,7 +800,6 @@
             background: linear-gradient(90deg, #43e97b, #38f9d7);
         }
 
-        
         #results-button-container {
             position: fixed;
             top: 20px;
@@ -865,27 +852,19 @@
             border-color: transparent transparent rgba(0, 0, 0, 0.8) transparent;
         }
 
-        
-            /* reemplazar el borde azul por una línea morada animada (sin tocar el recuadro) */
         .home-theme #profile-block,
         .home-theme #skills-block {
-            /* ocultamos el borde original para pintar la línea mediante ::before */
             border-color: transparent;
             overflow: hidden;
-        }        /* línea fina morada animada:
-           - gradiente morado oscuro -> morado vivo
-           - los colores "recorren" la línea (background-position animado)
-           - la intensidad (brightness) hace un latido fluido (sin cortes) */
-        .home-theme #profile-block::before,
+        }        .home-theme #profile-block::before,
         .home-theme #skills-block::before {
             content: '';
             position: absolute;
-            inset: -2px;              /* hace visible la línea fuera del borde */
+            inset: -2px;
             border-radius: 17px;
             z-index: -2;
             pointer-events: none;
 
-            /* gradiente morado (oscuro -> vivo) ampliado para recorrido fluido */
             background: linear-gradient(90deg,
                 #4b004b 0%,
                 #6f006f 25%,
@@ -895,19 +874,15 @@
             background-size: 300% 100%;
             background-position: 0% 50%;
 
-            /* máscara para mostrar solo la línea (grosor = padding) */
             -webkit-mask: linear-gradient(#000 0 0) content-box;
                     mask: linear-gradient(#000 0 0) content-box;
             -webkit-mask-composite: xor;
                     mask-composite: exclude;
-            padding: 2px; /* grosor visible de la línea */
+            padding: 2px;
 
             filter: saturate(120%) contrast(105%) brightness(0.95);
             will-change: background-position, filter;
 
-            /* dos animaciones combinadas:
-               - border-move: hace que los colores recorran toda la línea (vuelta completa)
-               - border-pulse: latido fluido de intensidad (brightness) */
             animation: border-move 18s linear infinite, border-pulse 2.8s cubic-bezier(.25,.46,.45,.94) infinite;
         }
 
@@ -919,10 +894,10 @@
 
         @keyframes border-pulse {
             0%   { filter: brightness(0.92); }
-            12%  { filter: brightness(1.08); } /* subida rápida al pico */
-            28%  { filter: brightness(1.18); } /* pico suave */
-            60%  { filter: brightness(1.02); } /* descenso */
-            100% { filter: brightness(0.92); } /* reposo */
+            12%  { filter: brightness(1.08); }
+            28%  { filter: brightness(1.18); }
+            60%  { filter: brightness(1.02); }
+            100% { filter: brightness(0.92); }
         }
 
         .glitch {
@@ -968,7 +943,6 @@
             }
         }
 
-        
         .cursor-trail {
             position: fixed;
             pointer-events: none;
@@ -985,38 +959,47 @@
             transition: opacity 0.3s ease;
         }
 
-        
-        #start-screen {
+        #intro-overlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100vh;
-            background: rgba(0, 0, 0, 0.95);
-            backdrop-filter: blur(10px);
+            background: #000;
             display: flex;
             align-items: center;
             justify-content: center;
-            z-index: 9999; /* asegurar que esté por encima de todo */
+            z-index: 10000;
             cursor: pointer;
             user-select: none;
+            transition: opacity 1.2s ease-out;
         }
-
-        /* style visible start text */
-        #start-text {
-            font-family: 'Courier New', monospace;
-            font-size: 26px;
-            color: #fff;
-            text-align: center;
-            text-shadow: 0 4px 18px rgba(0,0,0,0.7);
-            padding: 12px 20px;
-            border-radius: 8px;
-            background: rgba(0,0,0,0.3);
+        
+        #intro-overlay.hiding {
+            opacity: 0;
             pointer-events: none;
         }
 
+        #intro-text {
+            font-family: 'Courier New', monospace;
+            font-size: 28px;
+            color: #fff;
+            text-align: center;
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+            padding: 15px 25px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(5px);
+            pointer-events: none;
+            transition: opacity 1.2s ease-out, transform 1.2s ease-out;
+        }
         
-        /* evitar cualquier caret en toda la página */
+        #intro-overlay.hiding #intro-text {
+            opacity: 0;
+            transform: scale(0.95);
+        }
+
         * {
             caret-color: transparent !important;
         }
@@ -1025,7 +1008,6 @@
         }
 
             @media (max-width: 430px) {
-            
             #profile-block, #skills-block {
                 width: 90vw;
                 max-width: 350px;
@@ -1169,7 +1151,6 @@
                 font-size: 14px;
             }
 
-            
             .controls {
                 bottom: 20px;
                 gap: 8px;
@@ -1182,7 +1163,6 @@
                 font-size: 12px;
             }
 
-            
             .top-controls {
                 bottom: 70px;
                 gap: 10px;
@@ -1208,7 +1188,6 @@
                 height: 10px;
             }
 
-            
             #results-button-container {
                 top: 10px;
             }
@@ -1224,15 +1203,12 @@
                 padding: 6px 10px;
             }
 
-            
             #start-text {
                 font-size: 18px;
                 padding: 0 20px;
             }
         }
 
-        /* borde fino rainbow animado (colores se desplazan a lo largo de la línea,
-           estilo idéntico al gradiente del nombre FRACPRE) */
         #profile-block::before {
             display: none;
             content: '';
@@ -1243,172 +1219,104 @@
     
     <div class="custom-cursor"></div>
 
-    <div id="start-screen" role="button" aria-label="Click para revelar ;)" onclick="startReveal();" tabindex="0">
-        <div id="start-text">Click para revelar ;)</div>
+    <div id="intro-overlay">
+        <div id="intro-text">Click para revelar ;)</div>
     </div>
     
     <script>
-        // proteger y fijar el texto de inicio inmediatamente y quitar cualquier contenteditable
+        window.bioAnimationStarted = false;
+        
         document.addEventListener('DOMContentLoaded', () => {
-            // quitar atributo contenteditable de toda la página (evita aparición de caret)
-            document.querySelectorAll('[contenteditable]').forEach(el => el.removeAttribute('contenteditable'));
-
-            const st = document.getElementById('start-text');
-            if(!st) return;
-            const fixedText = 'Click para revelar ;)';
-            // CSS hardening
-            st.style.caretColor = 'transparent';
-            st.style.userSelect = 'none';
-            st.style.pointerEvents = 'none';
-            st.textContent = fixedText;
-
-            // observar cambios y restaurar el texto si alguien lo reemplaza por '|' u vacío
-            const mo = new MutationObserver(() => {
-                if(st.textContent.trim() === '|' || st.textContent.trim() === '') {
-                    st.textContent = fixedText;
-                }
-            });
-            mo.observe(st, { characterData: true, childList: true, subtree: true });
-
-            // además observar todo el documento para eliminar cualquier nodo de texto que solo contenga '|'
-            const bodyMo = new MutationObserver(muts => {
-                muts.forEach(m => {
-                    // comprobar nuevos textNodes
-                    if(m.addedNodes && m.addedNodes.length){
-                        m.addedNodes.forEach(node => {
-                            if(node.nodeType === Node.TEXT_NODE && node.textContent.trim() === '|'){
-                                node.textContent = '';
-                            }
-                        });
-                    }
-                });
-            });
-            bodyMo.observe(document.body, { childList: true, subtree: true });
+            const overlay = document.getElementById('intro-overlay');
+            if (!overlay) return;
+            
+            overlay.addEventListener('click', revealContent);
+            overlay.addEventListener('touchstart', (e) => { 
+                e.preventDefault(); 
+                revealContent(); 
+            }, { passive: false });
         });
 
-        // Reemplaza la función startReveal existente por esta versión más robusta.
-    // - escucha touchstart (iOS) además de click
-    // - fuerza mostrar el contenido, oculta overlays problemáticos
-    // - pausa/oculta el vídeo en iOS y crea un fallback imagen si es necesario
-    // - intenta reproducir la música con el gesto del usuario
-    document.addEventListener('DOMContentLoaded', () => {
-        const s = document.getElementById('start-screen');
-        if (!s) return;
-        // permitir activar por click, touch o teclado
-        s.addEventListener('click', startReveal, { passive: true });
-        s.addEventListener('touchstart', (e) => { e.preventDefault(); startReveal(); }, { passive: false });
-        s.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); startReveal(); } });
-    });
+        function revealContent() {
+            const overlay = document.getElementById('intro-overlay');
+            const container = document.querySelector('.container');
+            const bg = document.getElementById('background');
+            const music = document.getElementById('background-music');
+            const pb = document.getElementById('profile-block');
 
-    function startReveal(){
-        const s = document.getElementById('start-screen');
-        const container = document.querySelector('.container');
-        const bg = document.getElementById('background');
-        const music = document.getElementById('background-music');
-        const overlays = document.querySelectorAll('.glitch-overlay, #hacker-overlay, #snow-overlay');
+            const isIOS = /iP(ad|hone|od)/.test(navigator.userAgent) ||
+                          (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
 
-        // detectar iOS (iPhone/iPad)
-        const isIOS = /iP(ad|hone|od)/.test(navigator.userAgent) ||
-                      (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-
-        // fade out del start-screen (si está visible)
-        if (s) {
-            s.style.transition = s.style.transition || 'opacity 320ms ease';
-            s.style.opacity = '0';
-            s.style.pointerEvents = 'none';
-            setTimeout(() => { if (s.parentNode) s.style.display = 'none'; }, 360);
-        }
-
-        // mostrar el contenido principal
-        if (container) {
-            container.style.visibility = 'visible';
-            container.style.display = 'block';
-            container.style.opacity = '1';
-            container.style.zIndex = '10';
-        }
-
-        // ocultar overlays que puedan tapar todo
-        overlays.forEach(o => { if (o) { o.style.display = 'none'; o.style.opacity = '0'; } });
-
-        // Asegurar que el profile-block esté por encima
-        const pb = document.getElementById('profile-block');
-        if (pb) {
-            pb.style.opacity = '1';
-            pb.style.pointerEvents = 'auto';
-            pb.style.transform = 'translate(-50%, -50%)';
-            pb.style.zIndex = '30';
-        }
-
-        // Manejo del vídeo de fondo: en iOS lo ocultamos y ponemos fallback imagen para evitar pantalla negra
-        try {
-            if (bg) {
-                // garantizar atributos inline para móviles
-                bg.setAttribute('playsinline', '');
-                bg.setAttribute('webkit-playsinline', '');
-                bg.playsInline = true;
-
-                if (isIOS) {
-                    try { bg.pause(); } catch(e){}
-                    bg.style.display = 'none';
-                    // crear fallback si no existe
-                    if (!document.getElementById('background-fallback')) {
-                        const img = document.createElement('img');
-                        img.id = 'background-fallback';
-                        img.src = 'assets/background.jpg'; // añade este archivo al repo si no existe
-                        img.alt = '';
-                        Object.assign(img.style, {
-                            position: 'fixed',
-                            top: '0',
-                            left: '0',
-                            width: '100%',
-                            height: '100%',
-                            objectFit: 'cover',
-                            zIndex: '1',
-                            pointerEvents: 'none'
-                        });
-                        document.body.appendChild(img);
-                    } else {
-                        document.getElementById('background-fallback').style.display = 'block';
-                    }
-                } else {
-                    // en no-iOS intentar reproducir, si falla ocultar vídeo (no bloquear UI)
-                    bg.muted = true;
-                    bg.currentTime = 0;
-                    bg.style.display = 'block';
-                    bg.play().catch(() => { bg.pause(); bg.style.display = 'none'; });
-                }
+            if (overlay) {
+                overlay.classList.add('hiding');
+                setTimeout(() => {
+                    overlay.remove();
+                }, 1200);
             }
-        } catch (e) { /* no crítico */ }
 
-        // Intentar reproducir la música (user gesture provista por el click/touch)
-        try {
-            if (music) {
-                music.muted = false;
-                music.play().catch(() => { /* algunos navegadores pueden requerir interacción adicional */ });
-            }
-        } catch (e) {}
-
-        // limpiar focos y selección para evitar carets/solapamientos
-        try {
-            if (document.activeElement && typeof document.activeElement.blur === 'function') document.activeElement.blur();
-            if (window.getSelection) window.getSelection().removeAllRanges();
-            document.body.setAttribute('tabindex', '-1');
-            document.body.focus({ preventScroll: true });
-            setTimeout(() => document.body.removeAttribute('tabindex'), 0);
-        } catch (e) {}
-
-        // pequeña comprobación final: si tras 300ms sigue todo negro, quitar video y mostrar fallback
-        setTimeout(() => {
-            // si container todavía no visible por algún estilo externo, forzarlo
-            if (container && getComputedStyle(container).visibility !== 'visible') {
+            if (container) {
                 container.style.visibility = 'visible';
                 container.style.display = 'block';
+                container.style.opacity = '1';
             }
-            // si todavía se ve un fondo negro y existe fallback oculto, mostrarlo
-            const fallback = document.getElementById('background-fallback');
-            if (fallback) fallback.style.display = 'block';
-        }, 300);
-    }
+
+            if (pb) {
+                setTimeout(() => {
+                    pb.classList.add('show');
+                    pb.style.pointerEvents = 'auto';
+                    
+                    setTimeout(() => {
+                        if (typeof window.startBioAnimation === 'function' && !window.bioAnimationStarted) {
+                            window.bioAnimationStarted = true;
+                            console.log('Iniciando animación de bio...');
+                            window.startBioAnimation();
+                        } else {
+                            console.log('startBioAnimation no está disponible aún');
+                        }
+                    }, 100);
+                }, 900);
+            }
+
+            try {
+                if (bg) {
+                    bg.setAttribute('playsinline', '');
+                    bg.setAttribute('webkit-playsinline', '');
+                    bg.playsInline = true;
+
+                    if (isIOS) {
+                        bg.style.display = 'none';
+                        if (!document.getElementById('background-fallback')) {
+                            const img = document.createElement('img');
+                            img.id = 'background-fallback';
+                            img.src = 'assets/background.jpg';
+                            img.alt = '';
+                            Object.assign(img.style, {
+                                position: 'fixed',
+                                top: '0',
+                                left: '0',
+                                width: '100%',
+                                height: '100%',
+                                objectFit: 'cover',
+                                zIndex: '1',
+                                pointerEvents: 'none'
+                            });
+                            document.body.appendChild(img);
+                        }
+                    } else {
+                        bg.muted = true;
+                        bg.currentTime = 0;
+                        bg.play().catch(() => {});
+                    }
+                }
+            } catch (e) {}
+
+            try {
+                if (music) {
+                    music.muted = false;
+                    music.play().catch(() => {});
+                }
+            } catch (e) {}
+        }
     </script>
 
     <div class="container">
@@ -1476,12 +1384,15 @@
             <div class="profile-footer">
 
                 <div class="social-links">
+                     <a href="https://instagram.com/guillevgo" target="_blank">
+                         <img src="assets/instagram.png" alt="Instagram" class="social-icon">
+                     </a>
                     <div class="social-icon-container" aria-label="Discord">
                         <img src="assets/discord.png" alt="Discord" class="social-icon" />
                         <span class="social-tooltip">@fracpre</span>
                     </div>
-                     <a href="https://instagram.com/guillevgo" target="_blank">
-                         <img src="assets/instagram.png" alt="Instagram" class="social-icon">
+                     <a href="https://www.roblox.com/es/users/3040315936/profile" target="_blank">
+                         <img src="assets/roblox.png" alt="Roblox" class="social-icon">
                      </a>
                 </div>
 
@@ -1493,12 +1404,9 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
                         </svg>
                         <span id="visitor-count">--</span>
-                        <!-- El editor está escondido dentro del ojo: doble click en el SVG o Ctrl/Cmd+click -->
-                        <!-- (no botón visible para que no sea cantoso) -->
                         <span class="tooltip">views totales</span>
                     </div>
 
-                    <!-- Mini reproductor de música -->
                     <div class="mini-player">
                         <button class="play-pause-btn" id="playPauseBtn">
                             <svg id="playIcon" viewBox="0 0 24 24">
@@ -1516,7 +1424,7 @@
     </div>
 
     <audio id="background-music" loop>
-        <source src="assets/background_music.mp3" type="audio/mp3">
+        <source src="" type="audio/mp3">
     </audio>
     <audio id="hacker-music" loop muted>
         <source src="assets/hacker_music.mp3" type="audio/mp3">
@@ -1531,11 +1439,140 @@
         <source src="assets/car_music.mp3" type="audio/mp3">
     </audio>
 
+    <script>
+        (function() {
+            const songs = ['background_music.mp3', 'background_music2.mp3', 'background_music3.mp3'];
+            let availableSongs = JSON.parse(localStorage.getItem('availableSongs') || '[]');
+            
+            if (availableSongs.length === 0) {
+                availableSongs = [...songs];
+            }
+            
+            const randomIndex = Math.floor(Math.random() * availableSongs.length);
+            const selectedSong = availableSongs[randomIndex];
+            
+            availableSongs.splice(randomIndex, 1);
+            localStorage.setItem('availableSongs', JSON.stringify(availableSongs));
+            
+            const audio = document.getElementById('background-music');
+            audio.src = 'assets/' + selectedSong;
+            audio.load();
+        })();
+    </script>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
 
 
     <script src="script.js"></script>
+
+    <script>
+        (function(){
+            const bioMessages = [
+                "Que buscas pillin? sigueme en ig anda ;)",
+                "Beny Jr Lover",
+                "A lonely person never goes gonna be betrayed",
+                "Beny Jr Lover",
+                "#benyvuelveyaporfavor :(",
+                "guillevgo on ig ;)",
+                "A lonely person never goes gonna be betrayed",
+                "I want to feel that I am in love... :/",
+                "If I was good to her, why?",
+                "A lonely person never goes gonna be betrayed..."
+            ];
+            
+            let bioText = '';
+            let bioIndex = 0;
+            let bioMessageIndex = 0;
+            let isBioDeleting = false;
+            let bioCursorVisible = true;
+            let bioElement = null;
+            let bioStarted = false;
+
+            function typeWriterBio() {
+                if (!bioElement) return;
+                
+                if (!isBioDeleting && bioIndex < bioMessages[bioMessageIndex].length) {
+                    bioText = bioMessages[bioMessageIndex].slice(0, bioIndex + 1);
+                    bioIndex++;
+                } else if (isBioDeleting && bioIndex > 0) {
+                    bioText = bioMessages[bioMessageIndex].slice(0, bioIndex - 1);
+                    bioIndex--;
+                } else if (bioIndex === bioMessages[bioMessageIndex].length) {
+                    isBioDeleting = true;
+                    setTimeout(typeWriterBio, 2000);
+                    return;
+                } else if (bioIndex === 0 && isBioDeleting) {
+                    isBioDeleting = false;
+                    bioMessageIndex = (bioMessageIndex + 1) % bioMessages.length;
+                }
+                bioElement.textContent = bioText + (bioCursorVisible ? '|' : ' ');
+                setTimeout(typeWriterBio, isBioDeleting ? 75 : 150);
+            }
+
+            setInterval(() => {
+                bioCursorVisible = !bioCursorVisible;
+                if (bioElement) {
+                    bioElement.textContent = bioText + (bioCursorVisible ? '|' : ' ');
+                }
+            }, 500);
+
+            window.startBioAnimation = function() {
+                if (bioStarted) return;
+                bioStarted = true;
+                bioElement = document.getElementById('profile-bio');
+                if (bioElement) {
+                    console.log('Iniciando animación de bio...');
+                    typeWriterBio();
+                }
+            };
+        })();
+    </script>
+
+    <script>
+        document.addEventListener('contextmenu', function(e) {
+            e.preventDefault();
+            return false;
+        });
+
+        document.addEventListener('keydown', function(e) {
+            if (e.keyCode === 123) {
+                e.preventDefault();
+                return false;
+            }
+            if (e.ctrlKey && e.shiftKey && e.keyCode === 73) {
+                e.preventDefault();
+                return false;
+            }
+            if (e.ctrlKey && e.shiftKey && e.keyCode === 74) {
+                e.preventDefault();
+                return false;
+            }
+            if (e.ctrlKey && e.keyCode === 85) {
+                e.preventDefault();
+                return false;
+            }
+            if (e.ctrlKey && e.keyCode === 83) {
+                e.preventDefault();
+                return false;
+            }
+        });
+
+        // Bloquear combinaciones en Mac (Cmd en lugar de Ctrl)
+        document.addEventListener('keydown', function(e) {
+            if (e.metaKey && e.shiftKey && e.keyCode === 73) {
+                e.preventDefault();
+                return false;
+            }
+            if (e.metaKey && e.shiftKey && e.keyCode === 74) {
+                e.preventDefault();
+                return false;
+            }
+            if (e.metaKey && e.keyCode === 85) {
+                e.preventDefault();
+                return false;
+            }
+        });
+    </script>
 
     <script>
         // máquina de escribir mejorada: ritmo más suave y natural (ease-in/out)
@@ -1595,7 +1632,7 @@
         /* Contador estático visible públicamente.
            Cambia DEFAULT_COUNT a 22 (u otro número) directamente en este archivo para actualizarlo. */
         (function(){
-            const DEFAULT_COUNT = 68; // <- cambia aquí el número visible globalmente
+            const DEFAULT_COUNT =79; // <- cambia aquí el número visible globalmente
             document.addEventListener('DOMContentLoaded', () => {
                 const span = document.getElementById('visitor-count');
                 if(span) span.textContent = String(DEFAULT_COUNT);
