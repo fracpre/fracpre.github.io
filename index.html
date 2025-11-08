@@ -24,6 +24,7 @@
             pointer-events: none;
             z-index: 9999;
             transform: translate(0, 0);
+            display: none;
         }
 
         body:not(.touch-device) {
@@ -52,6 +53,7 @@
             object-fit: cover;
             z-index: 1;
             pointer-events: none;
+            display: none;
         }
 
         .glitch-overlay {
@@ -196,16 +198,17 @@
             top: 0;
             left: 0;
             width: 100%;
-            height: 135px;
+            height: 180px;
             object-fit: cover;
+            object-position: center 25%;
             border-radius: 15px 15px 0 0;
             z-index: 1;
             pointer-events: none;
             display: block !important;
             opacity: 0.6 !important;
             filter: blur(3px);
-            -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,1) 78%, rgba(0,0,0,0) 100%);
-            mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,1) 78%, rgba(0,0,0,0) 100%);
+            -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,1) 30%, rgba(0,0,0,0) 100%);
+            mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,1) 30%, rgba(0,0,0,0) 100%);
         }
 
         #profile-block::before {
@@ -1020,11 +1023,11 @@
 
             .profile-banner {
                 width: 100%;
-                height: 115px;
+                height: 150px;
                 opacity: 0.5 !important;
                 filter: blur(2px);
-                -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,1) 78%, rgba(0,0,0,0) 100%);
-                mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,1) 78%, rgba(0,0,0,0) 100%);
+                -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,1) 30%, rgba(0,0,0,0) 100%);
+                mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,1) 30%, rgba(0,0,0,0) 100%);
             }
 
             .profile-header {
@@ -1243,6 +1246,7 @@
             const bg = document.getElementById('background');
             const music = document.getElementById('background-music');
             const pb = document.getElementById('profile-block');
+            const cursor = document.querySelector('.custom-cursor');
 
             const isIOS = /iP(ad|hone|od)/.test(navigator.userAgent) ||
                           (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
@@ -1258,6 +1262,14 @@
                 container.style.visibility = 'visible';
                 container.style.display = 'block';
                 container.style.opacity = '1';
+            }
+
+            if (bg) {
+                bg.style.display = 'block';
+            }
+
+            if (cursor) {
+                cursor.style.display = 'block';
             }
 
             if (pb) {
@@ -1321,7 +1333,7 @@
 
     <div class="container">
         
-        <img id="background" src="assets/background.gif" alt="Background">
+        <img id="background" src="assets/background.gif" alt="">
 
         
         <div class="glitch-overlay"></div>
@@ -1334,7 +1346,7 @@
 
 
         <div id="profile-block">
-            <img src="assets/banner.jpg" alt="Banner" class="profile-banner">
+            <video src="assets/banner.mp4" class="profile-banner" autoplay loop muted playsinline></video>
             <div class="profile-header">
                 <div class="profile-container">
                 <img src="assets/profile.gif" alt="Profile" class="profile-picture">
@@ -1691,21 +1703,3 @@
     </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
