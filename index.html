@@ -551,7 +551,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 5px;
+            font-size: 14px;
             font-weight: bold;
             color: #fff;
             backface-visibility: hidden;
@@ -1411,8 +1411,8 @@
                 <div class="profile-container">
                 <img src="assets/profile.gif" alt="Profile" class="profile-picture">
                 <div class="sticker-container" id="stickerContainer">
-                    <img src="assets/sticker.gif" alt="Sticker Front" class="overlay-sticker">
-                    <div class="overlay-sticker-back">❓</div>
+                    <img src="assets/sticker.gif" alt="Sticker Front" class="overlay-sticker" id="stickerFront">
+                    <div class="overlay-sticker-back" id="stickerBack">❓</div>
                 </div>
             </div>
                 <div class="profile-info">
@@ -1545,22 +1545,36 @@
         // Animación de volteo del sticker
         document.addEventListener('DOMContentLoaded', () => {
             const stickerContainer = document.getElementById('stickerContainer');
+            const stickerFront = document.getElementById('stickerFront');
+            const stickerBack = document.getElementById('stickerBack');
             const titoBadge = document.getElementById('titoBadge');
-            let hasAnimated = false; // Bandera para controlar si ya se ejecutó la animación completa
+            let hasAnimatedRare = false; // Bandera solo para la animación rara (corazones + #lol)
+            let isAnimating = false; // Prevenir clicks múltiples durante animación
+            let isFlipped = false; // Estado actual del sticker
             
-            if (stickerContainer && titoBadge) {
+            if (stickerContainer && titoBadge && stickerFront && stickerBack) {
                 stickerContainer.addEventListener('click', (e) => {
                     e.stopPropagation();
                     
-                    // Voltear el sticker (corazón) - esto siempre sucede
-                    stickerContainer.classList.add('flipped');
+                    if (isAnimating) return; // No hacer nada si ya hay una animación en curso
                     
-                    // Después de 1 segundo, volver el sticker
-                    setTimeout(() => {
-                        stickerContainer.classList.remove('flipped');
+                    // Generar número aleatorio: 5% probabilidad de corazones + #lol, 95% de luna
+                    const random = Math.random();
+                    const showHearts = random < 0.05 && !hasAnimatedRare && !isFlipped; // 5% y solo si no ha salido antes y no está volteado
+                    
+                    if (showHearts) {
+                        // Animación rara con corazones + #lol (solo una vez, automática)
+                        isAnimating = true;
+                        hasAnimatedRare = true; // Marcar que ya salió la animación rara
+                        stickerBack.textContent = '❓';
                         
-                        // Solo animar el badge de tito la primera vez
-                        if (!hasAnimated) {
+                        // Voltear el sticker (corazón)
+                        stickerContainer.classList.add('flipped');
+                        
+                        // Después de 1 segundo, volver el sticker
+                        setTimeout(() => {
+                            stickerContainer.classList.remove('flipped');
+                            
                             // Esperar 2 segundos antes de voltear el badge de tito
                             setTimeout(() => {
                                 titoBadge.classList.add('flipped');
@@ -1568,11 +1582,28 @@
                                 // Después de 1 segundo, volver el badge de tito
                                 setTimeout(() => {
                                     titoBadge.classList.remove('flipped');
-                                    hasAnimated = true; // Marcar que ya se completó la animación
+                                    stickerBack.textContent = '';
+                                    isAnimating = false;
                                 }, 1000);
                             }, 2000);
+                        }, 1000);
+                    } else {
+                        // Animación común con emoji luna (95% probabilidad, toggle manual)
+                        if (!isFlipped) {
+                            // Voltear para mostrar la luna
+                            stickerBack.textContent = '🌙';
+                            stickerContainer.classList.add('flipped');
+                            isFlipped = true;
+                        } else {
+                            // Volver a mostrar el sticker original
+                            stickerContainer.classList.remove('flipped');
+                            isFlipped = false;
+                            // Limpiar después de la animación
+                            setTimeout(() => {
+                                stickerBack.textContent = '';
+                            }, 600);
                         }
-                    }, 1000);
+                    }
                 });
             }
         });
