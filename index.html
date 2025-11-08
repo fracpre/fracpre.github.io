@@ -539,6 +539,14 @@
             margin-top: auto;
         }
 
+        .footer-bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            gap: 10px;
+        }
+
         .visitor-counter {
             display: flex;
             align-items: center;
@@ -551,6 +559,9 @@
             position: relative;
             pointer-events: auto;
             opacity: 1 !important;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            margin-top: 15px;
         }
 
         .visitor-icon {
@@ -584,6 +595,75 @@
 
         #visitor-count {
             opacity: 1 !important;
+        }
+
+        /* Mini reproductor de música */
+        .mini-player {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 8px 15px;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            pointer-events: auto;
+            align-self: flex-end;
+        }
+
+        .play-pause-btn {
+            width: 35px;
+            height: 35px;
+            background: rgba(255, 255, 255, 0.15);
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+            color: white;
+        }
+
+        .play-pause-btn:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: scale(1.1);
+        }
+
+        .play-pause-btn svg {
+            width: 18px;
+            height: 18px;
+            fill: white;
+        }
+
+        .volume-slider-mini {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 80px;
+            height: 5px;
+            border-radius: 5px;
+            background: rgba(255, 255, 255, 0.3);
+            outline: none;
+            cursor: pointer;
+        }
+
+        .volume-slider-mini::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: white;
+            cursor: pointer;
+        }
+
+        .volume-slider-mini::-moz-range-thumb {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: white;
+            cursor: pointer;
+            border: none;
         }
 
         .social-links {
@@ -1035,6 +1115,32 @@
                 top: -30px;
             }
 
+            .footer-bottom {
+                flex-direction: column;
+                align-items: center;
+                gap: 8px;
+            }
+
+            .mini-player {
+                padding: 6px 12px;
+                gap: 8px;
+                align-self: center;
+            }
+
+            .play-pause-btn {
+                width: 28px;
+                height: 28px;
+            }
+
+            .play-pause-btn svg {
+                width: 14px;
+                height: 14px;
+            }
+
+            .volume-slider-mini {
+                width: 60px;
+            }
+
             .skills-title {
                 font-size: 18px;
                 margin-bottom: 10px;
@@ -1293,9 +1399,7 @@
 
     <div class="container">
         
-        <video id="background" autoplay loop muted playsinline webkit-playsinline>
-            <source src="assets/background.gif" type="video/gif">
-        </video>
+        <img id="background" src="assets/background.gif" alt="Background">
 
         
         <div class="glitch-overlay"></div>
@@ -1308,7 +1412,7 @@
 
 
         <div id="profile-block">
-            <img src="assets/banner.gif" alt="Banner" class="profile-banner">
+            <img src="assets/banner.jpg" alt="Banner" class="profile-banner">
             <div class="profile-header">
                 <div class="profile-container">
                 <img src="assets/profile.gif" alt="Profile" class="profile-picture">
@@ -1368,20 +1472,34 @@
                 </div>
 
 
-                <div class="visitor-counter" id="visitor-counter">
-                    <svg class="visitor-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" title="views totales (doble click dentro del ojo para editar)">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
-                    </svg>
-                    <span id="visitor-count">--</span>
-                    <!-- El editor está escondido dentro del ojo: doble click en el SVG o Ctrl/Cmd+click -->
-                    <!-- (no botón visible para que no sea cantoso) -->
-                    <span class="tooltip">views totales</span>
+                <div class="footer-bottom">
+                    <div class="visitor-counter" id="visitor-counter">
+                        <svg class="visitor-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" title="views totales (doble click dentro del ojo para editar)">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                        </svg>
+                        <span id="visitor-count">--</span>
+                        <!-- El editor está escondido dentro del ojo: doble click en el SVG o Ctrl/Cmd+click -->
+                        <!-- (no botón visible para que no sea cantoso) -->
+                        <span class="tooltip">views totales</span>
+                    </div>
+
+                    <!-- Mini reproductor de música -->
+                    <div class="mini-player">
+                        <button class="play-pause-btn" id="playPauseBtn">
+                            <svg id="playIcon" viewBox="0 0 24 24">
+                                <path d="M8 5v14l11-7z"/>
+                            </svg>
+                            <svg id="pauseIcon" style="display: none;" viewBox="0 0 24 24">
+                                <path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z"/>
+                            </svg>
+                        </button>
+                        <input type="range" class="volume-slider-mini" id="volumeSliderMini" min="0" max="100" value="50">
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-
 
     <audio id="background-music" loop>
         <source src="assets/background_music.mp3" type="audio/mp3">
@@ -1469,6 +1587,58 @@
                 if(span) span.textContent = String(DEFAULT_COUNT);
             });
         })();
+    </script>
+
+    <script>
+        // Mini reproductor de música
+        document.addEventListener('DOMContentLoaded', () => {
+            const playPauseBtn = document.getElementById('playPauseBtn');
+            const playIcon = document.getElementById('playIcon');
+            const pauseIcon = document.getElementById('pauseIcon');
+            const volumeSlider = document.getElementById('volumeSliderMini');
+            const music = document.getElementById('background-music');
+            
+            let isPlaying = true; // Iniciar como true porque la música ya está sonando
+            
+            // Configurar volumen inicial
+            music.volume = 0.5;
+            
+            // Mostrar el icono de pausa al inicio (porque está reproduciéndose)
+            playIcon.style.display = 'none';
+            pauseIcon.style.display = 'block';
+            
+            // Control de play/pause
+            playPauseBtn.addEventListener('click', () => {
+                if (isPlaying) {
+                    music.pause();
+                    playIcon.style.display = 'block';
+                    pauseIcon.style.display = 'none';
+                } else {
+                    music.play();
+                    playIcon.style.display = 'none';
+                    pauseIcon.style.display = 'block';
+                }
+                isPlaying = !isPlaying;
+            });
+            
+            // Control de volumen
+            volumeSlider.addEventListener('input', (e) => {
+                music.volume = e.target.value / 100;
+            });
+            
+            // Sincronizar con el estado real de la música
+            music.addEventListener('play', () => {
+                isPlaying = true;
+                playIcon.style.display = 'none';
+                pauseIcon.style.display = 'block';
+            });
+            
+            music.addEventListener('pause', () => {
+                isPlaying = false;
+                playIcon.style.display = 'block';
+                pauseIcon.style.display = 'none';
+            });
+        });
     </script>
 </body>
 </html>
