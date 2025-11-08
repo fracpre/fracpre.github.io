@@ -1589,8 +1589,8 @@
                 "guillevgo on ig ;)",
                 "A lonely person never goes gonna be betrayed",
                 "I want to feel that I am in love... :/",
-                "If I was good to her, why?",
-                "A lonely person never goes gonna be betrayed..."
+                "If it was good for you, why did you leave me?",
+                "I miss you but is okay"
             ];
             
             let bioText = '';
@@ -1619,7 +1619,7 @@
                     bioMessageIndex = (bioMessageIndex + 1) % bioMessages.length;
                 }
                 bioElement.textContent = bioText + (bioCursorVisible ? '|' : ' ');
-                setTimeout(typeWriterBio, isBioDeleting ? 75 : 150);
+                setTimeout(typeWriterBio, isBioDeleting ? 40 : 80); // Más rápido: 80ms escribir, 40ms borrar
             }
 
             setInterval(() => {
@@ -1760,6 +1760,8 @@
             const music = document.getElementById('background-music');
             
             let isPlaying = true; // Iniciar como true porque la música ya está sonando
+            let targetVolume = 0.5; // Volumen objetivo
+            let fadeInterval = null;
             
             // Configurar volumen inicial
             music.volume = 0.5;
@@ -1768,14 +1770,52 @@
             playIcon.style.display = 'none';
             pauseIcon.style.display = 'block';
             
+            // Función para fade out (bajar volumen gradualmente)
+            function fadeOut(callback) {
+                if (fadeInterval) clearInterval(fadeInterval);
+                const startVolume = music.volume;
+                const step = startVolume / 20; // 20 pasos para el fade
+                
+                fadeInterval = setInterval(() => {
+                    if (music.volume > 0.05) {
+                        music.volume = Math.max(0, music.volume - step);
+                    } else {
+                        music.volume = 0;
+                        clearInterval(fadeInterval);
+                        if (callback) callback();
+                    }
+                }, 25); // 25ms * 20 = 500ms total (medio segundo)
+            }
+            
+            // Función para fade in (subir volumen gradualmente)
+            function fadeIn() {
+                if (fadeInterval) clearInterval(fadeInterval);
+                music.volume = 0;
+                const step = targetVolume / 20;
+                
+                fadeInterval = setInterval(() => {
+                    if (music.volume < targetVolume - step) {
+                        music.volume = Math.min(targetVolume, music.volume + step);
+                    } else {
+                        music.volume = targetVolume;
+                        clearInterval(fadeInterval);
+                    }
+                }, 25);
+            }
+            
             // Control de play/pause
             playPauseBtn.addEventListener('click', () => {
                 if (isPlaying) {
-                    music.pause();
+                    // Fade out antes de pausar
+                    fadeOut(() => {
+                        music.pause();
+                    });
                     playIcon.style.display = 'block';
                     pauseIcon.style.display = 'none';
                 } else {
+                    // Reproducir y hacer fade in
                     music.play();
+                    fadeIn();
                     playIcon.style.display = 'none';
                     pauseIcon.style.display = 'block';
                 }
@@ -1784,7 +1824,10 @@
             
             // Control de volumen
             volumeSlider.addEventListener('input', (e) => {
-                music.volume = e.target.value / 100;
+                targetVolume = e.target.value / 100;
+                if (isPlaying) {
+                    music.volume = targetVolume;
+                }
             });
             
             // Sincronizar con el estado real de la música
@@ -1803,21 +1846,3 @@
     </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
