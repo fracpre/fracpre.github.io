@@ -201,16 +201,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const bioMessages = [
     "Que buscas pillin? sigueme en ig anda ;)",
-    "Beny Jr Lover",
-    "A lonely person never goes gonna be betrayed",
-    "Beny Jr Lover",
-    "#benyvuelveyaporfavor :(",
-    "guillevgo on ig ;)",
-    "A lonely person never goes gonna be betrayed",
-    "I want to feel that I am in love... :/",
-    "If I was good to her, why?",
-    "A lonely person never goes gonna be betrayed...",
-    
+    "Beny Jr Lover"
+    "A lonely person never goes gonna be betrayed"
+    "Beny Jr Lover"
+    "#benyvuelveyaporfavor :("
+    "guillevgo on ig ;)"
+    "A lonely person never goes gonna be betrayed"
+    "I want to feel that I am in love... :/"
+    "If I was good to her, why?"
+    "A lonely person never goes gonna be betrayed..."
   ];
   let bioText = '';
   let bioIndex = 0;
@@ -638,6 +637,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   typeWriterStart();
 });
+
 
 
 
