@@ -1639,13 +1639,45 @@
     </script>
 
     <script>
-        /* Contador estático visible públicamente.
-           Cambia DEFAULT_COUNT a 22 (u otro número) directamente en este archivo para actualizarlo. */
+        /* Contador de visitas usando GitHub API */
         (function(){
-            const DEFAULT_COUNT =79; // <- cambia aquí el número visible globalmente
-            document.addEventListener('DOMContentLoaded', () => {
+            document.addEventListener('DOMContentLoaded', async () => {
                 const span = document.getElementById('visitor-count');
-                if(span) span.textContent = String(DEFAULT_COUNT);
+                if(!span) return;
+                
+                try {
+                    // OPCIÓN 1: Usando CountAPI (funciona sin configuración)
+                    const namespace = 'fracpre-website';
+                    const key = 'visits';
+                    const apiUrl = `https://api.countapi.xyz/hit/${namespace}/${key}`;
+                    
+                    const response = await fetch(apiUrl);
+                    const data = await response.json();
+                    
+                    if (data && data.value) {
+                        span.textContent = data.value.toLocaleString();
+                    } else {
+                        span.textContent = '—';
+                    }
+                    
+                    /* OPCIÓN 2: Si prefieres usar tu propio archivo en GitHub, comenta lo de arriba y descomenta esto:
+                    
+                    // Leer contador desde archivo JSON en tu repo
+                    const repoUrl = 'https://raw.githubusercontent.com/TU-USUARIO/TU-REPO/main/visitor-count.json';
+                    const response = await fetch(repoUrl);
+                    const data = await response.json();
+                    
+                    if (data && data.count) {
+                        span.textContent = data.count.toLocaleString();
+                    } else {
+                        span.textContent = '—';
+                    }
+                    */
+                    
+                } catch (error) {
+                    console.error('Error al cargar el contador:', error);
+                    span.textContent = '—';
+                }
             });
         })();
     </script>
