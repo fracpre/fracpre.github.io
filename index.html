@@ -1050,12 +1050,19 @@
             text-align: center;
             text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
             padding: 15px 25px;
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            border-radius: 10px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 20px;
             background: rgba(255, 255, 255, 0.05);
             backdrop-filter: blur(5px);
-            pointer-events: none;
-            transition: opacity 1.2s ease-out, transform 1.2s ease-out;
+            pointer-events: auto;
+            cursor: pointer;
+            transition: opacity 1.2s ease-out, transform 1.2s ease-out, background 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+        }
+        
+        #intro-text:hover {
+            background: rgba(255, 255, 255, 0.1);
+            box-shadow: 0 0 20px rgba(255, 0, 0, 0.8), 0 0 40px rgba(255, 0, 0, 0.5);
         }
         
         #intro-overlay.hiding #intro-text {
@@ -1283,7 +1290,7 @@
     <div class="custom-cursor"></div>
 
     <div id="intro-overlay">
-        <div id="intro-text">Click para revelar ;)</div>
+        <div id="intro-text">Click para revelar :)</div>
     </div>
     
     <script>
@@ -1291,11 +1298,29 @@
         
         document.addEventListener('DOMContentLoaded', () => {
             const overlay = document.getElementById('intro-overlay');
-            if (!overlay) return;
+            const introText = document.getElementById('intro-text');
+            if (!overlay || !introText) return;
             
-            overlay.addEventListener('click', revealContent);
-            overlay.addEventListener('touchstart', (e) => { 
-                e.preventDefault(); 
+            let winkInterval = null;
+            
+            // Animación de guiño al hacer hover
+            introText.addEventListener('mouseenter', () => {
+                introText.textContent = 'Click para revelar ;)';
+            });
+            
+            introText.addEventListener('mouseleave', () => {
+                introText.textContent = 'Click para revelar :)';
+            });
+            
+            // Solo el texto activa la revelación, no todo el overlay
+            introText.addEventListener('click', (e) => {
+                e.stopPropagation();
+                revealContent();
+            });
+            
+            introText.addEventListener('touchstart', (e) => { 
+                e.preventDefault();
+                e.stopPropagation();
                 revealContent(); 
             }, { passive: false });
         });
@@ -1588,20 +1613,22 @@
                             }, 2000);
                         }, 1000);
                     } else {
-                        // Animación común con emoji luna (95% probabilidad, toggle manual)
+                        // Animación común con emoji luna (95% probabilidad, aparece 8 segundos)
                         if (!isFlipped) {
                             // Voltear para mostrar la luna
                             stickerBack.textContent = '🌙';
                             stickerContainer.classList.add('flipped');
                             isFlipped = true;
-                        } else {
-                            // Volver a mostrar el sticker original
-                            stickerContainer.classList.remove('flipped');
-                            isFlipped = false;
-                            // Limpiar después de la animación
+                            
+                            // Después de 8 segundos, volver automáticamente
                             setTimeout(() => {
-                                stickerBack.textContent = '';
-                            }, 600);
+                                stickerContainer.classList.remove('flipped');
+                                isFlipped = false;
+                                // Limpiar después de la animación
+                                setTimeout(() => {
+                                    stickerBack.textContent = '';
+                                }, 600);
+                            }, 8000);
                         }
                     }
                 });
@@ -1727,8 +1754,8 @@
                 'guillevgo on ig ;)',
                 'I am #notlikehim #lol'
             ];
-            const baseType = 60;      // base ms por carácter al escribir
-            const baseErase = 45;     // base ms por carácter al borrar
+            const baseType = 120;      // base ms por carácter al escribir (aumentado para más fluidez)
+            const baseErase = 80;      // base ms por carácter al borrar (aumentado)
             const pauseAfterFull = 3800;   // ms que permanece el texto completo
             const pauseAfterErase = 700;   // pausa antes de siguiente mensaje
             let idx = 0;
@@ -1750,13 +1777,15 @@
             }
 
             function eraseMessage(msg, i){
-                if (i >= 0) {
+                if (i >= 1) {
                     // borrado más fluido: ralentiza al final usando easing inverso
                     document.title = msg.slice(0, i);
                     const progress = 1 - (i / Math.max(1, msg.length)); // from 0 -> 1 as we erase
                     const delay = Math.max(16, Math.round(baseErase * (1 + 0.9 * easeInOutQuad(progress))));
                     setTimeout(() => eraseMessage(msg, i - 1), delay);
                 } else {
+                    // Dejar un carácter invisible
+                    document.title = 'ㅤ';
                     idx = (idx + 1) % messages.length;
                     setTimeout(() => typeMessage(messages[idx], 0), pauseAfterErase);
                 }
