@@ -1386,7 +1386,7 @@
                         if (!document.getElementById('background-fallback')) {
                             const img = document.createElement('img');
                             img.id = 'background-fallback';
-                            img.src = 'assets/background.jpg';
+                            img.src = 'assets/background.gif';
                             img.alt = '';
                             Object.assign(img.style, {
                                 position: 'fixed',
@@ -1419,7 +1419,7 @@
 
     <div class="container">
         
-        <img id="background" src="assets/background.jpg" alt="">
+        <img id="background" src="assets/background.gif" alt="">
 
         
         <div class="glitch-overlay"></div>
@@ -1802,7 +1802,7 @@
     <script>
         /* Contador manual de visitas */
         (function(){
-            const MANUAL_COUNT = 128; // <- Cambia este número manualmente para actualizar las views
+            const MANUAL_COUNT = 119; // <- Cambia este número manualmente para actualizar las views
             document.addEventListener('DOMContentLoaded', () => {
                 const span = document.getElementById('visitor-count');
                 if(span) span.textContent = MANUAL_COUNT.toLocaleString();
@@ -1906,5 +1906,4 @@
     </script>
 </body>
 </html>
-
 
