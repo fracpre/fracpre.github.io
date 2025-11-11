@@ -1382,13 +1382,19 @@
                     bg.playsInline = true;
 
                     if (isIOS) {
+                        // En iOS creamos un elemento video fallback (uses mp4) con playsinline/muted/loop para intentar reproducción
                         bg.style.display = 'none';
                         if (!document.getElementById('background-fallback')) {
-                            const img = document.createElement('img');
-                            img.id = 'background-fallback';
-                            img.src = 'assets/background.gif';
-                            img.alt = '';
-                            Object.assign(img.style, {
+                            const vid = document.createElement('video');
+                            vid.id = 'background-fallback';
+                            vid.src = 'assets/background.mp4';
+                            vid.alt = '';
+                            vid.muted = true;
+                            vid.loop = true;
+                            vid.autoplay = true;
+                            vid.setAttribute('playsinline', '');
+                            vid.setAttribute('webkit-playsinline', '');
+                            Object.assign(vid.style, {
                                 position: 'fixed',
                                 top: '0',
                                 left: '0',
@@ -1396,9 +1402,12 @@
                                 height: '100%',
                                 objectFit: 'cover',
                                 zIndex: '1',
-                                pointerEvents: 'none'
+                                pointerEvents: 'none',
+                                display: 'block'
                             });
-                            document.body.appendChild(img);
+                            document.body.appendChild(vid);
+                            // Intentar reproducir (algunas versiones iOS requieren playsinline + muted)
+                            vid.play().catch(()=>{});
                         }
                     } else {
                         bg.muted = true;
@@ -1419,7 +1428,8 @@
 
     <div class="container">
         
-        <img id="background" src="assets/background.gif" alt="">
+        <!-- background ahora es un video -->
+        <video id="background" src="assets/background.mp4" alt="" autoplay loop muted playsinline webkit-playsinline style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 1; pointer-events: none; display: none;"></video>
 
         
         <div class="glitch-overlay"></div>
@@ -1906,4 +1916,3 @@
     </script>
 </body>
 </html>
-
