@@ -145,20 +145,23 @@ body.car-theme {
 .profile-container::after {
   content: '';
   position: absolute;
-  top: -5px;
-  left: -5px;
-  right: -5px;
-  bottom: -5px;
+  top: -6px;
+  left: -6px;
+  right: -6px;
+  bottom: -6px;
   border-radius: 50%;
+  /* aura rosada más amplia */
   background: radial-gradient(
-    circle at 10px 10px,
-    var(--primary-color) 15%,
-    transparent 25%
+    circle at 20% 20%,
+    rgba(255,102,255,0.65) 0%,
+    rgba(198,77,182,0.32) 28%,
+    rgba(160,52,160,0.12) 55%,
+    transparent 75%
   );
-  animation: orbit 3s linear infinite;
+  animation: orbit 6s linear infinite; /* más lenta */
   z-index: -1;
-  filter: blur(2px);
-  box-shadow: 0 0 10px var(--primary-color);
+  filter: blur(10px); /* más difusa para efecto de aura */
+  box-shadow: 0 8px 36px rgba(198,77,182,0.22), 0 0 48px rgba(255,102,255,0.18);
 }
 
 .profile-container.fast-orbit::after {
@@ -200,8 +203,8 @@ body.car-theme {
   background: linear-gradient(
     0deg, 
     transparent, 
-    var(--primary-color), 
-    var(--secondary-color)
+    rgba(255,102,255,0.8), 
+    rgba(198,77,182,0.8)
   );
   transform-origin: bottom right;
   animation: shine 3s linear infinite;
@@ -699,10 +702,13 @@ body.car-theme {
 
 @keyframes orbit {
   0% {
-    transform: rotate(0deg);
+    transform: rotate(0deg) translateZ(0) scale(1);
+  }
+  50% {
+    transform: rotate(180deg) translateZ(0) scale(1.02);
   }
   100% {
-    transform: rotate(360deg);
+    transform: rotate(360deg) translateZ(0) scale(1);
   }
 }
 
@@ -844,4 +850,29 @@ body.car-theme {
 #accesory-sticker{
    top:-30px;
    right:-50px;
+}
+
+/* ajustar keyframes orbit para una rotación más suave y ligera oscilación */
+@keyframes orbit {
+  0% {
+    transform: rotate(0deg) translateZ(0) scale(1);
+  }
+  50% {
+    transform: rotate(180deg) translateZ(0) scale(1.02);
+  }
+  100% {
+    transform: rotate(360deg) translateZ(0) scale(1);
+  }
+}
+
+/* social icons glow: usar rosa en lugar de rojo */
+.social-icon:hover {
+  filter: drop-shadow(0 0 22px rgba(255, 102, 255, 0.95)) brightness(1.25);
+}
+
+/* asegurar badges específicos (si usas imágenes sueltas) también reciben resplandor rosa */
+img[src$="roblox.png"]:hover,
+img[src$="discord.png"]:hover,
+img[src$="instagram.png"]:hover {
+  filter: brightness(1.25) drop-shadow(0 0 22px rgba(255,102,255,0.95)) !important;
 }
