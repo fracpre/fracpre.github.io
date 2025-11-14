@@ -3,18 +3,23 @@ let hasUserInteracted = false;
 function initMedia() {
   console.log("initMedia called");
   const backgroundMusic = document.getElementById('background-music');
-  const backgroundVideo = document.getElementById('background');
-  if (!backgroundMusic || !backgroundVideo) {
+  const backgroundElem = document.getElementById('background');
+  if (!backgroundMusic || !backgroundElem) {
     console.error("Media elements not found");
     return;
   }
   backgroundMusic.volume = 0.3;
-  backgroundVideo.muted = true; 
 
-  
-  backgroundVideo.play().catch(err => {
-    console.error("Failed to play background video:", err);
-  });
+  // Si el background es video, mantenerlo silenciado y intentar reproducir.
+  if (backgroundElem.tagName === 'VIDEO') {
+    backgroundElem.muted = true;
+    backgroundElem.play().catch(err => {
+      console.error("Failed to play background video:", err);
+    });
+  } else {
+    // si es IMG (GIF), sólo aseguramos que esté visible cuando corresponda
+    backgroundElem.style.display = 'none';
+  }
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -140,6 +145,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
   startScreen.addEventListener('click', () => {
+    // intentar entrar en pantalla completa (gesto del usuario)
+    try {
+      const docEl = document.documentElement;
+      if (docEl.requestFullscreen) {
+        docEl.requestFullscreen().catch(()=>{});
+      } else if (docEl.webkitRequestFullscreen) {
+        docEl.webkitRequestFullscreen();
+      } else if (docEl.msRequestFullscreen) {
+        docEl.msRequestFullscreen();
+      }
+    } catch (e) { /* noop */ }
+
     startScreen.classList.add('hidden');
     backgroundMusic.muted = false;
     backgroundMusic.play().catch(err => {
@@ -169,6 +186,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
   startScreen.addEventListener('touchstart', (e) => {
     e.preventDefault();
+    // intentar entrar en pantalla completa (gesto táctil)
+    try {
+      const docEl = document.documentElement;
+      if (docEl.requestFullscreen) {
+        docEl.requestFullscreen().catch(()=>{});
+      } else if (docEl.webkitRequestFullscreen) {
+        docEl.webkitRequestFullscreen();
+      } else if (docEl.msRequestFullscreen) {
+        docEl.msRequestFullscreen();
+      }
+    } catch (e) { /* noop */ }
+
     startScreen.classList.add('hidden');
     backgroundMusic.muted = false;
     backgroundMusic.play().catch(err => {
@@ -308,7 +337,7 @@ document.addEventListener('DOMContentLoaded', () => {
       duration: 0.5,
       ease: 'power2.in',
       onComplete: () => {
-        backgroundVideo.src = videoSrc;
+        backgroundVideo.src = videoSrc; // funciona tanto para <video> como para <img>
 
         if (currentAudio) {
           currentAudio.pause();
@@ -356,11 +385,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
   homeButton.addEventListener('click', () => {
-    switchTheme('assets/background.mp4', backgroundMusic, 'home-theme');
+    switchTheme('assets/background1.gif', backgroundMusic, 'home-theme');
   });
   homeButton.addEventListener('touchstart', (e) => {
     e.preventDefault();
-    switchTheme('assets/background.mp4', backgroundMusic, 'home-theme');
+    switchTheme('assets/background1.gif', backgroundMusic, 'home-theme');
   });
 
   hackerButton.addEventListener('click', () => {
@@ -594,12 +623,3 @@ document.addEventListener('DOMContentLoaded', () => {
 
   typeWriterStart();
 });
-
-
-
-
-
-
-
-
-
