@@ -64,16 +64,15 @@
             height: 100%;
             pointer-events: none;
             z-index: 2;
-            opacity: 0;
-            transition: opacity 0.5s;
-        }
-
-        #hacker-overlay, #snow-overlay {
+                                            opacity: '0',
+                                                // hacer que la aparición dure 3s
+                                                transition: 'opacity 3s linear, transform 3s ease',
+                                                pointerEvents: 'none',
+                                                zIndex: '9999'
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+                                            document.body.appendChild(wait);
+                                            // animar hacia arriba y desvanecer durante 3s
+
             pointer-events: none;
             z-index: 3;
         }
@@ -218,9 +217,9 @@
             border-radius: 15px;
             padding: 1px;
             background: linear-gradient(45deg, 
-                rgba(139, 0, 0, 0.4),
-                rgba(255, 0, 0, 0.6),
-                rgba(139, 0, 0, 0.4));
+                rgba(255,102,255,0.4),
+                rgba(255,102,255,0.6),
+                rgba(255,102,255,0.4));
             -webkit-mask: linear-gradient(#fff 0 0) content-box, 
                           linear-gradient(#fff 0 0);
             -webkit-mask-composite: xor;
@@ -283,7 +282,7 @@
             border-radius: 50%;
             background: radial-gradient(
                 circle at 10px 10px,
-                var(--primary-color, #e70000) 10%,
+                var(--primary-color, #ff69b4) 10%,
                 transparent 15%
             );
             animation: orbit 3s linear infinite;
@@ -324,6 +323,19 @@
             z-index: 8;
         }
 
+        /* mini shake to hint interactivity */
+        @keyframes mini-shake {
+            0% { transform: rotate(15deg) translateX(0) translateY(0); }
+            15% { transform: rotate(10deg) translateX(-2px) translateY(-1px); }
+            30% { transform: rotate(20deg) translateX(2px) translateY(0); }
+            50% { transform: rotate(12deg) translateX(-1px) translateY(-1px); }
+            70% { transform: rotate(18deg) translateX(1px) translateY(0); }
+            100% { transform: rotate(15deg) translateX(0) translateY(0); }
+        }
+
+        /* pulsing hint triggered from JS (single run) */
+        .sticker-container.pulse { animation: mini-shake 620ms cubic-bezier(.2,.9,.2,1) 1; }
+
         .sticker-container.flipped {
             transform: rotate(15deg) rotateY(180deg);
         }
@@ -332,7 +344,10 @@
             position: absolute;
             width: 56px;
             height: 56px;
-            object-fit: cover;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
             background: transparent;
             border: none;
             box-shadow: none;
@@ -429,27 +444,27 @@
     font-size: 38px;
     font-weight: normal;
     letter-spacing: 3px;
+    /* láser rosa/púrpura — ampliado para una franja más larga */
     background: linear-gradient(90deg, 
-        transparent 0%, 
-        transparent 30%,
-        rgba(255, 0, 0, 0.02) 33%,
-        rgba(255, 0, 0, 0.05) 36%,
-        rgba(255, 0, 0, 0.1) 39%,
-        rgba(255, 0, 0, 0.18) 42%,
-        rgba(255, 0, 0, 0.3) 45%,
-        rgba(255, 0, 0, 0.5) 47%,
-        rgba(255, 0, 0, 0.7) 49%,
-        #ff0000 50%,
-        rgba(255, 0, 0, 0.7) 51%,
-        rgba(255, 0, 0, 0.5) 53%,
-        rgba(255, 0, 0, 0.3) 55%,
-        rgba(255, 0, 0, 0.18) 58%,
-        rgba(255, 0, 0, 0.1) 61%,
-        rgba(255, 0, 0, 0.05) 64%,
-        rgba(255, 0, 0, 0.02) 67%,
-        transparent 70%, 
+        transparent 0%,
+        transparent 20%,
+        rgba(198, 77, 182, 0.03) 22%,
+        rgba(198, 77, 182, 0.06) 26%,
+        rgba(198, 77, 182, 0.12) 30%,
+        rgba(198, 77, 182, 0.2) 35%,
+        rgba(198, 77, 182, 0.35) 40%,
+        rgba(198, 77, 182, 0.55) 45%,
+        rgba(255,102,255,0.85) 50%,
+        rgba(198, 77, 182, 0.55) 55%,
+        rgba(198, 77, 182, 0.35) 60%,
+        rgba(198, 77, 182, 0.2) 65%,
+        rgba(198, 77, 182, 0.12) 70%,
+        rgba(198, 77, 182, 0.06) 74%,
+        rgba(198, 77, 182, 0.03) 76%,
+        transparent 80%,
         transparent 100%);
-    background-size: 280% 100%;
+    /* mayor tamaño de fondo para que la franja recorra más área y se vea más ancha */
+    background-size: 350% 100%;
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -490,31 +505,7 @@
             transition: transform 0.6s;
         }
 
-        .badge-container.flipped {
-            transform: rotateY(180deg);
-        }
-
-        .badge-container .tooltip {
-            visibility: hidden;
-            width: 120px;
-            background-color: rgba(0, 0, 0, 0.8);
-            color: #fff;
-            text-align: center;
-            border-radius: 6px;
-            padding: 5px 0;
-            position: absolute;
-            z-index: 100;
-            bottom: 125%;
-            left: 50%;
-            margin-left: -60px;
-            opacity: 0;
-            transition: opacity 0.3s;
-        }
-
-        .badge-container:hover .tooltip {
-            visibility: visible;
-            opacity: 1 !important;
-        }
+        /* badge tooltips removed */
 
         .badge-box {
             background: rgba(255, 255, 255, 0.15);
@@ -532,6 +523,8 @@
             display: flex;
             gap: 10px;
             box-shadow: inset 0 0 10px rgba(255, 255, 255, 0.2);
+            position: relative;
+            overflow: hidden;
         }
 
         .badge {
@@ -543,6 +536,8 @@
             display: block;
             backface-visibility: hidden;
         }
+
+        /* (tito tooltip removed) */
 
         .badge-back {
             position: absolute;
@@ -581,6 +576,39 @@
 
         img[src="assets/tito.png"]:hover {
             filter: brightness(1.3) drop-shadow(0 0 10px rgba(255, 105, 180, 0.9)) !important;
+        }
+
+        /* Spain egg aura: show only on hover (no zoom, just glow like other badges) */
+        #espanaEgg {
+            position: relative;
+            border-radius: 6px;
+            transition: filter 180ms ease;
+            filter: none;
+        }
+
+        #espanaEgg::after {
+            content: '';
+            position: absolute;
+            left: -8px;
+            top: -8px;
+            right: -8px;
+            bottom: -8px;
+            border-radius: 10px;
+            background: radial-gradient(circle at 30% 30%, rgba(255,223,0,0.95) 0%, rgba(255,223,0,0.6) 25%, rgba(178,34,34,0.55) 55%, rgba(178,34,34,0.25) 80%, transparent 100%);
+            filter: blur(6px) saturate(120%);
+            pointer-events: none;
+            z-index: -1;
+            opacity: 0;
+            transition: opacity 220ms ease, filter 220ms ease;
+        }
+
+        /* on hover, show glow but DO NOT scale/transform the badge */
+        #espanaEgg:hover {
+            filter: brightness(1.3) drop-shadow(0 0 12px rgba(255,215,0,0.95)) drop-shadow(0 0 18px rgba(178,34,34,0.6));
+        }
+
+        #espanaEgg:hover::after {
+            opacity: 1;
         }
 
             #profile-bio {
@@ -648,27 +676,7 @@
             opacity: 1 !important;
         }
 
-        .visitor-counter .tooltip {
-            visibility: hidden;
-            width: 120px;
-            background-color: rgba(0, 0, 0, 0.8);
-            color: #fff;
-            text-align: center;
-            border-radius: 6px;
-            padding: 5px 0;
-            position: absolute;
-            z-index: 100;
-            top: -35px;
-            left: 50%;
-            margin-left: -60px;
-            opacity: 0;
-            transition: opacity 0.3s;
-        }
-
-        .visitor-counter:hover .tooltip {
-            visibility: visible;
-            opacity: 1 !important;
-        }
+        /* visitor-counter tooltip removed */
 
         #visitor-count {
             opacity: 1 !important;
@@ -762,36 +770,94 @@
         }
 
         .social-icon:hover {
-            filter: drop-shadow(0 0 20px rgba(255, 0, 0, 1)) brightness(1.3);
+            filter: drop-shadow(0 0 20px rgba(255, 105, 180, 1)) drop-shadow(0 0 15px rgba(255, 20, 147, 0.8)) drop-shadow(0 0 10px rgba(255, 182, 193, 0.6)) brightness(1.3);
         }
 
-        /* tooltip for social icons */
-        .social-icon-container {
-            position: relative;
-            display: inline-block;
-        }
-        .social-tooltip {
-            visibility: hidden;
-            opacity: 0;
-            transition: opacity 0.18s ease, transform 0.18s ease;
+        /* social tooltips removed */
+        .copied-notice {
             position: absolute;
-            bottom: calc(100% + 8px);
+            bottom: -34px;
             left: 50%;
             transform: translateX(-50%) translateY(6px);
             background: rgba(0,0,0,0.8);
-            color: #ff0000;
-            padding: 6px 8px;
+            color: #fff;
+            padding: 5px 8px;
             border-radius: 6px;
             font-size: 12px;
             white-space: nowrap;
-            z-index: 60;
             pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.25s ease, transform 0.25s ease;
+            backdrop-filter: blur(6px);
+            border: 1px solid rgba(255,255,255,0.06);
+            z-index: 80;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.22);
         }
-        .social-icon-container:hover .social-tooltip {
-            visibility: visible;
+        /* Discord handle: hidden by default, appears above icon on hover/focus */
+        .social-icon-container { position: relative; display: inline-flex; align-items: center; }
+        .discord-handle {
+            position: absolute;
+            left: 50%;
+            bottom: calc(100% + 8px);
+            transform: translateX(-50%) translateY(6px);
+            background: rgba(0,0,0,0.72);
+            color: #ff1493;
+            padding: 4px 8px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            line-height: 1;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 180ms ease, transform 180ms ease;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.22);
+            backdrop-filter: blur(6px);
+            border: 1px solid rgba(255,255,255,0.06);
+            text-shadow: 0 0 8px rgba(255,105,180,0.35);
+            z-index: 30;
+            transform-origin: center center;
+        }
+
+        .social-icon-container:hover .discord-handle,
+        .social-icon-container:focus-within .discord-handle {
             opacity: 1;
             transform: translateX(-50%) translateY(0);
         }
+        /* keep visible while in 'copied' state */
+        .social-icon-container.discord-copied .discord-handle {
+            opacity: 1 !important;
+            transform: translateX(-50%) translateY(0) !important;
+        }
+        /* Anonymous question modal styles */
+        .anon-modal {
+            position: fixed;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0,0,0,0.55);
+            z-index: 2000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 220ms ease;
+        }
+        .anon-modal.visible { opacity: 1; pointer-events: auto; }
+        .anon-modal-content {
+            width: min(540px, 92%);
+            background: rgba(8,8,10,0.94);
+            padding: 18px;
+            border-radius: 12px;
+            box-shadow: 0 12px 40px rgba(0,0,0,0.6);
+            border: 1px solid rgba(255,255,255,0.04);
+            color: #fff;
+        }
+        .anon-modal-content h3 { margin: 0 0 8px 0; font-family: 'Courier New', monospace; }
+        .anon-modal-content textarea { width: 100%; resize: vertical; min-height: 110px; margin-top:8px; padding:10px; border-radius:8px; border:1px solid rgba(255,255,255,0.06); background: rgba(0,0,0,0.45); color:#fff; }
+        .anon-actions { display:flex; gap:8px; justify-content:flex-end; margin-top:10px; }
+        .anon-status { margin-top:8px; font-size:13px; opacity:0.95 }
+        .anon-close { position:absolute; right:12px; top:8px; background:transparent; border:none; color:#fff; font-size:20px; cursor:pointer }
+        /* social tooltips fully removed */
 
         #skills-block {
             position: fixed;
@@ -929,11 +995,11 @@
             pointer-events: none;
 
             background: linear-gradient(90deg,
-                #4b004b 0%,
-                #6f006f 25%,
-                #a000a0 50%,
-                #c653c6 75%,
-                #ff66ff 100%);
+                #ff1493 0%,
+                #ffb6c1 25%,
+                #ffc0cb 50%,
+                #ff69b4 75%,
+                #ff1493 100%);
             background-size: 300% 100%;
             background-position: 0% 50%;
 
@@ -1062,7 +1128,7 @@
         
         #intro-text:hover {
             background: rgba(255, 255, 255, 0.1);
-            box-shadow: 0 0 20px rgba(255, 0, 0, 0.8), 0 0 40px rgba(255, 0, 0, 0.5);
+            box-shadow: 0 0 20px rgba(255, 105, 180, 0.8), 0 0 40px rgba(255, 105, 180, 0.5);
         }
         
         #intro-overlay.hiding #intro-text {
@@ -1137,12 +1203,7 @@
                 height: 18px;
             }
 
-            .badge-container .tooltip {
-                width: 100px;
-                font-size: 12px;
-                margin-left: -50px;
-                bottom: 110%;
-            }
+            /* badge tooltip styles removed for small screens */
 
             #profile-bio {
                 font-size: 14px;
@@ -1174,12 +1235,7 @@
                 height: 16px;
             }
 
-            .visitor-counter .tooltip {
-                width: 100px;
-                font-size: 12px;
-                margin-left: -50px;
-                top: -30px;
-            }
+            /* visitor-counter tooltip styles removed for small screens */
 
             .footer-bottom {
                 flex-direction: column;
@@ -1283,6 +1339,7 @@
             display: none;
             content: '';
         }
+        /* Lyrics removed per user request */
 
     </style>
 </head>
@@ -1295,6 +1352,204 @@
     </div>
     
     <script>
+        // Anonymous question modal & submit (static sites: configure FORM_ENDPOINT)
+        (function(){
+            const FORM_ENDPOINT = ''; // <-- Replace with your Formspree endpoint, e.g. 'https://formspree.io/f/xxxxx'
+
+            function $(sel) { return document.querySelector(sel); }
+            document.addEventListener('DOMContentLoaded', () => {
+                const openBtn = document.getElementById('openAnonAsk');
+                if (!openBtn) return;
+
+                // build modal DOM (insert at end of body)
+                const modal = document.createElement('div');
+                modal.className = 'anon-modal';
+                modal.id = 'anonModal';
+                modal.innerHTML = `
+                    <div class="anon-modal-content" role="dialog" aria-modal="true" aria-labelledby="anonTitle">
+                        <button class="anon-close" id="closeAnon">×</button>
+                        <h3 id="anonTitle">Enviar pregunta anónima</h3>
+                        <p style="margin:6px 0 0 0; font-size:13px; color:rgba(255,255,255,0.85);">Tu pregunta será enviada anónimamente. No compartas datos personales.</p>
+                        <textarea id="anonMessage" placeholder="Escribe tu pregunta aquí..."></textarea>
+                        <div class="anon-actions">
+                            <button id="cancelAnon" class="cancel-btn" style="background:transparent; border:1px solid rgba(255,255,255,0.06); color:#fff; padding:8px 10px; border-radius:8px;">Cancelar</button>
+                            <button id="submitAnon" class="submit-btn" style="background:linear-gradient(90deg,#ff1493,#ff69b4); border:none; color:#fff; padding:8px 12px; border-radius:8px;">Enviar</button>
+                        </div>
+                        <div id="anonStatus" class="anon-status" aria-live="polite"></div>
+                        <div style="margin-top:8px; display:flex; gap:8px; align-items:center;"> 
+                            <button id="downloadAnon" style="background:transparent; border:1px solid rgba(255,255,255,0.06); color:#fff; padding:6px 8px; border-radius:8px;">Descargar JSON</button>
+                            <button id="openAdvanced" style="background:transparent; border:1px solid rgba(255,255,255,0.06); color:#fff; padding:6px 8px; border-radius:8px;">Avanzado (GitHub)</button>
+                        </div>
+                        <div id="anonAdvanced" style="margin-top:10px; display:none; border-top:1px dashed rgba(255,255,255,0.04); padding-top:10px;">
+                            <div style="font-size:13px; color:rgba(255,255,255,0.85); margin-bottom:6px;">Guardar en repo (opcional): pega un Token con scope <code>repo</code> temporalmente para que el navegador haga el commit. No guardamos el token.</div>
+                            <input id="ghOwner" placeholder="owner" style="width:30%; padding:6px; border-radius:6px; background:rgba(0,0,0,0.45); color:#fff; border:1px solid rgba(255,255,255,0.04); margin-right:6px;"> 
+                            <input id="ghRepo" placeholder="repo" style="width:30%; padding:6px; border-radius:6px; background:rgba(0,0,0,0.45); color:#fff; border:1px solid rgba(255,255,255,0.04); margin-right:6px;"> 
+                            <input id="ghPath" placeholder="anon_questions.json" value="anon_questions.json" style="width:34%; padding:6px; border-radius:6px; background:rgba(0,0,0,0.45); color:#fff; border:1px solid rgba(255,255,255,0.04); margin-top:6px;">
+                            <input id="ghToken" type="password" placeholder="GitHub Personal Access Token (repo)" style="width:100%; padding:6px; border-radius:6px; background:rgba(0,0,0,0.45); color:#fff; border:1px solid rgba(255,255,255,0.04); margin-top:6px;">
+                            <div style="display:flex; gap:8px; margin-top:8px;">
+                                <button id="pushGithub" style="background:linear-gradient(90deg,#ff1493,#ff69b4); border:none; color:#fff; padding:8px 12px; border-radius:8px;">Guardar en GitHub</button>
+                                <button id="clearStorage" style="background:transparent; border:1px solid rgba(255,255,255,0.06); color:#fff; padding:8px 12px; border-radius:8px;">Borrar almacenado</button>
+                            </div>
+                            <div id="anonPushStatus" style="margin-top:8px; font-size:13px; color:rgba(255,255,255,0.9);"></div>
+                        </div>
+                    </div>`;
+                document.body.appendChild(modal);
+
+                const closeBtn = document.getElementById('closeAnon');
+                const cancelBtn = document.getElementById('cancelAnon');
+                const submitBtn = document.getElementById('submitAnon');
+                const messageEl = document.getElementById('anonMessage');
+                const statusEl = document.getElementById('anonStatus');
+
+                function openModal(){
+                    modal.classList.add('visible');
+                    messageEl.focus();
+                }
+                function closeModal(){
+                    modal.classList.remove('visible');
+                    statusEl.textContent = '';
+                    messageEl.value = '';
+                }
+
+                openBtn.addEventListener('click', openModal);
+                closeBtn.addEventListener('click', closeModal);
+                cancelBtn.addEventListener('click', closeModal);
+
+                // close on overlay click
+                modal.addEventListener('click', (ev)=>{ if (ev.target === modal) closeModal(); });
+
+                submitBtn.addEventListener('click', async ()=>{
+                    const text = (messageEl.value || '').trim();
+                    if (!text) { statusEl.textContent = 'Escribe tu pregunta antes de enviar.'; return; }
+
+                    // If no endpoint configured, show instructions
+                    if (!FORM_ENDPOINT) {
+                        statusEl.innerHTML = 'No hay endpoint configurado. Regístrate en <a href="https://formspree.io/" target="_blank">Formspree</a> o crea un Google Form y pega aquí la URL.\n<br>Reemplaza la constante <code>FORM_ENDPOINT</code> en el código.';
+                        return;
+                    }
+
+                    submitBtn.disabled = true;
+                    statusEl.textContent = 'Enviando...';
+
+                    try {
+                        const fd = new FormData();
+                        fd.append('message', text);
+                        fd.append('_subject','Pregunta anónima desde sitio');
+
+                        const res = await fetch(FORM_ENDPOINT, { method: 'POST', body: fd, headers: { 'Accept':'application/json' } });
+                        if (res.ok) {
+                            statusEl.textContent = 'Pregunta enviada. Gracias.';
+                            setTimeout(closeModal, 1300);
+                        } else {
+                            const data = await res.json().catch(()=>null);
+                            statusEl.textContent = (data && data.error) ? ('Error: '+data.error) : 'Error al enviar. Intenta de nuevo más tarde.';
+                        }
+                    } catch (err) {
+                        statusEl.textContent = 'Error en la conexión. Intenta de nuevo.';
+                    } finally {
+                        submitBtn.disabled = false;
+                    }
+                });
+
+                // client-side submissions storage + download
+                const STORAGE_KEY = 'anon_questions_v1';
+                let submissions = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+
+                const downloadBtn = document.getElementById('downloadAnon');
+                const openAdv = document.getElementById('openAdvanced');
+                const advPanel = document.getElementById('anonAdvanced');
+                const pushBtn = document.getElementById('pushGithub');
+                const ownerI = document.getElementById('ghOwner');
+                const repoI = document.getElementById('ghRepo');
+                const pathI = document.getElementById('ghPath');
+                const tokenI = document.getElementById('ghToken');
+                const anonPushStatus = document.getElementById('anonPushStatus');
+                const clearStorageBtn = document.getElementById('clearStorage');
+
+                function saveLocalSubmission(txt){
+                    const entry = { message: txt, ts: new Date().toISOString() };
+                    submissions.push(entry);
+                    localStorage.setItem(STORAGE_KEY, JSON.stringify(submissions));
+                    statusEl.textContent = 'Guardado localmente.';
+                }
+
+                // override submit to save locally as well
+                submitBtn.addEventListener('click', () => {
+                    const text = (messageEl.value || '').trim();
+                    if (!text) return;
+                    saveLocalSubmission(text);
+                    // enable download quickly
+                });
+
+                downloadBtn.addEventListener('click', ()=>{
+                    const data = JSON.stringify(submissions, null, 2);
+                    const blob = new Blob([data], { type: 'application/json' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'anon_questions.json';
+                    document.body.appendChild(a);
+                    a.click();
+                    a.remove();
+                    URL.revokeObjectURL(url);
+                });
+
+                openAdv.addEventListener('click', ()=>{
+                    advPanel.style.display = advPanel.style.display === 'none' ? 'block' : 'none';
+                });
+
+                clearStorageBtn.addEventListener('click', ()=>{
+                    submissions = [];
+                    localStorage.removeItem(STORAGE_KEY);
+                    anonPushStatus.textContent = 'Almacenamiento local borrado.';
+                });
+
+                // GitHub push implementation (requires PAT from user)
+                async function githubPutFile(owner, repo, path, token, contentStr, commitMessage){
+                    const apiBase = 'https://api.github.com';
+                    const url = `${apiBase}/repos/${owner}/${repo}/contents/${encodeURIComponent(path)}`;
+                    // check existing file to get sha
+                    const headers = { 'Authorization': 'token ' + token, 'Accept': 'application/vnd.github.v3+json' };
+                    let sha = null;
+                    try {
+                        const r = await fetch(url, { headers });
+                        if (r.ok){
+                            const j = await r.json();
+                            sha = j.sha;
+                        }
+                    } catch (e) {}
+
+                    const content = btoa(unescape(encodeURIComponent(contentStr)));
+                    const body = { message: commitMessage || 'Add anonymous questions', content };
+                    if (sha) body.sha = sha;
+
+                    const put = await fetch(url, { method: 'PUT', headers: Object.assign({ 'Content-Type': 'application/json' }, headers), body: JSON.stringify(body) });
+                    return put;
+                }
+
+                pushBtn.addEventListener('click', async ()=>{
+                    const owner = ownerI.value.trim();
+                    const repo = repoI.value.trim();
+                    const path = (pathI.value || 'anon_questions.json').trim();
+                    const token = tokenI.value.trim();
+                    if (!owner || !repo || !token) { anonPushStatus.textContent = 'Rellena owner, repo y token.'; return; }
+                    anonPushStatus.textContent = 'Subiendo a GitHub...';
+                    pushBtn.disabled = true;
+                    try {
+                        const dataStr = JSON.stringify(submissions, null, 2);
+                        const res = await githubPutFile(owner, repo, path, token, dataStr, 'anon questions update');
+                        if (res.ok) {
+                            anonPushStatus.textContent = 'Archivo guardado en GitHub.';
+                        } else {
+                            const txt = await res.text().catch(()=>null);
+                            anonPushStatus.textContent = 'Error en GitHub: ' + (txt || res.statusText);
+                        }
+                    } catch (err) {
+                        anonPushStatus.textContent = 'Error al conectar con GitHub.';
+                    } finally { pushBtn.disabled = false; }
+                });
+            });
+        })();
         window.bioAnimationStarted = false;
         
         document.addEventListener('DOMContentLoaded', () => {
@@ -1334,6 +1589,18 @@
             const pb = document.getElementById('profile-block');
             const cursor = document.querySelector('.custom-cursor');
 
+            // intentar entrar en pantalla completa (desde el gesto del usuario)
+            try {
+                const docEl = document.documentElement;
+                if (docEl.requestFullscreen) {
+                    docEl.requestFullscreen().catch(()=>{});
+                } else if (docEl.webkitRequestFullscreen) {
+                    docEl.webkitRequestFullscreen();
+                } else if (docEl.msRequestFullscreen) {
+                    docEl.msRequestFullscreen();
+                }
+            } catch (e) { /* si falla, no hacemos nada */ }
+
             const isIOS = /iP(ad|hone|od)/.test(navigator.userAgent) ||
                           (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
 
@@ -1351,7 +1618,12 @@
             }
 
             if (bg) {
-                bg.style.display = 'block';
+                // si es imagen (GIF) sólo mostrarla; si fuera video, mantener la lógica previa
+                if (bg.tagName === 'VIDEO') {
+                    bg.style.display = 'block';
+                } else {
+                    bg.style.display = 'block';
+                }
             }
 
             if (cursor) {
@@ -1377,42 +1649,38 @@
 
             try {
                 if (bg) {
-                    bg.setAttribute('playsinline', '');
-                    bg.setAttribute('webkit-playsinline', '');
-                    bg.playsInline = true;
+                    if (bg.tagName === 'VIDEO') {
+                        bg.setAttribute('playsinline', '');
+                        bg.setAttribute('webkit-playsinline', '');
+                        bg.playsInline = true;
 
-                    if (isIOS) {
-                        // En iOS creamos un elemento video fallback (uses mp4) con playsinline/muted/loop para intentar reproducción
-                        bg.style.display = 'none';
-                        if (!document.getElementById('background-fallback')) {
-                            const vid = document.createElement('video');
-                            vid.id = 'background-fallback';
-                            vid.src = 'assets/background.mp4';
-                            vid.alt = '';
-                            vid.muted = true;
-                            vid.loop = true;
-                            vid.autoplay = true;
-                            vid.setAttribute('playsinline', '');
-                            vid.setAttribute('webkit-playsinline', '');
-                            Object.assign(vid.style, {
-                                position: 'fixed',
-                                top: '0',
-                                left: '0',
-                                width: '100%',
-                                height: '100%',
-                                objectFit: 'cover',
-                                zIndex: '1',
-                                pointerEvents: 'none',
-                                display: 'block'
-                            });
-                            document.body.appendChild(vid);
-                            // Intentar reproducir (algunas versiones iOS requieren playsinline + muted)
-                            vid.play().catch(()=>{});
+                        if (isIOS) {
+                            // iOS: crear un fallback VIDEO (si aún quieres), pero ahora usamos GIF: crear IMG fallback
+                            bg.style.display = 'none';
+                            if (!document.getElementById('background-fallback')) {
+                                const img = document.createElement('img');
+                                img.id = 'background-fallback';
+                                img.src = 'assets/background1.gif';
+                                Object.assign(img.style, {
+                                    position: 'fixed',
+                                    top: '0',
+                                    left: '0',
+                                    width: '100%',
+                                    height: '100%',
+                                    objectFit: 'cover',
+                                    zIndex: '1',
+                                    pointerEvents: 'none',
+                                    display: 'block'
+                                });
+                                document.body.appendChild(img);
+                            }
+                        } else {
+                            bg.muted = true;
+                            bg.currentTime = 0;
+                            bg.play().catch(() => {});
                         }
                     } else {
-                        bg.muted = true;
-                        bg.currentTime = 0;
-                        bg.play().catch(() => {});
+                        // si es IMG (GIF), nada que reproducir: ya lo mostramos arriba
                     }
                 }
             } catch (e) {}
@@ -1425,11 +1693,12 @@
             } catch (e) {}
         }
     </script>
+    <!-- Lyrics feature removed per user request -->
 
     <div class="container">
         
-        <!-- background ahora es un video -->
-        <video id="background" src="assets/background.mp4" alt="" autoplay loop muted playsinline webkit-playsinline style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 1; pointer-events: none; display: none;"></video>
+        <!-- background ahora es un GIF (imagen) -->
+        <img id="background" src="assets/background1.gif" alt="" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 1; pointer-events: none; display: none;" />
 
         
         <div class="glitch-overlay"></div>
@@ -1446,7 +1715,7 @@
                 <div class="profile-container">
                 <img src="assets/profile.gif" alt="Profile" class="profile-picture">
                 <div class="sticker-container" id="stickerContainer">
-                    <img src="assets/sticker1.gif" alt="Sticker Front" class="overlay-sticker" id="stickerFront">
+                    <div class="overlay-sticker" id="stickerFront">🌙</div>
                     <div class="overlay-sticker-back" id="stickerBack">❓</div>
                 </div>
             </div>
@@ -1464,23 +1733,19 @@
                                     </div>
                                     <div class="badge-container">
                                         <img src="assets/developer.png" alt="Developer" class="badge">
-                                        <span class="tooltip">Junior :s</span>
                                     </div>
                                     <div class="badge-container">
                                         <a href="https://instagram.com/guillevgo" target="_blank" rel="noopener noreferrer">
                                             <img src="assets/boy.png" alt="boy" class="badge">
-                                            <span class="tooltip">18y</span>
                                         </a>
                                     </div>
                                     <div class="badge-container">
                                         <a href="https://tracker.gg/valorant/profile/riot/Fracpre%23ontop/overview?platform=pc&playlist=competitive&season=4c4b8cff-43eb-13d3-8f14-96b783c90cd2" target="_blank" rel="noopener noreferrer">
                                             <img src="assets/ascendant.png" alt="Valorant" class="badge">
                                         </a>
-                                        <span class="tooltip">Asc 1</span>
                                     </div>
-                                    <div class="badge-container" id="titoBadge">
-                                        <img src="assets/tito.png" alt="Tito" class="badge">
-                                        <div class="badge-back">#lol</div>
+                                    <div class="badge-container">
+                                        <img src="assets/spain.png" alt="España" class="badge" id="espanaEgg">
                                     </div>
                                 </div>
                             </div>
@@ -1500,12 +1765,14 @@
                      </a>
                     <div class="social-icon-container" aria-label="Discord">
                         <img src="assets/discord.png" alt="Discord" class="social-icon" />
-                        <span class="social-tooltip">@fracpre</span>
+                        <span class="discord-handle">@fracpre</span>
                     </div>
                      <a href="https://www.roblox.com/es/users/3040315936/profile" target="_blank">
                          <img src="assets/roblox.png" alt="Roblox" class="social-icon">
                      </a>
                 </div>
+
+                <!-- anonymous question button removed per user request -->
 
 
                 <div class="footer-bottom">
@@ -1515,7 +1782,6 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
                         </svg>
                         <span id="visitor-count">--</span>
-                        <span class="tooltip">views totales</span>
                     </div>
 
                     <div class="mini-player">
@@ -1528,6 +1794,7 @@
                             </svg>
                         </button>
                         <input type="range" class="volume-slider-mini" id="volumeSliderMini" min="0" max="100" value="50">
+                        <!-- 'Letra' button removed per user request -->
                     </div>
                 </div>
             </div>
@@ -1583,62 +1850,282 @@
             const stickerFront = document.getElementById('stickerFront');
             const stickerBack = document.getElementById('stickerBack');
             const titoBadge = document.getElementById('titoBadge');
-            let hasAnimatedRare = false; // Bandera solo para la animación rara (corazones + #lol)
+            let clickCount = 0;
             let isAnimating = false; // Prevenir clicks múltiples durante animación
             let isFlipped = false; // Estado actual del sticker
+            let didPostClickShake = false; // asegurar que el sacudón post-click ocurra solo una vez
+            let didReturnShake = false; // asegurar que el sacudón al volver ocurra solo una vez
             
-            if (stickerContainer && titoBadge && stickerFront && stickerBack) {
+            if (stickerContainer && stickerFront && stickerBack) {
+                // small periodic pulse to hint that the sticker is clickable
+                try {
+                    const startPulse = () => {
+                        if (!stickerContainer || stickerContainer.classList.contains('flipped')) return;
+                        stickerContainer.classList.add('pulse');
+                        const onEnd = () => { stickerContainer.classList.remove('pulse'); stickerContainer.removeEventListener('animationend', onEnd); };
+                        stickerContainer.addEventListener('animationend', onEnd);
+                    };
+                    // only run once: schedule pulse 2s after the profile/menu is shown
+                    (function scheduleAfterMenu(){
+                        try {
+                            const profile = document.getElementById('profile-block');
+                            if (!profile) { // fallback: schedule after 2s
+                                setTimeout(startPulse, 2000);
+                                return;
+                            }
+
+                            if (profile.classList.contains('show')) {
+                                setTimeout(startPulse, 2000);
+                                return;
+                            }
+
+                            // observe when the 'show' class is added
+                            const mo = new MutationObserver((records)=>{
+                                for (const r of records) {
+                                    if (r.type === 'attributes' && r.attributeName === 'class') {
+                                        if (profile.classList.contains('show')) {
+                                            setTimeout(startPulse, 2000);
+                                            try { mo.disconnect(); } catch(e) {}
+                                            break;
+                                        }
+                                    }
+                                }
+                            });
+                            mo.observe(profile, { attributes: true, attributeFilter: ['class'] });
+                            // safety fallback in case 'show' never appears
+                            setTimeout(()=>{ try { mo.disconnect(); } catch(e){} }, 10000);
+                        } catch (e) { setTimeout(startPulse, 2000); }
+                    })();
+                } catch (e) {}
                 stickerContainer.addEventListener('click', (e) => {
                     e.stopPropagation();
-                    
+
                     if (isAnimating) return; // No hacer nada si ya hay una animación en curso
-                    
-                    // Generar número aleatorio: 5% probabilidad de corazones + #lol, 95% de luna
-                    const random = Math.random();
-                    const showHearts = random < 0.05 && !hasAnimatedRare && !isFlipped; // 5% y solo si no ha salido antes y no está volteado
-                    
-                    if (showHearts) {
-                        // Animación rara con corazones + #lol (solo una vez, automática)
-                        isAnimating = true;
-                        hasAnimatedRare = true; // Marcar que ya salió la animación rara
-                        stickerBack.textContent = '❓';
-                        
-                        // Voltear el sticker (corazón)
-                        stickerContainer.classList.add('flipped');
-                        
-                        // Después de 1 segundo, volver el sticker
-                        setTimeout(() => {
-                            stickerContainer.classList.remove('flipped');
-                            
-                            // Esperar 2 segundos antes de voltear el badge de tito
-                            setTimeout(() => {
-                                titoBadge.classList.add('flipped');
-                                
-                                // Después de 1 segundo, volver el badge de tito
-                                setTimeout(() => {
-                                    titoBadge.classList.remove('flipped');
-                                    stickerBack.textContent = '';
-                                    isAnimating = false;
-                                }, 1000);
-                            }, 2000);
-                        }, 1000);
+
+                    clickCount++;
+                    let duration;
+
+                    if (clickCount === 1) {
+                        duration = 2000; // 2 segundos la primera vez
+                    } else if (clickCount === 2) {
+                        duration = 6000; // 6 segundos la segunda vez
+
+                        // Crear espacio en badge-box a la derecha de ascendant.png y añadir tito.png
+                        const asc = document.querySelector('img[src="assets/ascendant.png"]');
+                        const badgeInner = document.querySelector('.badge-box-inner');
+                        if (asc && badgeInner) {
+                            const ascContainer = asc.closest('.badge-container');
+                            if (ascContainer) {
+                                // Medir ancho real de la imagen tito
+                                const meas = document.createElement('img');
+                                meas.src = 'assets/tito.png';
+                                meas.className = 'badge';
+                                Object.assign(meas.style, { position: 'absolute', left: '-9999px', top: '0px', visibility: 'hidden' });
+                                document.body.appendChild(meas);
+                                const measuredW = Math.round(meas.getBoundingClientRect().width || 28);
+                                document.body.removeChild(meas);
+
+                                // crear titoBadge pero con ancho 0 para insertar inline y expandir empujando a los vecinos
+                                if (!document.getElementById('titoBadge')) {
+                                    const tito = document.createElement('div');
+                                    tito.className = 'badge-container';
+                                    tito.id = 'titoBadge';
+                                    tito.style.display = 'inline-flex';
+                                    tito.style.alignItems = 'center';
+                                    tito.style.justifyContent = 'center';
+                                    tito.style.overflow = 'hidden';
+                                    tito.style.width = '0px';
+                                    tito.style.transform = 'translateY(20px)';
+                                    tito.style.opacity = '0';
+                                    tito.innerHTML = '<img src="assets/tito.png" alt="Tito" class="badge" style="width: ' + measuredW + 'px;">';
+
+                                    // Prefer insertar justo después del nuevo huevo 'espana', si existe;
+                                    // si no, caer al comportamiento anterior (después de ascendant).
+                                    try {
+                                        const espImg = document.querySelector('img[src="assets/spain.png"]');
+                                        if (espImg) {
+                                            const espContainer = espImg.closest('.badge-container');
+                                            if (espContainer) {
+                                                espContainer.insertAdjacentElement('afterend', tito);
+                                            } else {
+                                                ascContainer.insertAdjacentElement('afterend', tito);
+                                            }
+                                        } else {
+                                            ascContainer.insertAdjacentElement('afterend', tito);
+                                        }
+                                    } catch (e) {
+                                        try { ascContainer.insertAdjacentElement('afterend', tito); } catch (e) {}
+                                    }
+
+                                    // Animar ancho del contenedor tito para que empuje a los hermanos sin dejar huecos
+                                    gsap.to(tito, { width: measuredW + 'px', duration: 0.45, ease: 'power2.out' });
+                                    // Animar aparición vertical y opacidad de la imagen
+                                    gsap.to(tito, { y: 0, opacity: 1, duration: 0.9, ease: 'power2.out', delay: 0.05, onComplete: () => {
+                                        try {
+                                            // Limpiar estilos para que quede natural en el flujo
+                                            tito.style.width = '';
+                                            tito.style.overflow = '';
+                                            tito.style.transform = '';
+                                            tito.style.opacity = '';
+                                        } catch (e) {}
+
+                                        // Mostrar texto temporal ubicado encima de la imagen tito cuando la animación termine
+                                        try {
+                                            const prev = document.getElementById('titoWaiting');
+                                            if (prev) prev.remove();
+
+                                            // localizar la imagen dentro de tito
+                                            const imgEl = tito.querySelector('img') || tito.querySelector('.badge');
+                                            let left = window.innerWidth / 2;
+                                            let top = 0;
+                                            if (imgEl) {
+                                                const r = imgEl.getBoundingClientRect();
+                                                left = r.left + r.width / 2;
+                                                top = r.top;
+                                            } else {
+                                                const r = tito.getBoundingClientRect();
+                                                left = r.left + r.width / 2;
+                                                top = r.top;
+                                            }
+
+                                            // Mostrar el texto tras un retraso de 3s desde que tito apareció
+                                            setTimeout(() => {
+                                                // switch background music to algocontigo when Tito appears
+                                                try {
+                                                    const bgAudio = document.getElementById('background-music');
+                                                    if (bgAudio) {
+                                                        // cross-fade: fade out current, switch src, fade in
+                                                        const newSrc = 'assets/algocontigo.mp3';
+                                                        const duration = 500; // ms for fade out and fade in
+                                                        const steps = 20;
+                                                        const stepTime = Math.max(10, Math.round(duration / steps));
+                                                        const startVol = (typeof bgAudio.volume === 'number' && !isNaN(bgAudio.volume)) ? bgAudio.volume : 0.2;
+
+                                                        // fade out
+                                                        let outStep = 0;
+                                                        const outInt = setInterval(() => {
+                                                            outStep++;
+                                                            const v = Math.max(0, startVol * (1 - outStep / steps));
+                                                            try { bgAudio.volume = v; } catch (e) {}
+                                                            if (outStep >= steps) {
+                                                                clearInterval(outInt);
+                                                                try { bgAudio.pause(); } catch (e) {}
+                                                                // switch source
+                                                                bgAudio.src = newSrc;
+                                                                bgAudio.load();
+                                                                const playPromise = bgAudio.play();
+                                                                // fade in once playback starts (or immediately)
+                                                                const startFadeIn = () => {
+                                                                    let inStep = 0;
+                                                                    const inInt = setInterval(() => {
+                                                                        inStep++;
+                                                                        const vv = Math.min(startVol, startVol * (inStep / steps));
+                                                                        try { bgAudio.volume = vv; } catch (e) {}
+                                                                        if (inStep >= steps) clearInterval(inInt);
+                                                                    }, stepTime);
+                                                                };
+                                                                if (playPromise && typeof playPromise.then === 'function') {
+                                                                    playPromise.then(startFadeIn).catch(startFadeIn);
+                                                                } else {
+                                                                    startFadeIn();
+                                                                }
+                                                            }
+                                                        }, stepTime);
+                                                    }
+                                                } catch (e) {}
+
+                                                const wait = document.createElement('div');
+                                                wait.id = 'titoWaiting';
+                                                wait.textContent = 'im still waiting.. right? :/';
+
+                                                Object.assign(wait.style, {
+                                                    position: 'fixed',
+                                                    left: left + 'px',
+                                                    top: top + 'px',
+                                                    // empezar cerca de la imagen y animar hacia arriba para quedar más alto
+                                                    transform: 'translate(-50%, -100%)',
+                                                    fontFamily: 'Courier New, monospace',
+                                                    fontSize: '13px',
+                                                    color: '#ffb6c1',
+                                                    background: 'rgba(0,0,0,0.45)',
+                                                    padding: '4px 8px',
+                                                    borderRadius: '8px',
+                                                    opacity: '0',
+                                                    // aparición rápida (0.3s)
+                                                    transition: 'opacity 300ms linear, transform 300ms ease',
+                                                    pointerEvents: 'none',
+                                                    zIndex: '9999'
+                                                });
+
+                                                document.body.appendChild(wait);
+                                                // animar hacia arriba y desvanecer rápidamente
+                                                requestAnimationFrame(() => {
+                                                    wait.style.opacity = '1';
+                                                    wait.style.transform = 'translate(-50%, -220%)';
+                                                });
+
+                                                // Remover 4s después de que el texto se haya mostrado
+                                                setTimeout(() => {
+                                                    wait.style.opacity = '0';
+                                                    wait.style.transform = 'translate(-50%, -260%)';
+                                                    setTimeout(() => { try { wait.remove(); } catch (e) {} }, 260);
+                                                }, 4000);
+                                            }, 3000);
+                                        } catch (e) { /* no bloquear si algo falla */ }
+                                    }});
+
+                                    // Tooltip for tito removed per user request
+                                }
+                            }
+                        }
                     } else {
-                        // Animación común con emoji luna (95% probabilidad, aparece 8 segundos)
-                        if (!isFlipped) {
-                            // Voltear para mostrar la luna
-                            stickerBack.textContent = '🌙';
-                            stickerContainer.classList.add('flipped');
-                            isFlipped = true;
-                            
-                            // Después de 8 segundos, volver automáticamente
+                        duration = 2000; // Para clicks adicionales, usar 2 segundos
+                    }
+
+                    // Siempre mostrar ❓ al voltear
+                    if (!isFlipped) {
+                        stickerBack.textContent = '❓';
+                        stickerContainer.classList.add('flipped');
+                        isFlipped = true;
+
+                        // Removed immediate post-click shake. We'll schedule a one-time
+                        // shake after the sticker RETURNS for the first click specifically.
+
+                        // Desired behavior: first click flips and returns (with post-return shake),
+                        // the NEXT click (i.e. clickCount === 2) should leave the sticker
+                        // flipped permanently showing '❓'. Subsequent clicks do nothing special.
+                        if (clickCount === 1) {
+                            // Primer click: volver automáticamente y disparar la sacudida única 1s
+                            // después de que haya vuelto (comportamiento previo).
                             setTimeout(() => {
                                 stickerContainer.classList.remove('flipped');
                                 isFlipped = false;
                                 // Limpiar después de la animación
                                 setTimeout(() => {
-                                    stickerBack.textContent = '';
+                                    stickerBack.textContent = '❓';
                                 }, 600);
-                            }, 8000);
+
+                                // Una vez haya vuelto, esperar 1s y disparar la sacudida única
+                                try {
+                                    if (!didReturnShake && typeof startPulse === 'function') {
+                                        setTimeout(() => {
+                                            try { startPulse(); } catch (e) {}
+                                            didReturnShake = true;
+                                        }, 1000);
+                                    }
+                                } catch (e) { /* noop */ }
+                            }, duration);
+                        } else if (clickCount === 2) {
+                            // Segundo click (después del primero): dejarlo volteado estático
+                            try {
+                                // Ensure back shows the question mark and keep flipped
+                                stickerBack.textContent = '❓';
+                                // keep isFlipped true and class 'flipped' present (we already added it)
+                                isFlipped = true;
+                            } catch (e) {}
+                        } else if (clickCount > 2) {
+                            // Más clicks no cambian el estado: mantener ❓
+                            try { stickerBack.textContent = '❓'; } catch (e) {}
                         }
                     }
                 });
@@ -1655,9 +2142,16 @@
                 "Beny Jr Lover",
                 "#benyvuelveyaporfavor :(",
                 "guillevgo on ig ;)",
+                "Que buscas pillin? sigueme en ig anda ;)",
+                "Beny Jr Lover",
+                "A lonely person never goes gonna be betrayed",
+                "Beny Jr Lover",
+                "#benyvuelveyaporfavor :(",
                 "A lonely person never goes gonna be betrayed",
                 "I want to feel that I am in love... :/",
+                "#benyvuelveyaporfavor :(",
                 "If it was good for you, why did you leave me?",
+                "A lonely person never goes gonna be betrayed",
                 "I miss you but is okay"
             ];
             
@@ -1812,7 +2306,7 @@
     <script>
         /* Contador manual de visitas */
         (function(){
-            const MANUAL_COUNT = 159; // <- Cambia este número manualmente para actualizar las views
+            const MANUAL_COUNT = 129; // <- Cambia este número manualmente para actualizar las views
             document.addEventListener('DOMContentLoaded', () => {
                 const span = document.getElementById('visitor-count');
                 if(span) span.textContent = MANUAL_COUNT.toLocaleString();
@@ -1830,11 +2324,13 @@
             const music = document.getElementById('background-music');
             
             let isPlaying = true; // Iniciar como true porque la música ya está sonando
-            let targetVolume = 0.5; // Volumen objetivo
+            let targetVolume = 0.2; // Volumen objetivo (20%)
             let fadeInterval = null;
-            
+
             // Configurar volumen inicial
-            music.volume = 0.5;
+            music.volume = targetVolume;
+            // reflect initial value on slider if present
+            try { if (volumeSlider) volumeSlider.value = Math.round(targetVolume * 100); } catch (e) {}
             
             // Mostrar el icono de pausa al inicio (porque está reproduciéndose)
             playIcon.style.display = 'none';
@@ -1914,8 +2410,87 @@
             });
         });
     </script>
+
+    <script>
+        // Copiar Discord al portapapeles y cambiar texto del handle a "copiado!" durante 2s
+        (function(){
+            document.addEventListener('DOMContentLoaded', () => {
+                const discordImg = document.querySelector('img[src="assets/discord.png"]');
+                if (!discordImg) return;
+
+                discordImg.style.cursor = 'pointer';
+
+                const container = discordImg.closest('.social-icon-container') || discordImg.parentElement;
+                if (!container) return;
+                // asegurar positioning para el tooltip absoluto
+                if (window.getComputedStyle(container).position === 'static') container.style.position = 'relative';
+
+                const handle = container.querySelector('.discord-handle');
+                if (handle && !handle.dataset.original) handle.dataset.original = (handle.textContent || '@fracpre').trim();
+
+                discordImg.addEventListener('click', async (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+
+                    const textToCopy = (handle && handle.dataset.original) ? handle.dataset.original : '@fracpre';
+                    try {
+                        if (navigator.clipboard && navigator.clipboard.writeText) {
+                            await navigator.clipboard.writeText(textToCopy);
+                        } else {
+                            const ta = document.createElement('textarea');
+                            ta.value = textToCopy;
+                            ta.style.position = 'absolute';
+                            ta.style.left = '-9999px';
+                            document.body.appendChild(ta);
+                            ta.select();
+                            document.execCommand('copy');
+                            document.body.removeChild(ta);
+                        }
+                    } catch (err) {
+                        // ignore
+                    }
+
+                    // clear any previous pending revert
+                    if (container._discordCopiedTimeout) {
+                        clearTimeout(container._discordCopiedTimeout);
+                        container._discordCopiedTimeout = null;
+                    }
+
+                    // add class to force visible during copied state
+                    container.classList.add('discord-copied');
+
+                    if (handle) {
+                        const original = handle.dataset.original || '@fracpre';
+                        // animated swap: shrink+fade out -> swap -> expand+fade in
+                        gsap.to(handle, { scale: 0.88, opacity: 0, duration: 0.14, ease: 'power2.in', onComplete() {
+                            handle.textContent = 'copiado!';
+                            gsap.to(handle, { scale: 1, opacity: 1, duration: 0.28, ease: 'back.out(1.2)'});
+                        }});
+
+                        // schedule revert
+                        container._discordCopiedTimeout = setTimeout(() => {
+                            gsap.to(handle, { scale: 0.9, opacity: 0, duration: 0.12, ease: 'power2.in', onComplete() {
+                                handle.textContent = original;
+                                gsap.to(handle, { scale: 1, opacity: 1, duration: 0.28, ease: 'back.out(1.2)', onComplete() {
+                                    // cleanup: remove forced-visible class so hover controls visibility again
+                                    container.classList.remove('discord-copied');
+                                    // clear any inline GSAP props so CSS resumes control
+                                    try { gsap.set(handle, { clearProps: 'all' }); } catch (e) {}
+                                }});
+                            }});
+                            container._discordCopiedTimeout = null;
+                        }, 2000);
+                    } else {
+                        // no handle found: remove the copied class after 2s
+                        container._discordCopiedTimeout = setTimeout(() => {
+                            container.classList.remove('discord-copied');
+                            container._discordCopiedTimeout = null;
+                        }, 2000);
+                    }
+                });
+            });
+        })();
+    </script>
 </body>
 </html>
-
-
 
