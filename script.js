@@ -622,4 +622,94 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
   typeWriterStart();
+
+  // Lanyard WebSocket implementation for real-time Discord status
+  function initLanyard() {
+    const userId = '344060291543334914';
+    const statusIndicator = document.getElementById('discord-status-indicator');
+    const statusIndicatorBadge = document.getElementById('discord-status-indicator-badge');
+    const activityDiv = document.getElementById('discord-activity');
+
+    if (!activityDiv || !statusIndicator || !statusIndicatorBadge) {
+      console.error('[Lanyard] Status elements not found.');
+      return;
+    }
+
+    let ws;
+    let heartbeatInterval;
+
+    const connect = () => {
+      ws = new WebSocket('wss://api.lanyard.rest/socket');
+
+      ws.onopen = () => {
+        console.log('[Lanyard] WebSocket connected.');
+        // Subscribe to the user's ID
+        ws.send(JSON.stringify({ op: 2, d: { subscribe_to_id: userId } }));
+      };
+
+      ws.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+
+        // Heartbeat logic
+        if (data.op === 1) {
+          heartbeatInterval = setInterval(() => {
+            ws.send(JSON.stringify({ op: 3 }));
+          }, data.d.heartbeat_interval);
+          return;
+        }
+
+        // Presence update
+        if (data.op === 0 && (data.t === 'INIT_STATE' || data.t === 'PRESENCE_UPDATE')) {
+          updatePresence(data.d);
+        }
+      };
+
+      ws.onclose = () => {
+        console.log('[Lanyard] WebSocket disconnected. Reconnecting...');
+        clearInterval(heartbeatInterval);
+        setTimeout(connect, 5000); // Try to reconnect after 5 seconds
+      };
+
+      ws.onerror = (error) => {
+        console.error('[Lanyard] WebSocket error:', error);
+        ws.close();
+      };
+    };
+
+    const updatePresence = (presence) => {
+      // Update status dots
+      const status = presence.discord_status || 'offline';
+      
+      statusIndicator.className = 'discord-status-indicator'; // Reset classes
+      statusIndicator.classList.add(status);
+      
+      statusIndicatorBadge.className = ''; // Reset classes
+      statusIndicatorBadge.id = 'discord-status-indicator-badge';
+      statusIndicatorBadge.classList.add(status);
+
+      // Update activity text
+      const listeningActivity = presence.activities.find(activity => activity.type === 2); // Listening to Spotify
+      const playingActivity = presence.activities.find(activity => activity.type === 0); // Playing a Game
+
+      let activityText = '';
+      if (listeningActivity) {
+        activityText = `Escuchando ${listeningActivity.details} de ${listeningActivity.state}`;
+      } else if (playingActivity) {
+        activityText = `Jugando a ${playingActivity.name}`;
+      } else {
+        // Translate status to Spanish
+        switch (status) {
+          case 'online': activityText = 'En línea'; break;
+          case 'idle': activityText = 'Ausente'; break;
+          case 'dnd': activityText = 'No molestar'; break;
+          case 'offline': activityText = 'Desconectado'; break;
+        }
+      }
+      activityDiv.textContent = activityText;
+    };
+
+    connect();
+  }
+
+  initLanyard();
 });
