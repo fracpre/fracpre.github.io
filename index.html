@@ -824,6 +824,26 @@
             opacity: 1;
             transform: translateX(-50%) translateY(0);
         }
+        #discord-status-indicator.offline { background-color: #747f8d; }
+
+        #discord-status-indicator-badge {
+            position: absolute;
+            bottom: 0px;
+            right: 0px;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: #747f8d; /* offline by default */
+            border: 2px solid rgba(0, 0, 0, 0.5);
+            z-index: 11;
+            transition: background-color 0.5s ease;
+        }
+
+        #discord-status-indicator-badge.online { background-color: #3ba55d; }
+        #discord-status-indicator-badge.idle { background-color: #faa61a; }
+        #discord-status-indicator-badge.dnd { background-color: #ed4245; }
+        #discord-status-indicator-badge.offline { background-color: #747f8d; }
+
         /* keep visible while in 'copied' state */
         .social-icon-container.discord-copied .discord-handle {
             opacity: 1 !important;
@@ -1116,7 +1136,7 @@
             text-align: center;
             text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
             padding: 15px 25px;
-            border: 3px solid rgba(255, 255, 255, 0.3);
+            border: 3px solid transparent;
             border-radius: 20px;
             background: rgba(255, 255, 255, 0.05);
             backdrop-filter: blur(5px);
@@ -1127,8 +1147,48 @@
         }
         
         #intro-text:hover {
-            background: rgba(255, 255, 255, 0.1);
             box-shadow: 0 0 20px rgba(255, 105, 180, 0.8), 0 0 40px rgba(255, 105, 180, 0.5);
+        }
+
+        @property --gradient-angle {
+          syntax: '<angle>';
+          initial-value: 0deg;
+          inherits: false;
+        }
+
+        @keyframes rainbow-border-flow {
+          to {
+            --gradient-angle: 360deg;
+          }
+        }
+
+        #intro-text::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: calc(100% + 6px);
+            height: calc(100% + 6px);
+            z-index: -1;
+            
+            background: conic-gradient(from var(--gradient-angle), red, yellow, lime, aqua, blue, magenta, red);
+            border-radius: 20px;
+            
+            animation: rainbow-border-flow 3s linear infinite;
+
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, 
+                          linear-gradient(#fff 0 0);
+            -webkit-mask-composite: destination-out;
+            mask: linear-gradient(#fff 0 0) content-box, 
+                  linear-gradient(#fff 0 0);
+            mask-composite: subtract;
+            padding: 3px;
+        }
+        
+        #intro-text:hover::after {
+            animation: none;
+            background: rgba(255, 102, 255, 0.8);
         }
         
         #intro-overlay.hiding #intro-text {
@@ -1746,6 +1806,7 @@
                                     </div>
                                     <div class="badge-container">
                                         <img src="assets/spain.png" alt="España" class="badge" id="espanaEgg">
+                                        <div id="discord-status-indicator-badge"></div>
                                     </div>
                                 </div>
                             </div>
@@ -2306,7 +2367,7 @@
     <script>
         /* Contador manual de visitas */
         (function(){
-            const MANUAL_COUNT = 137; // <- Cambia este número manualmente para actualizar las views
+            const MANUAL_COUNT = 129; // <- Cambia este número manualmente para actualizar las views
             document.addEventListener('DOMContentLoaded', () => {
                 const span = document.getElementById('visitor-count');
                 if(span) span.textContent = MANUAL_COUNT.toLocaleString();
@@ -2493,6 +2554,4 @@
     </script>
 </body>
 </html>
-
-
 
