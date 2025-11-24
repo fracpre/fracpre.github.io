@@ -25,11 +25,12 @@ body {
   overflow-x: hidden;
   overflow-y: auto;
   perspective: 1000px;
-  cursor: none;
+  cursor: url('assets/cursor.ani'), auto;
 }
 
 
 .custom-cursor {
+  display: none;
   position: fixed;
   width: 32px;
   height: 32px;
