@@ -15,26 +15,13 @@
             font-family: 'Courier New', monospace;
         }
 
-        .custom-cursor {
-            position: fixed;
-            width: 40px;
-            height: 40px;
-            background: url('assets/custom_cursor.png') no-repeat center center;
-            background-size: contain;
-            pointer-events: none;
-            z-index: 9999;
-            transform: translate(0, 0);
-            display: none;
-        }
-
         body:not(.touch-device) {
-            cursor: none;
+            cursor: url('assets/cursor.ani'), auto;
         }
 
         body {
             background-color: #000;
             color: #fff;
-            overflow: hidden;
         }
 
         .container {
@@ -184,7 +171,7 @@
             transition: opacity 1.2s ease-out, transform 1.2s ease-out;
             pointer-events: auto;
             position: relative;
-            overflow: hidden;
+            overflow: visible;
         }
         
         #profile-block.show {
@@ -824,6 +811,23 @@
             opacity: 1;
             transform: translateX(-50%) translateY(0);
         }
+
+        .lanyard-card-hover {
+            position: absolute;
+            bottom: calc(100% + 38px); /* Positioned above the discord-handle */
+            left: 50%;
+            transform: translateX(-50%) translateY(6px);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 180ms ease, transform 180ms ease;
+            z-index: 1000; /* Increased z-index */
+        }
+
+        .social-icon-container:hover .lanyard-card-hover {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+        
         #discord-status-indicator.offline { background-color: #747f8d; }
 
         #discord-status-indicator-badge {
@@ -843,6 +847,14 @@
         #discord-status-indicator-badge.idle { background-color: #faa61a; }
         #discord-status-indicator-badge.dnd { background-color: #ed4245; }
         #discord-status-indicator-badge.offline { background-color: #747f8d; }
+
+        #discord-status-text-badge {
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.75);
+            padding: 0 5px;
+            line-height: 28px; /* Approx height of a badge */
+        }
 
         /* keep visible while in 'copied' state */
         .social-icon-container.discord-copied .discord-handle {
@@ -1001,10 +1013,13 @@
             border-color: transparent transparent rgba(0, 0, 0, 0.8) transparent;
         }
 
-        .home-theme #profile-block,
         .home-theme #skills-block {
             border-color: transparent;
             overflow: hidden;
+        }
+        .home-theme #profile-block {
+            border-color: transparent;
+            overflow: visible;
         }        .home-theme #profile-block::before,
         .home-theme #skills-block::before {
             content: '';
@@ -1405,8 +1420,6 @@
 </head>
 <body class="home-theme" onload="initMedia()">
     
-    <div class="custom-cursor"></div>
-
     <div id="intro-overlay">
         <div id="intro-text">Click para revelar :)</div>
     </div>
@@ -1779,60 +1792,63 @@
                     <div class="overlay-sticker-back" id="stickerBack">❓</div>
                 </div>
             </div>
-                <div class="profile-info">
-                    <div class="name-and-badges">
-                        <div id="profile-name">
-                            fracpre
-                            <img src="assets/verified.gif" alt="Verified" class="verified-badge">
-                        </div>
-                        <div class="badge-box">
-                            <div class="badge-box-inner">
-                                <div class="badge-group">
-                                    <div class="badge-container">
-                                        <img src="assets/owner.png" alt="Owner" class="badge">
-                                    </div>
-                                    <div class="badge-container">
-                                        <img src="assets/developer.png" alt="Developer" class="badge">
-                                    </div>
-                                    <div class="badge-container">
-                                        <a href="https://instagram.com/guillevgo" target="_blank" rel="noopener noreferrer">
-                                            <img src="assets/boy.png" alt="boy" class="badge">
-                                        </a>
-                                    </div>
-                                    <div class="badge-container">
-                                        <a href="https://tracker.gg/valorant/profile/riot/Fracpre%23ontop/overview?platform=pc&playlist=competitive&season=4c4b8cff-43eb-13d3-8f14-96b783c90cd2" target="_blank" rel="noopener noreferrer">
-                                            <img src="assets/ascendant.png" alt="Valorant" class="badge">
-                                        </a>
-                                    </div>
-                                    <div class="badge-container">
-                                        <img src="assets/spain.png" alt="España" class="badge" id="espanaEgg">
-                                        <div id="discord-status-indicator-badge"></div>
+                                    <div class="profile-info">
+                                        <div class="name-and-badges">
+                                            <div id="profile-name">
+                                                fracpre
+                                                <img src="assets/verified.gif" alt="Verified" class="verified-badge">
+                                            </div>
+                                            <div class="badge-box">
+                                                <div class="badge-box-inner">
+                                                    <div class="badge-group">
+                                                        <div class="badge-container">
+                                                            <img src="assets/owner.png" alt="Owner" class="badge">
+                                                        </div>
+                                                        <div class="badge-container">
+                                                            <img src="assets/developer.png" alt="Developer" class="badge">
+                                                        </div>
+                                                        <div class="badge-container">
+                                                            <a href="https://instagram.com/guillevgo" target="_blank" rel="noopener noreferrer">
+                                                                <img src="assets/boy.png" alt="boy" class="badge">
+                                                            </a>
+                                                        </div>
+                                                        <div class="badge-container">
+                                                            <a href="https://tracker.gg/valorant/profile/riot/Fracpre%23ontop/overview?platform=pc&playlist=competitive&season=4c4b8cff-43eb-13d3-8f14-96b783c90cd2" target="_blank" rel="noopener noreferrer">
+                                                                <img src="assets/ascendant.png" alt="Valorant" class="badge">
+                                                            </a>
+                                                        </div>
+                                                        <div class="badge-container">
+                                                            <img src="assets/spain.png" alt="España" class="badge" id="espanaEgg">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div id="profile-bio"></div>
                                     </div>
                                 </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div id="profile-bio"></div>
-                </div>
+                
+                                <div class="bio-separator"></div>
+
+            <div id="valorant-stats-container">
+                <!-- Las estadísticas de Valorant se cargarán aquí -->
             </div>
-
-            <div class="bio-separator"></div>
-
-            <div class="profile-footer">
-
-                <div class="social-links">
-                     <a href="https://instagram.com/guillevgo" target="_blank">
-                         <img src="assets/instagram.png" alt="Instagram" class="social-icon">
-                     </a>
-                    <div class="social-icon-container" aria-label="Discord">
-                        <img src="assets/discord.png" alt="Discord" class="social-icon" />
-                        <span class="discord-handle">@fracpre</span>
-                    </div>
-                     <a href="https://www.roblox.com/es/users/3040315936/profile" target="_blank">
-                         <img src="assets/roblox.png" alt="Roblox" class="social-icon">
-                     </a>
-                </div>
-
+                
+                                <div class="profile-footer">
+                
+                                    <div class="social-links">
+                                         <a href="https://instagram.com/guillevgo" target="_blank">
+                                             <img src="assets/instagram.png" alt="Instagram" class="social-icon">
+                                         </a>
+                                        <div class="social-icon-container" aria-label="Discord">
+                                            <img src="assets/discord.png" alt="Discord" class="social-icon" />
+                                            <span class="discord-handle">@fracpre</span>
+                                            <img class="lanyard-card-hover" src="https://lanyard.cnrad.dev/api/344060291543334914?theme=dark&bg=212121&borderRadius=8px&hideAvatar=true" alt="Discord Presence">
+                                        </div>
+                                         <a href="https://www.roblox.com/es/users/3040315936/profile" target="_blank">
+                                             <img src="assets/roblox.png" alt="Roblox" class="social-icon">
+                                         </a>
+                                    </div>
                 <!-- anonymous question button removed per user request -->
 
 
