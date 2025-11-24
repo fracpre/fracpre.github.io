@@ -1,3 +1,9 @@
+@property --gradient-angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+
 :root {
   --primary-color: #00CED1; 
   --secondary-color: #FF6B9E;
@@ -276,11 +282,20 @@ body.car-theme {
 /* botón de resultados: borde arcoíris + fondo rojo pulsante */
 #results-theme {
   border: 3px solid transparent;
-  -webkit-border-image: conic-gradient(from 0deg, #ff0000, #ff7a00, #ffef00, #00ff6a, #00caff, #4b00ff, #ff00d4, #ff0000) 1;
-  border-image: conic-gradient(from 0deg, #ff0000, #ff7a00, #ffef00, #00ff6a, #00caff, #4b00ff, #ff00d4, #ff0000) 1;
-  background-image: linear-gradient(180deg, #8B0000 0%, #FF0000 100%);
-  animation: heartbeat 1.2s ease-in-out infinite;
+  background:
+    linear-gradient(180deg, #8B0000 0%, #FF0000 100%) padding-box,
+    conic-gradient(from var(--gradient-angle), #ff0000, #ff7a00, #ffef00, #00ff6a, #00caff, #4b00ff, #ff00d4, #ff0000) border-box;
+  animation:
+    heartbeat 1.2s ease-in-out infinite,
+    border-rainbow-spin 4s linear infinite;
   touch-action: manipulation;
+}
+
+#results-theme:hover {
+  background:
+    linear-gradient(180deg, #8B0000 0%, #FF0000 100%) padding-box,
+    #ff66ff border-box;
+  animation: heartbeat 1.2s ease-in-out infinite;
 }
 
 
@@ -687,6 +702,15 @@ body.car-theme {
   /* Esto asegura que solo se vea el texto a medida que se escribe */
   overflow: hidden; 
   }
+
+@keyframes border-rainbow-spin {
+  from {
+    --gradient-angle: 0deg;
+  }
+  to {
+    --gradient-angle: 360deg;
+  }
+}
 
 @keyframes led-glow {
   0% {
