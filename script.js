@@ -1,992 +1,812 @@
-@property --gradient-angle {
-  syntax: '<angle>';
-  initial-value: 0deg;
-  inherits: false;
-}
+let hasUserInteracted = false;
 
-:root {
-  --primary-color: #00CED1; 
-  --secondary-color: #FF6B9E;
-  --background-dark: #0A0A1A;
-  --text-color: #E0E0FF;
-}
-
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  transition: all 0.3s ease;
-}
-
-body {
-  font-family: 'Space Mono', monospace;
-  background: var(--background-dark);
-  color: var(--text-color);
-  overflow-x: hidden;
-  overflow-y: auto;
-  perspective: 1000px;
-  cursor: url('assets/cursor.ani'), auto;
-}
-
-
-.custom-cursor {
-  display: none;
-  position: fixed;
-  width: 32px;
-  height: 32px;
-  background: url('assets/custom_cursor.png') no-repeat center center;
-  background-size: contain;
-  pointer-events: none;
-  z-index: 10000;
-  transition: transform 0.1s ease-out;
-  filter: hue-rotate(var(--cursor-hue, 0deg)); 
-  transform: translate(0, 0);
-}
-
-
-body.home-theme {
-  --primary-gradient: from-purple-400;
-  --secondary-gradient: to-pink-600;
-  --primary-color: #00CED1; 
-  --secondary-color: #FF6B9E;
-  --cursor-hue: 180deg; 
-}
-
-body.hacker-theme {
-  --primary-gradient: from-green-500;
-  --secondary-gradient: to-teal-600;
-  --primary-color: #22C55E; 
-  --secondary-color: #2DD4BF;
-  --cursor-hue: 120deg; 
-}
-
-body.rain-theme {
-  --primary-gradient: from-blue-800;
-  --secondary-gradient: to-blue-600;
-  --primary-color: #1E3A8A; 
-  --secondary-color: #2563EB;
-  --cursor-hue: 240deg; 
-}
-
-body.anime-theme {
-  --primary-gradient: from-red-600;
-  --secondary-gradient: to-red-400;
-  --primary-color: #DC2626; 
-  --secondary-color: #F87171;
-  --cursor-hue: 0deg; 
-}
-
-body.car-theme {
-  --primary-gradient: from-yellow-500;
-  --secondary-gradient: to-yellow-300;
-  --primary-color: #EAB308; 
-  --secondary-color: #FACC15;
-  --cursor-hue: 60deg; 
-}
-
-
-.video-background {
-  transform: scale(1.02);
-}
-
-
-#hacker-overlay {
-  mix-blend-mode: screen;
-  opacity: 0.7;
-}
-
-#snow-overlay {
-  z-index: 15;
-  opacity: 0.8;
-}
-
-
-.glitch-overlay {
-  pointer-events: none;
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: transparent;
-  opacity: 0;
-  z-index: 20;
-  mix-blend-mode: color-dodge;
-}
-
-
-#profile-block, #skills-block {
-  transform-style: preserve-3d;
-  transition: transform 0.5s ease-out, background 0.3s ease, border-opacity 0.3s ease, backdrop-filter 0.3s ease, opacity 0.3s ease, border-color 0.3s ease; /* Flüssigere Transition */
-  width: 640px;
-  max-width: 90vw;
-}
-
-
-#profile-block.profile-appear {
-  animation: slideInFade 1s ease-out forwards;
-}
-
-@keyframes slideInFade {
-  0% {
-    opacity: 0;
-    transform: translate(-50%, -40%);
+function initMedia() {
+  console.log("initMedia called");
+  const backgroundMusic = document.getElementById('background-music');
+  const backgroundElem = document.getElementById('background');
+  if (!backgroundMusic || !backgroundElem) {
+    console.error("Media elements not found");
+    return;
   }
-  100% {
-    opacity: 1;
-    transform: translate(-50%, -50%);
+  backgroundMusic.volume = 0.3;
+
+  // Si el background es video, mantenerlo silenciado y intentar reproducir.
+  if (backgroundElem.tagName === 'VIDEO') {
+    backgroundElem.muted = true;
+    backgroundElem.play().catch(err => {
+      console.error("Failed to play background video:", err);
+    });
+  } else {
+    // si es IMG (GIF), sólo aseguramos que esté visible cuando corresponda
+    backgroundElem.style.display = 'none';
   }
 }
 
+document.addEventListener('DOMContentLoaded', () => {
+  const startScreen = document.getElementById('start-screen');
+  const startText = document.getElementById('start-text');
+  // NO tocar profileName - dejarlo estático en el HTML
+  const profileBio = document.getElementById('profile-bio');
+  const visitorCount = document.getElementById('visitor-count');
+  const backgroundMusic = document.getElementById('background-music');
+  const hackerMusic = document.getElementById('hacker-music');
+  const rainMusic = document.getElementById('rain-music');
+  const animeMusic = document.getElementById('anime-music');
+  const carMusic = document.getElementById('car-music');
+  const homeButton = document.getElementById('home-theme');
+  const hackerButton = document.getElementById('hacker-theme');
+  const rainButton = document.getElementById('rain-theme');
+  const animeButton = document.getElementById('anime-theme');
+  const carButton = document.getElementById('car-theme');
+  const resultsButtonContainer = document.getElementById('results-button-container');
+  const resultsButton = document.getElementById('results-theme');
+  const volumeIcon = document.getElementById('volume-icon');
+  const volumeSlider = document.getElementById('volume-slider');
+  const transparencySlider = document.getElementById('transparency-slider');
+  const backgroundVideo = document.getElementById('background');
+  const hackerOverlay = document.getElementById('hacker-overlay');
+  const snowOverlay = document.getElementById('snow-overlay');
+  const glitchOverlay = document.querySelector('.glitch-overlay');
+  const profileBlock = document.getElementById('profile-block');
+  const skillsBlock = document.getElementById('skills-block');
+  const pythonBar = document.getElementById('python-bar');
+  const cppBar = document.getElementById('cpp-bar');
+  const csharpBar = document.getElementById('csharp-bar');
+  const resultsHint = document.getElementById('results-hint');
+  const profilePicture = document.querySelector('.profile-picture');
+  const profileContainer = document.querySelector('.profile-container');
+  const socialIcons = document.querySelectorAll('.social-icon');
+  const badges = document.querySelectorAll('.badge');
 
-.border-theme {
-  border-color: var(--primary-color);
-}
-
-
-.profile-container {
-  position: relative;
-  transform-style: preserve-3d;
-}
-
-.profile-container::after {
-  content: '';
-  position: absolute;
-  top: -6px;
-  left: -6px;
-  right: -6px;
-  bottom: -6px;
-  border-radius: 50%;
-  /* aura rosada más amplia */
-  background: radial-gradient(
-    circle at 20% 20%,
-    rgba(255,102,255,0.65) 0%,
-    rgba(198,77,182,0.32) 28%,
-    rgba(160,52,160,0.12) 55%,
-    transparent 75%
-  );
-  animation: orbit 6s linear infinite; /* más lenta */
-  z-index: -1;
-  filter: blur(10px); /* más difusa para efecto de aura */
-  box-shadow: 0 8px 36px rgba(198,77,182,0.22), 0 0 48px rgba(255,102,255,0.18);
-}
-
-.profile-container.fast-orbit::after {
-  animation: fast-orbit 0.5s linear forwards;
-}
-
-
-.social-links {
-  display: flex;
-  gap: 12px;
-  background: rgba(0, 0, 0, 0.3);
-  border-radius: 20px;
-  padding: 8px 12px;
-  backdrop-filter: blur(5px);
-}
-
-.social-icon {
-  display: inline-block;
-  position: relative;
-  overflow: hidden;
-  border-radius: 50%;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-  pointer-events: auto;
-  transition: transform 0.3s ease;
-}
-
-.social-icon:hover,
-.social-icon:active {
-  transform: scale(1.4) rotateY(15deg);
-}
-
-.social-icon::before {
-  content: '';
-  position: absolute;
-  top: -50%;
-  left: -50%;
-  width: 200%;
-  height: 200%;
-  background: linear-gradient(
-    0deg, 
-    transparent, 
-    rgba(255,102,255,0.8), 
-    rgba(198,77,182,0.8)
-  );
-  transform-origin: bottom right;
-  animation: shine 3s linear infinite;
-  opacity: 0;
-  transition: opacity 0.5s;
-}
-
-.social-icon:hover::before,
-.social-icon:active::before {
-  opacity: 0.3;
-}
-
-
-.animated-border {
-  position: relative;
-}
-
-.animated-border::before {
-  content: '';
-  position: absolute;
-  top: -4px;
-  left: -4px;
-  right: -4px;
-  bottom: -4px;
-  border: 2px solid transparent;
-  border-radius: inherit;
-  background: conic-gradient(
-    from 0deg,
-    var(--primary-color) 0.8,
-    var(--secondary-color) 0.8,
-    var(--primary-color) 0.8
-  );
-  animation: border-spin 2s linear infinite;
-  z-index: -1;
-}
-
-
-.led-border {
-  position: relative;
-  border: 2px solid transparent;
-}
-
-.led-border::before {
-  content: '';
-  position: absolute;
-  top: -4px;
-  left: -4px;
-  right: -4px;
-  bottom: -4px;
-  border-radius: inherit;
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    var(--primary-color) 20%,
-    var(--secondary-color) 40%,
-    transparent 60%
-  );
-  background-size: 400%;
-  animation: led-glow 4s ease-in-out infinite;
-  z-index: -1;
-}
-
-
-#home-theme, #hacker-theme, #rain-theme, #anime-theme, #car-theme {
-  background-image: linear-gradient(to bottom right, var(--primary-color), var(--secondary-color));
-  touch-action: manipulation;
-}
-
-/* botón de resultados: borde arcoíris + fondo rojo pulsante */
-#results-theme {
-  border: 3px solid transparent;
-  background:
-    linear-gradient(180deg, #8B0000 0%, #FF0000 100%) padding-box,
-    conic-gradient(from var(--gradient-angle), #ff0000, #ff7a00, #ffef00, #00ff6a, #00caff, #4b00ff, #ff00d4, #ff0000) border-box;
-  animation:
-    heartbeat 1.2s ease-in-out infinite,
-    border-rainbow-spin 4s linear infinite;
-  touch-action: manipulation;
-}
-
-#results-theme:hover {
-  background:
-    linear-gradient(180deg, #8B0000 0%, #FF0000 100%) padding-box,
-    #ff66ff border-box;
-  animation: heartbeat 1.2s ease-in-out infinite;
-}
-
-
-.name-gradient {
-  background-image: linear-gradient(to right, var(--primary-color), var(--secondary-color));
-}
-
-#profile-name {
-  font-family: 'Orbitron', sans-serif !important;
-  font-weight: 700;
-  font-size: 32px;
-  text-align: center;
-  letter-spacing: 3px;
-  color: #fff;
-  text-shadow: 0 0 10px rgba(255, 255, 255, 0.7), 0 0 20px rgba(255, 255, 255, 0.4);
-}
-
-
-#profile-bio {
-  font-family: 'Courier New', monospace;
-}
-
-
-.profilschein {
-  background-image: linear-gradient(to bottom right, var(--primary-color), var(--secondary-color));
-}
-
-
-.social-border {
-  border-color: var(--primary-color);
-}
-
-
-.profile-border {
-  border-color: var(--primary-color);
-}
-
-
-.visitor-icon {
-  stroke: var(--primary-color);
-}
-
-
-.visitor-count {
-  color: var(--primary-color);
-}
-
-
-.volume-icon {
-  stroke: var(--primary-color);
-}
-
-.volume-icon:hover,
-.volume-icon:active {
-  stroke: var(--secondary-color);
-}
-
-
-.volume-slider {
-  background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
-}
-
-.volume-slider::-webkit-slider-thumb {
-  border-color: var(--primary-color);
-}
-
-
-.transparency-icon {
-  stroke: var(--primary-color);
-}
-
-.transparency-icon:hover,
-.transparency-icon:active {
-  stroke: var(--secondary-color);
-}
-
-
-.transparency-slider {
-  background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
-}
-
-.transparency-slider::-webkit-slider-thumb {
-  border-color: var(--primary-color);
-}
-
-
-.skill-title {
-  background-image: linear-gradient(to right, var(--primary-color), var(--secondary-color));
-}
-
-
-.skill-bar {
-  background-image: linear-gradient(to right, var(--primary-color), var(--secondary-color));
-}
-
-
-.cursor-trail {
-  background: radial-gradient(circle, var(--primary-color) 20%, var(--secondary-color) 80%);
-  opacity: 0.8;
-  border-radius: 50%;
-  pointer-events: none;
-  position: fixed;
-  z-index: 10000;
-}
-
-
-.controls {
-  position: fixed;
-  bottom: calc(50% - 280px - 10px);
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 25;
-  display: flex;
-  gap: 6px;
-  /* fondo rojo oscuro -> rojo vivo con pulso */
-  background-image: linear-gradient(180deg, #8B0000 0%, #FF0000 100%);
-  padding: 6px 10px;
-  border-radius: 16px;
-  backdrop-filter: blur(5px);
-  border: 3px solid transparent;
-  -webkit-border-image: conic-gradient(from 0deg, #ff0000, #ff7a00, #ffef00, #00ff6a, #00caff, #4b00ff, #ff00d4, #ff0000) 1;
-  border-image: conic-gradient(from 0deg, #ff0000, #ff7a00, #ffef00, #00ff6a, #00caff, #4b00ff, #ff00d4, #ff0000) 1;
-  animation: heartbeat 1.2s ease-in-out infinite;
-}
-
-.theme-button {
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  background-color: rgba(0, 0, 0, 0.5);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.3s;
-  font-size: 14px;
-  font-weight: bold;
-}
-
-.theme-button:hover {
-  transform: scale(1.1);
-  border-color: rgba(255, 255, 255, 0.8);
-}
-
-
-.top-controls {
-  position: fixed;
-  bottom: calc(50% - 280px - 60px);
-  left: 50%;
-  transform: translateX(-50%);
-  /* fondo rojo pulsante */
-  background-image: linear-gradient(180deg, #8B0000 0%, #FF0000 100%);
-  backdrop-filter: blur(10px);
-  border-radius: 20px;
-  padding: 6px 10px;
-  display: flex;
-  gap: 12px;
-  z-index: 25;
-  border: 3px solid transparent;
-  -webkit-border-image: conic-gradient(from 0deg, #ff0000, #ff7a00, #ffef00, #00ff6a, #00caff, #4b00ff, #ff00d4, #ff0000) 1;
-  border-image: conic-gradient(from 0deg, #ff0000, #ff7a00, #ffef00, #00ff6a, #00caff, #4b00ff, #ff00d4, #ff0000) 1;
-  animation: heartbeat 1.2s ease-in-out infinite;
-}
-
-
-.volume-control, .transparency-control {
-  z-index: 25;
-  background: none;
-  padding: 0;
-}
-
-
-.volume-slider, .transparency-slider {
-  -webkit-appearance: none;
-  appearance: none;
-  background: transparent;
-  outline: none;
-  width: 80px;
-  height: 6px;
-  border-radius: 3px;
-  cursor: pointer;
-  touch-action: manipulation;
-}
-
-.volume-slider::-webkit-slider-thumb, .transparency-slider::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 12px;
-  height: 12px;
-  background: white;
-  cursor: grab;
-  border-radius: 50%;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-}
-
-.volume-slider::-webkit-slider-thumb:hover, .transparency-slider::-webkit-slider-thumb:hover,
-.volume-slider::-webkit-slider-thumb:active, .transparency-slider::-webkit-slider-thumb:active {
-  background: #E0E0FF;
-}
-
-
-.badge-container {
-  position: relative;
-  display: inline-block;
-  cursor: pointer;
-  transition: transform 0.6s;
-  transform-style: preserve-3d;
-  touch-action: manipulation;
-  width: 22px;
-  height: 22px;
-}
-
-.badge-container img {
-  image-rendering: pixelated;
-}
-
-
-.badge {
-  width: 22px;
-  height: 22px;
-  backface-visibility: hidden;
-}
-
-.badge-back {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 22px;
-  height: 22px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: rgba(0, 0, 0, 0.7);
-  color: #fff;
-  font-size: 14px;
-  transform: rotateY(180deg);
-  backface-visibility: hidden;
-}
-
-.badge-container:hover,
-.badge-container:active {
-  transform: rotateY(180deg);
-}
-
-
-.badge-group {
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-  border-radius: 20px;
-  padding: 8px 12px;
-  display: flex;
-  gap: 8px;
-  justify-content: center;
-  flex-wrap: wrap;
-}
-
-
-@media (max-width: 768px) {
-
-  #profile-block, #skills-block {
-    width: 85vw;
-    max-width: 360px;
-    padding: 15px;
-    left: 50%;
-    transform: translateX(-50%);
-  }
-
-
-  .profile-picture {
-    width: 80px;
-    height: 80px;
-  }
-
-  .accesory-picture {
-    width: 20px;
-    height: 20px;
-  }
-
-  #profile-name {
-    font-size: 18px;
-  }
-
-  #profile-bio {
-    font-size: 12px;
-  }
-
-
-  .badge-group {
-    gap: 4px;
-    padding: 6px 8px;
-  }
-
-  .badge {
-    width: 16px;
-    height: 16px;
-  }
-
-
-  .social-links {
-    gap: 8px;
-    padding: 6px 8px;
-  }
-
-  .social-icon {
-    width: 20px;
-    height: 20px;
-  }
-
-
-  .visitor-counter {
-    font-size: 10px;
-    padding: 6px 10px;
-    bottom: 8px;
-    left: 10px;
-    transform: none;
-  }
-
-  .visitor-icon {
-    width: 14px;
-    height: 14px;
-  }
-
-
-  .skills-title {
-    font-size: 16px;
-  }
-
-  .skill-icon {
-    width: 16px;
-    height: 16px;
-  }
-
-
-  .controls {
-    bottom: calc(50% - 200px - 10px);
-    padding: 4px 8px;
-    left: 50%;
-    transform: translateX(-50%);
-    /* mantener el pulso y borde arcoíris en móviles */
-    background-image: linear-gradient(180deg, #8B0000 0%, #FF0000 100%);
-    border: 2px solid transparent;
-    -webkit-border-image: conic-gradient(from 0deg, #ff0000, #ff7a00, #ffef00, #00ff6a, #00caff, #4b00ff, #ff00d4, #ff0000) 1;
-    border-image: conic-gradient(from 0deg, #ff0000, #ff7a00, #ffef00, #00ff6a, #00caff, #4b00ff, #ff00d4, #ff0000) 1;
-    animation: heartbeat 1.2s ease-in-out infinite;
-  }
-
-  .theme-button {
-    width: 25px;
-    height: 25px;
-    font-size: 12px;
-  }
-
-
-  .top-controls {
-    bottom: calc(50% - 200px - 60px);
-    left: 50%;
-    transform: translateX(-50%);
-    padding: 6px 8px;
-    gap: 10px;
-  }
-
-  .volume-slider, .transparency-slider {
-    width: 60px;
-  }
-
-  .volume-icon, .transparency-icon {
-    width: 16px;
-    height: 16px;
-  }
-
-
-  #results-button-container {
-    top: calc(50% + 200px - 20px);
-    left: 50%;
-    transform: translateX(-50%);
-  }
-
-  #results-theme {
-    font-size: 10px;
-    padding: 6px 10px;
-  }
-
-  #results-hint {
-    font-size: 8px;
-    width: 140px;
-  }
-
-
-  #start-text {
-  /* 1. SOLUCIÓN AL ERROR DE SINTAXIS: Elimina la llave final flotante si no es necesaria. */
   
-  /* 2. SOLUCIÓN AL PROBLEMA DE VISIBILIDAD: Define un color CLARO para el texto. */
-  color: #00ff00; /* Color verde brillante, muy común para efectos "hacker" */
-  
-  /* O un color simple que contraste con el fondo. */
-  /* color: white; */ 
-  
-  font-size: 18px;
-  
-  /* Esto asegura que el texto no se vea hasta que el JS lo "escribe" */
-  white-space: nowrap; 
-  
-  /* Esto asegura que solo se vea el texto a medida que se escribe */
-  overflow: hidden; 
+  const cursor = document.querySelector('.custom-cursor');
+  const isTouchDevice = window.matchMedia("(pointer: coarse)").matches;
+
+  if (isTouchDevice) {
+    document.body.classList.add('touch-device');
+    
+    document.addEventListener('touchstart', (e) => {
+      const touch = e.touches[0];
+      cursor.style.left = touch.clientX + 'px';
+      cursor.style.top = touch.clientY + 'px';
+      cursor.style.display = 'block';
+    });
+
+    document.addEventListener('touchmove', (e) => {
+      const touch = e.touches[0];
+      cursor.style.left = touch.clientX + 'px';
+      cursor.style.top = touch.clientY + 'px';
+      cursor.style.display = 'block';
+    });
+
+    document.addEventListener('touchend', () => {
+      cursor.style.display = 'none'; 
+    });
+  } else {
+
+    document.addEventListener('mousemove', (e) => {
+      cursor.style.left = e.clientX + 'px';
+      cursor.style.top = e.clientY + 'px';
+      cursor.style.display = 'block';
+    });
+
+    document.addEventListener('mousedown', () => {
+      cursor.style.transform = 'scale(0.8) translate(0, 0)';
+    });
+
+    document.addEventListener('mouseup', () => {
+      cursor.style.transform = 'scale(1) translate(0, 0)';
+    });
   }
 
-@keyframes border-rainbow-spin {
-  from {
-    --gradient-angle: 0deg;
-  }
-  to {
-    --gradient-angle: 360deg;
-  }
-}
 
-@keyframes led-glow {
-  0% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 400% 50%;
-  }
-  100% {
-    background-position: 0% 50%;
-  }
-}
+  const startMessage = "Bendiciones";
+  let startTextContent = '';
+  let startIndex = 0;
+  let startCursorVisible = true;
 
-@keyframes orbit {
-  0% {
-    transform: rotate(0deg) translateZ(0) scale(1);
+  function typeWriterStart() {
+    if (!startText) return;
+    if (startIndex < startMessage.length) {
+      startTextContent = startMessage.slice(0, startIndex + 1);
+      startIndex++;
+    }
+    startText.textContent = startTextContent + (startCursorVisible ? '|' : ' ');
+    setTimeout(typeWriterStart, 100);
   }
-  50% {
-    transform: rotate(180deg) translateZ(0) scale(1.02);
-  }
-  100% {
-    transform: rotate(360deg) translateZ(0) scale(1);
-  }
-}
 
-@keyframes fast-orbit {
-  0% {
-    transform: rotate(0deg);
+  if (startText) {
+    setInterval(() => {
+        startCursorVisible = !startCursorVisible;
+        if(startText) {
+            startText.textContent = startTextContent + (startCursorVisible ? '|' : ' ');
+        }
+    }, 500);
   }
-  50% {
-    transform: rotate(180deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
-}
 
-/* animación de latido: escala sutil y cambio de brillo para simular pulso rojo oscuro -> rojo vivo */
-@keyframes heartbeat {
-  0% {
-    transform: scale(1);
-    filter: brightness(0.85);
-    box-shadow: 0 6px 18px rgba(139,0,0,0.25);
-  }
-  25% {
-    transform: scale(1.02);
-    filter: brightness(1.05);
-    box-shadow: 0 10px 28px rgba(255,0,0,0.22);
-  }
-  50% {
-    transform: scale(1.03);
-    filter: brightness(1.15);
-    box-shadow: 0 14px 36px rgba(255,0,0,0.28);
-  }
-  100% {
-    transform: scale(1);
-    filter: brightness(0.85);
-    box-shadow: 0 6px 18px rgba(139,0,0,0.25);
-  }
-}
 
-@keyframes shine {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
-}
+  function initializeVisitorCounter() {
+    let totalVisitors = localStorage.getItem('totalVisitorCount');
+    if (!totalVisitors) {
+      totalVisitors = 4;
+      localStorage.setItem('totalVisitorCount', totalVisitors);
+    } else {
+      totalVisitors = parseInt(totalVisitors);
+    }
 
-@keyframes glitch {
-  0% {
-    clip: rect(35px, 9999px, 14px, 0);
-  }
-  5% {
-    clip: rect(88px, 9999px, 40px, 0);
-  }
-  10% {
-    clip: rect(60px, 9999px, 50px, 0);
-  }
-  15% {
-    clip: rect(55px, 9999px, 53px, 0);
-  }
-  20% {
-    clip: rect(89px, 9999px, 65px, 0);
-  }
-  25% {
-    clip: rect(52px, 9999px, 43px, 0);
-  }
-  30% {
-    clip: rect(28px, 9999px, 15px, 0);
-  }
-  35% {
-    clip: rect(40px, 9999px, 60px, 0);
-  }
-  40% {
-    clip: rect(80px, 9999px, 45px, 0);
-  }
-  45% {
-    clip: rect(90px, 9999px, 55px, 0);
-  }
-}
+    const hasVisited = localStorage.getItem('hasVisited');
+    if (!hasVisited) {
+      totalVisitors++;
+      localStorage.setItem('totalVisitorCount', totalVisitors);
+      localStorage.setItem('hasVisited', 'true');
+    }
 
-@keyframes glitch-anim {
-  0% {
-    clip: rect(39px, 9999px, 15px, 0);
+    if (visitorCount) {
+        visitorCount.textContent = totalVisitors.toLocaleString();
+    }
   }
-  5% {
-    clip: rect(29px, 9999px, 10px, 0);
-  }
-  10% {
-    clip: rect(50px, 9999px, 20px, 0);
-  }
-  15% {
-    clip: rect(35px, 9999px, 25px, 0);
-  }
-  20% {
-    clip: rect(45px, 9999px, 30px, 0);
-  }
-  25% {
-    clip: rect(55px, 9999px, 40px, 0);
-  }
-  30% {
-    clip: rect(60px, 9999px, 45px, 0);
-  }
-  35% {
-    clip: rect(65px, 9999px, 50px, 0);
-  }
-  40% {
-    clip: rect(70px, 9999px, 55px, 0);
-  }
-  45% {
-    clip: rect(75px, 9999px, 60px, 0);
-  }
-}
 
-@keyframes glitch-anim2 {
-  0% {
-    clip: rect(25px, 9999px, 10px, 0);
+
+  initializeVisitorCounter();
+
+  if (startScreen) {
+    startScreen.addEventListener('click', () => {
+      // Se eliminó la petición automática de pantalla completa aquí.
+      // Para permitir pantalla completa, añade un botón que llame
+      // a `document.documentElement.requestFullscreen()` explícitamente.
+
+        startScreen.classList.add('hidden');
+        backgroundMusic.muted = false;
+        backgroundMusic.play().catch(err => {
+        console.error("Failed to play music after start screen click:", err);
+        });
+        profileBlock.classList.remove('hidden');
+        gsap.fromTo(profileBlock,
+        { opacity: 0, y: -50 },
+        { opacity: 1, y: 0, duration: 1, ease: 'power2.out', onComplete: () => {
+            profileBlock.classList.add('profile-appear');
+            profileContainer.classList.add('orbit');
+        }}
+        );
+        if (!isTouchDevice) {
+        try {
+            new cursorTrailEffect({
+            length: 10,
+            size: 8,
+            speed: 0.2
+            });
+            console.log("Cursor trail initialized");
+        } catch (err) {
+            console.error("Failed to initialize cursor trail effect:", err);
+        }
+        }
+    });
+
+    startScreen.addEventListener('touchstart', (e) => {
+      e.preventDefault();
+      // Se eliminó la petición automática de pantalla completa aquí.
+      // Mantener la experiencia táctil sin forzar fullscreen.
+
+        startScreen.classList.add('hidden');
+        backgroundMusic.muted = false;
+        backgroundMusic.play().catch(err => {
+        console.error("Failed to play music after start screen touch:", err);
+        });
+        profileBlock.classList.remove('hidden');
+        gsap.fromTo(profileBlock,
+        { opacity: 0, y: -50 },
+        { opacity: 1, y: 0, duration: 1, ease: 'power2.out', onComplete: () => {
+            profileBlock.classList.add('profile-appear');
+            profileContainer.classList.add('orbit');
+        }}
+        );
+        if (!isTouchDevice) {
+        try {
+            new cursorTrailEffect({
+            length: 10,
+            size: 8,
+            speed: 0.2
+            });
+            console.log("Cursor trail initialized");
+        } catch (err) {
+            console.error("Failed to initialize cursor trail effect:", err);
+        }
+        }
+    });
   }
-  5% {
-    clip: rect(35px, 9999px, 20px, 0);
+
+
+
+
+  let currentAudio = backgroundMusic;
+  let isMuted = false;
+
+  volumeIcon.addEventListener('click', () => {
+    isMuted = !isMuted;
+    currentAudio.muted = isMuted;
+    volumeIcon.innerHTML = isMuted
+      ? `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2"></path>`
+      : `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"></path>`;
+  });
+
+  volumeIcon.addEventListener('touchstart', (e) => {
+    e.preventDefault();
+    isMuted = !isMuted;
+    currentAudio.muted = isMuted;
+    volumeIcon.innerHTML = isMuted
+      ? `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2"></path>`
+      : `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"></path>`;
+  });
+
+  volumeSlider.addEventListener('input', () => {
+    currentAudio.volume = volumeSlider.value;
+    isMuted = false;
+    currentAudio.muted = false;
+    volumeIcon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"></path>`;
+  });
+
+
+  transparencySlider.addEventListener('input', () => {
+    const opacity = transparencySlider.value;
+    if (opacity == 0) {
+      profileBlock.style.background = 'rgba(0, 0, 0, 0)';
+      profileBlock.style.borderOpacity = '0';
+      profileBlock.style.borderColor = 'transparent';
+      profileBlock.style.backdropFilter = 'none';
+      skillsBlock.style.background = 'rgba(0, 0, 0, 0)';
+      skillsBlock.style.borderOpacity = '0';
+      skillsBlock.style.borderColor = 'transparent';
+      skillsBlock.style.backdropFilter = 'none';
+   
+      profileBlock.style.pointerEvents = 'auto';
+      socialIcons.forEach(icon => {
+        icon.style.pointerEvents = 'auto';
+        icon.style.opacity = '1';
+      });
+      badges.forEach(badge => {
+        badge.style.pointerEvents = 'auto';
+        badge.style.opacity = '1';
+      });
+      profilePicture.style.pointerEvents = 'auto';
+      profilePicture.style.opacity = '1';
+      // profileName se deja estático en HTML
+      profileBio.style.opacity = '1';
+      visitorCount.style.opacity = '1';
+    } else {
+      profileBlock.style.background = `rgba(0, 0, 0, ${opacity})`;
+      profileBlock.style.borderOpacity = opacity;
+      profileBlock.style.borderColor = '';
+      profileBlock.style.backdropFilter = `blur(${10 * opacity}px)`;
+      skillsBlock.style.background = `rgba(0, 0, 0, ${opacity})`;
+      skillsBlock.style.borderOpacity = opacity;
+      skillsBlock.style.borderColor = '';
+      skillsBlock.style.backdropFilter = `blur(${10 * opacity}px)`;
+      profileBlock.style.pointerEvents = 'auto';
+      socialIcons.forEach(icon => {
+        icon.style.pointerEvents = 'auto';
+        icon.style.opacity = '1';
+      });
+      badges.forEach(badge => {
+        badge.style.pointerEvents = 'auto';
+        badge.style.opacity = '1';
+      });
+      profilePicture.style.pointerEvents = 'auto';
+      profilePicture.style.opacity = '1';
+      // profileName se deja estático en HTML
+      profileBio.style.opacity = '1';
+      visitorCount.style.opacity = '1';
+    }
+  });
+
+
+  function switchTheme(videoSrc, audio, themeClass, overlay = null, overlayOverProfile = false) {
+    let primaryColor;
+    switch (themeClass) {
+      case 'home-theme':
+        primaryColor = '#00CED1';
+        break;
+      case 'hacker-theme':
+        primaryColor = '#22C55E';
+        break;
+      case 'rain-theme':
+        primaryColor = '#1E3A8A';
+        break;
+      case 'anime-theme':
+        primaryColor = '#DC2626';
+        break;
+      case 'car-theme':
+        primaryColor = '#EAB308';
+        break;
+      default:
+        primaryColor = '#00CED1';
+    }
+    document.documentElement.style.setProperty('--primary-color', primaryColor);
+
+    gsap.to(backgroundVideo, {
+      opacity: 0,
+      duration: 0.5,
+      ease: 'power2.in',
+      onComplete: () => {
+        backgroundVideo.src = videoSrc; // funciona tanto para <video> como para <img>
+
+        if (currentAudio) {
+          currentAudio.pause();
+          currentAudio.currentTime = 0;
+        }
+        currentAudio = audio;
+        currentAudio.volume = volumeSlider.value;
+        currentAudio.muted = isMuted;
+        currentAudio.play().catch(err => console.error("Failed to play theme music:", err));
+
+        document.body.classList.remove('home-theme', 'hacker-theme', 'rain-theme', 'anime-theme', 'car-theme');
+        document.body.classList.add(themeClass);
+
+        hackerOverlay.classList.add('hidden');
+        snowOverlay.classList.add('hidden');
+        profileBlock.style.zIndex = overlayOverProfile ? 10 : 20;
+        skillsBlock.style.zIndex = overlayOverProfile ? 10 : 20;
+        if (overlay) {
+          overlay.classList.remove('hidden');
+        }
+
+        if (themeClass === 'hacker-theme') {
+          resultsButtonContainer.classList.remove('hidden');
+        } else {
+          resultsButtonContainer.classList.add('hidden');
+          skillsBlock.classList.add('hidden');
+          resultsHint.classList.add('hidden');
+          profileBlock.classList.remove('hidden');
+          gsap.to(profileBlock, { x: 0, opacity: 1, duration: 0.5, ease: 'power2.out' });
+        }
+
+        gsap.to(backgroundVideo, {
+          opacity: 1,
+          duration: 0.5,
+          ease: 'power2.out',
+          onComplete: () => {
+            profileContainer.classList.remove('orbit');
+            void profileContainer.offsetWidth;
+            profileContainer.classList.add('orbit');
+          }
+        });
+      }
+    });
   }
-  10% {
-    clip: rect(40px, 9999px, 25px, 0);
+
+
+  homeButton.addEventListener('click', () => {
+    switchTheme('assets/background1.gif', backgroundMusic, 'home-theme');
+  });
+  homeButton.addEventListener('touchstart', (e) => {
+    e.preventDefault();
+    switchTheme('assets/background1.gif', backgroundMusic, 'home-theme');
+  });
+
+  hackerButton.addEventListener('click', () => {
+    switchTheme('assets/hacker_background.mp4', hackerMusic, 'hacker-theme', hackerOverlay, false);
+  });
+  hackerButton.addEventListener('touchstart', (e) => {
+    e.preventDefault();
+    switchTheme('assets/hacker_background.mp4', hackerMusic, 'hacker-theme', hackerOverlay, false);
+  });
+
+  rainButton.addEventListener('click', () => {
+    switchTheme('assets/rain_background.mov', rainMusic, 'rain-theme', snowOverlay, true);
+  });
+  rainButton.addEventListener('touchstart', (e) => {
+    e.preventDefault();
+    switchTheme('assets/rain_background.mov', rainMusic, 'rain-theme', snowOverlay, true);
+  });
+
+  animeButton.addEventListener('click', () => {
+    switchTheme('assets/anime_background.mp4', animeMusic, 'anime-theme');
+  });
+  animeButton.addEventListener('touchstart', (e) => {
+    e.preventDefault();
+    switchTheme('assets/anime_background.mp4', animeMusic, 'anime-theme');
+  });
+
+  carButton.addEventListener('click', () => {
+    switchTheme('assets/car_background.mp4', carMusic, 'car-theme');
+  });
+  carButton.addEventListener('touchstart', (e) => {
+    e.preventDefault();
+    switchTheme('assets/car_background.mp4', carMusic, 'car-theme');
+  });
+
+ 
+  function handleTilt(e, element) {
+    const rect = element.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
+    let clientX, clientY;
+
+    if (e.type === 'touchmove') {
+      clientX = e.touches[0].clientX;
+      clientY = e.touches[0].clientY;
+    } else {
+      clientX = e.clientX;
+      clientY = e.clientY;
+    }
+
+    const mouseX = clientX - centerX;
+    const mouseY = clientY - centerY;
+
+    const maxTilt = 15;
+    const tiltX = (mouseY / rect.height) * maxTilt;
+    const tiltY = -(mouseX / rect.width) * maxTilt;
+
+    gsap.to(element, {
+      rotationX: tiltX,
+      rotationY: tiltY,
+      duration: 0.3,
+      ease: 'power2.out',
+      transformPerspective: 1000
+    });
   }
-  15% {
-    clip: rect(50px, 9999px, 30px, 0);
+
+  profileBlock.addEventListener('mousemove', (e) => handleTilt(e, profileBlock));
+  profileBlock.addEventListener('touchmove', (e) => {
+    e.preventDefault();
+    handleTilt(e, profileBlock);
+  });
+
+  skillsBlock.addEventListener('mousemove', (e) => handleTilt(e, skillsBlock));
+  skillsBlock.addEventListener('touchmove', (e) => {
+    e.preventDefault();
+    handleTilt(e, skillsBlock);
+  });
+
+  profileBlock.addEventListener('mouseleave', () => {
+    gsap.to(profileBlock, {
+      rotationX: 0,
+      rotationY: 0,
+      duration: 0.5,
+      ease: 'power2.out'
+    });
+  });
+  profileBlock.addEventListener('touchend', () => {
+    gsap.to(profileBlock, {
+      rotationX: 0,
+      rotationY: 0,
+      duration: 0.5,
+      ease: 'power2.out'
+    });
+  });
+
+  skillsBlock.addEventListener('mouseleave', () => {
+    gsap.to(skillsBlock, {
+      rotationX: 0,
+      rotationY: 0,
+      duration: 0.5,
+      ease: 'power2.out'
+    });
+  });
+  skillsBlock.addEventListener('touchend', () => {
+    gsap.to(skillsBlock, {
+      rotationX: 0,
+      rotationY: 0,
+      duration: 0.5,
+      ease: 'power2.out'
+    });
+  });
+
+
+  profilePicture.addEventListener('mouseenter', () => {
+    glitchOverlay.style.opacity = '1';
+    setTimeout(() => {
+      glitchOverlay.style.opacity = '0';
+    }, 500);
+  });
+
+
+  profilePicture.addEventListener('click', () => {
+    profileContainer.classList.remove('fast-orbit');
+    profileContainer.classList.remove('orbit');
+    void profileContainer.offsetWidth;
+    profileContainer.classList.add('fast-orbit');
+    setTimeout(() => {
+      profileContainer.classList.remove('fast-orbit');
+      void profileContainer.offsetWidth;
+      profileContainer.classList.add('orbit');
+    }, 500);
+  });
+
+  profilePicture.addEventListener('touchstart', (e) => {
+    e.preventDefault();
+    profileContainer.classList.remove('fast-orbit');
+    profileContainer.classList.remove('orbit');
+    void profileContainer.offsetWidth;
+    profileContainer.classList.add('fast-orbit');
+    setTimeout(() => {
+      profileContainer.classList.remove('fast-orbit');
+      void profileContainer.offsetWidth;
+      profileContainer.classList.add('orbit');
+    }, 500);
+  });
+
+ 
+  let isShowingSkills = false;
+  resultsButton.addEventListener('click', () => {
+    if (!isShowingSkills) {
+      gsap.to(profileBlock, {
+        x: -100,
+        opacity: 0,
+        duration: 0.5,
+        ease: 'power2.in',
+        onComplete: () => {
+          profileBlock.classList.add('hidden');
+          skillsBlock.classList.remove('hidden');
+          gsap.fromTo(skillsBlock,
+            { x: 100, opacity: 0 },
+            { x: 0, opacity: 1, duration: 0.5, ease: 'power2.out' }
+          );
+          gsap.to(pythonBar, { width: '87%', duration: 2, ease: 'power2.out' });
+          gsap.to(cppBar, { width: '75%', duration: 2, ease: 'power2.out' });
+          gsap.to(csharpBar, { width: '80%', duration: 2, ease: 'power2.out' });
+        }
+      });
+      resultsHint.classList.remove('hidden');
+      isShowingSkills = true;
+    } else {
+      gsap.to(skillsBlock, {
+        x: 100,
+        opacity: 0,
+        duration: 0.5,
+        ease: 'power2.in',
+        onComplete: () => {
+          skillsBlock.classList.add('hidden');
+          profileBlock.classList.remove('hidden');
+          gsap.fromTo(profileBlock,
+            { x: -100, opacity: 0 },
+            { x: 0, opacity: 1, duration: 0.5, ease: 'power2.out' }
+          );
+        }
+      });
+      resultsHint.classList.add('hidden');
+      isShowingSkills = false;
+    }
+  });
+
+  resultsButton.addEventListener('touchstart', (e) => {
+    e.preventDefault();
+    if (!isShowingSkills) {
+      gsap.to(profileBlock, {
+        x: -100,
+        opacity: 0,
+        duration: 0.5,
+        ease: 'power2.in',
+        onComplete: () => {
+          profileBlock.classList.add('hidden');
+          skillsBlock.classList.remove('hidden');
+          gsap.fromTo(skillsBlock,
+            { x: 100, opacity: 0 },
+            { x: 0, opacity: 1, duration: 0.5, ease: 'power2.out' }
+          );
+          gsap.to(pythonBar, { width: '87%', duration: 2, ease: 'power2.out' });
+          gsap.to(cppBar, { width: '75%', duration: 2, ease: 'power2.out' });
+          gsap.to(csharpBar, { width: '80%', duration: 2, ease: 'power2.out' });
+        }
+      });
+      resultsHint.classList.remove('hidden');
+      isShowingSkills = true;
+    } else {
+      gsap.to(skillsBlock, {
+        x: 100,
+        opacity: 0,
+        duration: 0.5,
+        ease: 'power2.in',
+        onComplete: () => {
+          skillsBlock.classList.add('hidden');
+          profileBlock.classList.remove('hidden');
+          gsap.fromTo(profileBlock,
+            { x: -100, opacity: 0 },
+            { x: 0, opacity: 1, duration: 0.5, ease: 'power2.out' }
+          );
+        }
+      });
+      resultsHint.classList.add('hidden');
+      isShowingSkills = false;
+    }
+  });
+
+
+  typeWriterStart();
+});
+
+// Fallback: ensure the Discord handle is only visible on hover using JS toggle
+document.addEventListener('DOMContentLoaded', () => {
+  try {
+    const discordContainer = document.querySelector('.social-icon-container[aria-label="Discord"]');
+    if (discordContainer) {
+      const handle = discordContainer.querySelector('.discord-handle');
+      if (handle) {
+        // Make sure it's hidden initially
+        handle.classList.remove('show');
+
+        // Toggle on mouseenter/mouseleave and on focus
+        discordContainer.addEventListener('mouseenter', () => handle.classList.add('show'));
+        discordContainer.addEventListener('mouseleave', () => handle.classList.remove('show'));
+        discordContainer.addEventListener('focusin', () => handle.classList.add('show'));
+        discordContainer.addEventListener('focusout', () => handle.classList.remove('show'));
+      }
+    }
+  } catch (e) { /* no bloquear si algo falla */ }
+});
+
+// --- Lanyard WebSocket: real-time Discord presence ---
+document.addEventListener('DOMContentLoaded', () => {
+  const LANYARD_WS = 'wss://api.lanyard.rest/socket';
+  const USER_ID = '344060291543334914';
+  const container = document.querySelector('.social-icon-container[aria-label="Discord"]');
+  if (!container) return;
+
+  const avatarImg = container.querySelector('.discord-avatar');
+  const nameEl = container.querySelector('.discord-name');
+  const activityEl = container.querySelector('.discord-activity');
+  const statusDot = container.querySelector('.status-dot');
+
+  let ws;
+  let heartbeatIntervalId = null;
+
+  function connect() {
+    ws = new WebSocket(LANYARD_WS);
+    ws.addEventListener('open', () => {
+      console.log('Lanyard WS connected');
+    });
+
+    ws.addEventListener('message', (ev) => {
+      try {
+        const payload = JSON.parse(ev.data);
+
+        // Handle HELLO / heartbeat info (Lanyard may use op 1 or 2 for hello; accept both)
+        if ((payload.op === 2 && payload.d && payload.d.heartbeat_interval) || (payload.d && payload.d.heartbeat_interval)) {
+          const interval = payload.d.heartbeat_interval;
+          if (heartbeatIntervalId) clearInterval(heartbeatIntervalId);
+          heartbeatIntervalId = setInterval(() => {
+            if (ws && ws.readyState === WebSocket.OPEN) {
+              ws.send(JSON.stringify({ op: 3 }));
+            }
+          }, interval);
+
+          // subscribe to the user's presence
+          if (ws && ws.readyState === WebSocket.OPEN) {
+            ws.send(JSON.stringify({ op: 2, d: { subscribe_to_id: USER_ID } }));
+          }
+          return;
+        }
+
+        // Event dispatches
+        if (payload.op === 0 && payload.t) {
+          // payload.d may contain presence info directly or under 'presence'
+          const d = payload.d || {};
+          const presence = d.presence || d;
+
+          // Discord user info
+          const discordUser = presence.discord_user || d.discord_user || {};
+          const uid = discordUser.id || USER_ID;
+          const avatarHash = discordUser.avatar;
+          if (avatarHash && avatarImg) {
+            const isAnimated = avatarHash.startsWith('a_');
+            const ext = isAnimated ? 'gif' : 'png';
+            avatarImg.src = `https://cdn.discordapp.com/avatars/${uid}/${avatarHash}.${ext}?size=128`;
+          }
+
+          // username (use raw username for the card; keep visible handle text unchanged elsewhere)
+          if (discordUser && discordUser.username && nameEl) {
+            nameEl.textContent = discordUser.username;
+          }
+
+          // status (online/idle/dnd/offline)
+          const status = presence.discord_status || d.discord_status || 'offline';
+          if (statusDot) {
+            statusDot.classList.remove('online','idle','dnd','offline');
+            statusDot.classList.add(status || 'offline');
+          }
+
+          // activity: prefer a 'playing' / game activity or the first activity
+          const activities = presence.activities || d.activities || [];
+          let activity = activities.find(a => a.type === 0) || activities[0] || null;
+          if (activity && activity.name) {
+            const text = activity.state ? `${activity.name} — ${activity.state}` : activity.name;
+            if (activityEl) activityEl.textContent = text;
+          } else {
+            if (activityEl) activityEl.textContent = '';
+          }
+        }
+      } catch (err) {
+        console.error('Lanyard WS message parse error', err);
+      }
+    });
+
+    ws.addEventListener('close', () => {
+      console.log('Lanyard WS closed, reconnecting in 5s');
+      if (heartbeatIntervalId) { clearInterval(heartbeatIntervalId); heartbeatIntervalId = null; }
+      setTimeout(connect, 5000);
+    });
+    ws.addEventListener('error', (e) => {
+      console.error('Lanyard WS error', e);
+      try { ws.close(); } catch(e){}
+    });
   }
-  20% {
-    clip: rect(55px, 9999px, 35px, 0);
-  }
-  25% {
-    clip: rect(60px, 9999px, 40px, 0);
-  }
-  30% {
-    clip: rect(65px, 9999px, 45px, 0);
-  }
-}
 
-#accesory-sticker{
-   top:-30px;
-   right:-50px;
-}
+  connect();
+});
 
-/* ajustar keyframes orbit para una rotación más suave y ligera oscilación */
-@keyframes orbit {
-  0% {
-    transform: rotate(0deg) translateZ(0) scale(1);
-  }
-  50% {
-    transform: rotate(180deg) translateZ(0) scale(1.02);
-  }
-  100% {
-    transform: rotate(360deg) translateZ(0) scale(1);
-  }
-}
+// Conexión al WebSocket de Lanyard
+const socket = new WebSocket("wss://api.lanyard.rest/socket");
 
-/* social icons glow: usar rosa en lugar de rojo */
-.social-icon:hover {
-  filter: drop-shadow(0 0 22px rgba(255, 102, 255, 0.95)) brightness(1.25);
-}
+// Hover-only handle elements (avatar, name, status) shown above discord.png
+const handleAvatar = document.querySelector(".handle-avatar");
+const handleName = document.querySelector(".handle-name");
+const handleStatus = document.querySelector(".handle-status");
+// Lanyard card elements (reintroduced)
+const lanyardAvatar = document.querySelector('.lanyard-avatar');
+const lanyardName = document.querySelector('.lanyard-name');
+const lanyardActivity = document.querySelector('.lanyard-activity');
+const lanyardStatusDot = document.querySelector('.lanyard-status-dot');
 
-/* asegurar badges específicos (si usas imágenes sueltas) también reciben resplandor rosa */
-img[src$="roblox.png"]:hover,
-img[src$="discord.png"]:hover,
-img[src$="instagram.png"]:hover {
-  filter: brightness(1.25) drop-shadow(0 0 22px rgba(255,102,255,0.95)) !important;
-}
+const DISCORD_ID = "YOUR_DISCORD_ID"; // Reemplaza con tu ID de Discord
 
-/* Lanyard replacement image styling */
-.discord-card {
-  position: absolute;
-  bottom: calc(100% + 10px); /* Posicionado arriba del ícono de Discord */
-  left: 50%;
-  transform: translateX(-50%);
-    display: flex; /* kept for layout but hidden via opacity/visibility */
-    opacity: 0;
-    visibility: hidden;
-    pointer-events: none;
-    transform-origin: center bottom;
-    transition: opacity 160ms ease, transform 160ms ease, visibility 160ms;
-    transform: translateX(-50%) translateY(8px) scale(0.99);
-  flex-direction: row; /* Diseño horizontal */
-  align-items: center;
-  background-color: #2c2f33;
-  border: 1px solid #23272a;
-  border-radius: 8px;
-  padding: 10px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  z-index: 100;
-  width: auto;
-  min-width: 200px;
-  max-width: 300px;
-}
+const heartbeat = () => {
+    socket.send(JSON.stringify({ op: 3 }));
+};
 
-.discord-card .avatar-wrap {
-  position: relative;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-right: 10px;
-}
+socket.addEventListener("open", () => {
+    socket.send(
+        JSON.stringify({
+            op: 2,
+            d: {
+                subscribe_to_id: DISCORD_ID,
+            },
+        })
+    );
+    setInterval(heartbeat, 30000);
+});
 
-.discord-card .discord-avatar {
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  border: 2px solid #7289da;
-}
+socket.addEventListener("message", (event) => {
+    const data = JSON.parse(event.data);
 
-.discord-card .status-dot {
-  position: absolute;
-  bottom: 5px;
-  right: 5px;
-  width: 15px;
-  height: 15px;
-  border-radius: 50%;
-  border: 2px solid #2c2f33;
-}
+    if (data.op === 0) {
+        const discordData = data.d;
 
-.discord-card .status-dot.online {
-  background-color: #43b581;
-}
-.discord-card .status-dot.offline {
-  background-color: #747f8d;
-}
-.discord-card .status-dot.dnd {
-  background-color: #f04747;
-}
-.discord-card .status-dot.idle {
-  background-color: #faa61a;
-}
+        // Actualizar avatar (si existe el elemento en el hover handle)
+        if (handleAvatar && discordData.discord_user && discordData.discord_user.avatar) {
+          handleAvatar.src = `https://cdn.discordapp.com/avatars/${DISCORD_ID}/${discordData.discord_user.avatar}.png`;
+        }
 
-.discord-card .discord-info {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  color: #ffffff;
-}
+        // Actualizar nombre en handle
+        if (handleName && discordData.discord_user) {
+          handleName.textContent = discordData.discord_user.username || '';
+        }
 
-.discord-card .discord-name {
-  font-size: 16px;
-  font-weight: bold;
-  margin-bottom: 5px;
-}
+        // Actualizar estado (cambia la clase del punto de status) en handle
+        if (handleStatus) {
+          const st = discordData.discord_status || 'offline';
+          handleStatus.classList.remove('online','idle','dnd','offline');
+          handleStatus.classList.add(st);
+        }
 
-.discord-card .discord-activity {
-  font-size: 14px;
-  color: #b9bbbe;
-}
+        // También actualizar la tarjeta Lanyard si está presente
+        if (lanyardAvatar && discordData.discord_user && discordData.discord_user.avatar) {
+            lanyardAvatar.src = `https://cdn.discordapp.com/avatars/${DISCORD_ID}/${discordData.discord_user.avatar}.png`;
+        }
+        if (lanyardName && discordData.discord_user) {
+            lanyardName.textContent = discordData.discord_user.username || '';
+        }
+        if (lanyardActivity) {
+            if (discordData.activities && discordData.activities.length > 0) {
+                lanyardActivity.textContent = discordData.activities[0].name || 'Sin actividad';
+            } else {
+                lanyardActivity.textContent = 'Sin actividad';
+            }
+        }
+        if (lanyardStatusDot) {
+            const st2 = discordData.discord_status || 'offline';
+            lanyardStatusDot.classList.remove('online','idle','dnd','offline');
+            lanyardStatusDot.classList.add(st2);
+        }
+    }
+});
 
-.social-icon-container:hover .discord-card {
-  opacity: 1 !important;
-  visibility: visible !important;
-  pointer-events: auto !important;
-  transform: translateX(-50%) translateY(0) scale(1) !important;
-}
+
