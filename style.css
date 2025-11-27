@@ -901,3 +901,92 @@ img[src$="discord.png"]:hover,
 img[src$="instagram.png"]:hover {
   filter: brightness(1.25) drop-shadow(0 0 22px rgba(255,102,255,0.95)) !important;
 }
+
+/* Lanyard replacement image styling */
+.discord-card {
+  position: absolute;
+  bottom: calc(100% + 10px); /* Posicionado arriba del ícono de Discord */
+  left: 50%;
+  transform: translateX(-50%);
+    display: flex; /* kept for layout but hidden via opacity/visibility */
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transform-origin: center bottom;
+    transition: opacity 160ms ease, transform 160ms ease, visibility 160ms;
+    transform: translateX(-50%) translateY(8px) scale(0.99);
+  flex-direction: row; /* Diseño horizontal */
+  align-items: center;
+  background-color: #2c2f33;
+  border: 1px solid #23272a;
+  border-radius: 8px;
+  padding: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  z-index: 100;
+  width: auto;
+  min-width: 200px;
+  max-width: 300px;
+}
+
+.discord-card .avatar-wrap {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-right: 10px;
+}
+
+.discord-card .discord-avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  border: 2px solid #7289da;
+}
+
+.discord-card .status-dot {
+  position: absolute;
+  bottom: 5px;
+  right: 5px;
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  border: 2px solid #2c2f33;
+}
+
+.discord-card .status-dot.online {
+  background-color: #43b581;
+}
+.discord-card .status-dot.offline {
+  background-color: #747f8d;
+}
+.discord-card .status-dot.dnd {
+  background-color: #f04747;
+}
+.discord-card .status-dot.idle {
+  background-color: #faa61a;
+}
+
+.discord-card .discord-info {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  color: #ffffff;
+}
+
+.discord-card .discord-name {
+  font-size: 16px;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.discord-card .discord-activity {
+  font-size: 14px;
+  color: #b9bbbe;
+}
+
+.social-icon-container:hover .discord-card {
+  opacity: 1 !important;
+  visibility: visible !important;
+  pointer-events: auto !important;
+  transform: translateX(-50%) translateY(0) scale(1) !important;
+}
