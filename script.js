@@ -151,17 +151,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
   if (startScreen) {
     startScreen.addEventListener('click', () => {
-        // intentar entrar en pantalla completa (gesto del usuario)
-        try {
-        const docEl = document.documentElement;
-        if (docEl.requestFullscreen) {
-            docEl.requestFullscreen().catch(()=>{});
-        } else if (docEl.webkitRequestFullscreen) {
-            docEl.webkitRequestFullscreen();
-        } else if (docEl.msRequestFullscreen) {
-            docEl.msRequestFullscreen();
-        }
-        } catch (e) { /* noop */ }
+      // Se eliminó la petición automática de pantalla completa aquí.
+      // Para permitir pantalla completa, añade un botón que llame
+      // a `document.documentElement.requestFullscreen()` explícitamente.
 
         startScreen.classList.add('hidden');
         backgroundMusic.muted = false;
@@ -191,18 +183,9 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     startScreen.addEventListener('touchstart', (e) => {
-        e.preventDefault();
-        // intentar entrar en pantalla completa (gesto táctil)
-        try {
-        const docEl = document.documentElement;
-        if (docEl.requestFullscreen) {
-            docEl.requestFullscreen().catch(()=>{});
-        } else if (docEl.webkitRequestFullscreen) {
-            docEl.webkitRequestFullscreen();
-        } else if (docEl.msRequestFullscreen) {
-            docEl.msRequestFullscreen();
-        }
-        } catch (e) { /* noop */ }
+      e.preventDefault();
+      // Se eliminó la petición automática de pantalla completa aquí.
+      // Mantener la experiencia táctil sin forzar fullscreen.
 
         startScreen.classList.add('hidden');
         backgroundMusic.muted = false;
@@ -629,6 +612,201 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
   typeWriterStart();
+});
+
+// Fallback: ensure the Discord handle is only visible on hover using JS toggle
+document.addEventListener('DOMContentLoaded', () => {
+  try {
+    const discordContainer = document.querySelector('.social-icon-container[aria-label="Discord"]');
+    if (discordContainer) {
+      const handle = discordContainer.querySelector('.discord-handle');
+      if (handle) {
+        // Make sure it's hidden initially
+        handle.classList.remove('show');
+
+        // Toggle on mouseenter/mouseleave and on focus
+        discordContainer.addEventListener('mouseenter', () => handle.classList.add('show'));
+        discordContainer.addEventListener('mouseleave', () => handle.classList.remove('show'));
+        discordContainer.addEventListener('focusin', () => handle.classList.add('show'));
+        discordContainer.addEventListener('focusout', () => handle.classList.remove('show'));
+      }
+    }
+  } catch (e) { /* no bloquear si algo falla */ }
+});
+
+// --- Lanyard WebSocket: real-time Discord presence ---
+document.addEventListener('DOMContentLoaded', () => {
+  const LANYARD_WS = 'wss://api.lanyard.rest/socket';
+  const USER_ID = '344060291543334914';
+  const container = document.querySelector('.social-icon-container[aria-label="Discord"]');
+  if (!container) return;
+
+  const avatarImg = container.querySelector('.discord-avatar');
+  const nameEl = container.querySelector('.discord-name');
+  const activityEl = container.querySelector('.discord-activity');
+  const statusDot = container.querySelector('.status-dot');
+
+  let ws;
+  let heartbeatIntervalId = null;
+
+  function connect() {
+    ws = new WebSocket(LANYARD_WS);
+    ws.addEventListener('open', () => {
+      console.log('Lanyard WS connected');
+    });
+
+    ws.addEventListener('message', (ev) => {
+      try {
+        const payload = JSON.parse(ev.data);
+
+        // Handle HELLO / heartbeat info (Lanyard may use op 1 or 2 for hello; accept both)
+        if ((payload.op === 2 && payload.d && payload.d.heartbeat_interval) || (payload.d && payload.d.heartbeat_interval)) {
+          const interval = payload.d.heartbeat_interval;
+          if (heartbeatIntervalId) clearInterval(heartbeatIntervalId);
+          heartbeatIntervalId = setInterval(() => {
+            if (ws && ws.readyState === WebSocket.OPEN) {
+              ws.send(JSON.stringify({ op: 3 }));
+            }
+          }, interval);
+
+          // subscribe to the user's presence
+          if (ws && ws.readyState === WebSocket.OPEN) {
+            ws.send(JSON.stringify({ op: 2, d: { subscribe_to_id: USER_ID } }));
+          }
+          return;
+        }
+
+        // Event dispatches
+        if (payload.op === 0 && payload.t) {
+          // payload.d may contain presence info directly or under 'presence'
+          const d = payload.d || {};
+          const presence = d.presence || d;
+
+          // Discord user info
+          const discordUser = presence.discord_user || d.discord_user || {};
+          const uid = discordUser.id || USER_ID;
+          const avatarHash = discordUser.avatar;
+          if (avatarHash && avatarImg) {
+            const isAnimated = avatarHash.startsWith('a_');
+            const ext = isAnimated ? 'gif' : 'png';
+            avatarImg.src = `https://cdn.discordapp.com/avatars/${uid}/${avatarHash}.${ext}?size=128`;
+          }
+
+          // username (use raw username for the card; keep visible handle text unchanged elsewhere)
+          if (discordUser && discordUser.username && nameEl) {
+            nameEl.textContent = discordUser.username;
+          }
+
+          // status (online/idle/dnd/offline)
+          const status = presence.discord_status || d.discord_status || 'offline';
+          if (statusDot) {
+            statusDot.classList.remove('online','idle','dnd','offline');
+            statusDot.classList.add(status || 'offline');
+          }
+
+          // activity: prefer a 'playing' / game activity or the first activity
+          const activities = presence.activities || d.activities || [];
+          let activity = activities.find(a => a.type === 0) || activities[0] || null;
+          if (activity && activity.name) {
+            const text = activity.state ? `${activity.name} — ${activity.state}` : activity.name;
+            if (activityEl) activityEl.textContent = text;
+          } else {
+            if (activityEl) activityEl.textContent = '';
+          }
+        }
+      } catch (err) {
+        console.error('Lanyard WS message parse error', err);
+      }
+    });
+
+    ws.addEventListener('close', () => {
+      console.log('Lanyard WS closed, reconnecting in 5s');
+      if (heartbeatIntervalId) { clearInterval(heartbeatIntervalId); heartbeatIntervalId = null; }
+      setTimeout(connect, 5000);
+    });
+    ws.addEventListener('error', (e) => {
+      console.error('Lanyard WS error', e);
+      try { ws.close(); } catch(e){}
+    });
+  }
+
+  connect();
+});
+
+// Conexión al WebSocket de Lanyard
+const socket = new WebSocket("wss://api.lanyard.rest/socket");
+
+// Hover-only handle elements (avatar, name, status) shown above discord.png
+const handleAvatar = document.querySelector(".handle-avatar");
+const handleName = document.querySelector(".handle-name");
+const handleStatus = document.querySelector(".handle-status");
+// Lanyard card elements (reintroduced)
+const lanyardAvatar = document.querySelector('.lanyard-avatar');
+const lanyardName = document.querySelector('.lanyard-name');
+const lanyardActivity = document.querySelector('.lanyard-activity');
+const lanyardStatusDot = document.querySelector('.lanyard-status-dot');
+
+const DISCORD_ID = "YOUR_DISCORD_ID"; // Reemplaza con tu ID de Discord
+
+const heartbeat = () => {
+    socket.send(JSON.stringify({ op: 3 }));
+};
+
+socket.addEventListener("open", () => {
+    socket.send(
+        JSON.stringify({
+            op: 2,
+            d: {
+                subscribe_to_id: DISCORD_ID,
+            },
+        })
+    );
+    setInterval(heartbeat, 30000);
+});
+
+socket.addEventListener("message", (event) => {
+    const data = JSON.parse(event.data);
+
+    if (data.op === 0) {
+        const discordData = data.d;
+
+        // Actualizar avatar (si existe el elemento en el hover handle)
+        if (handleAvatar && discordData.discord_user && discordData.discord_user.avatar) {
+          handleAvatar.src = `https://cdn.discordapp.com/avatars/${DISCORD_ID}/${discordData.discord_user.avatar}.png`;
+        }
+
+        // Actualizar nombre en handle
+        if (handleName && discordData.discord_user) {
+          handleName.textContent = discordData.discord_user.username || '';
+        }
+
+        // Actualizar estado (cambia la clase del punto de status) en handle
+        if (handleStatus) {
+          const st = discordData.discord_status || 'offline';
+          handleStatus.classList.remove('online','idle','dnd','offline');
+          handleStatus.classList.add(st);
+        }
+
+        // También actualizar la tarjeta Lanyard si está presente
+        if (lanyardAvatar && discordData.discord_user && discordData.discord_user.avatar) {
+            lanyardAvatar.src = `https://cdn.discordapp.com/avatars/${DISCORD_ID}/${discordData.discord_user.avatar}.png`;
+        }
+        if (lanyardName && discordData.discord_user) {
+            lanyardName.textContent = discordData.discord_user.username || '';
+        }
+        if (lanyardActivity) {
+            if (discordData.activities && discordData.activities.length > 0) {
+                lanyardActivity.textContent = discordData.activities[0].name || 'Sin actividad';
+            } else {
+                lanyardActivity.textContent = 'Sin actividad';
+            }
+        }
+        if (lanyardStatusDot) {
+            const st2 = discordData.discord_status || 'offline';
+            lanyardStatusDot.classList.remove('online','idle','dnd','offline');
+            lanyardStatusDot.classList.add(st2);
+        }
+    }
 });
 
 
