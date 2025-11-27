@@ -1,2695 +1,992 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>guillevgo on IG</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=Josefin+Sans:wght@400;700&display=swap" rel="stylesheet">
-    <!-- Pixel / Minecraft-like font for Discord handle -->
-    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Courier New', monospace;
-        }
+@property --gradient-angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
 
-        body:not(.touch-device) {
-            cursor: url('assets/cursor.ani'), auto;
-        }
+:root {
+  --primary-color: #00CED1; 
+  --secondary-color: #FF6B9E;
+  --background-dark: #0A0A1A;
+  --text-color: #E0E0FF;
+}
 
-        body {
-            background-color: #000;
-            color: #fff;
-        }
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  transition: all 0.3s ease;
+}
 
-        .container {
-            width: 100%;
-            height: 100vh;
-            position: relative;
-            visibility: hidden;
-        }
-
-        #background {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            z-index: 1;
-            pointer-events: none;
-            display: none;
-        }
-
-        .glitch-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 2;
-                                            opacity: '0',
-                                                // hacer que la aparición dure 3s
-                                                transition: 'opacity 3s linear, transform 3s ease',
-                                                pointerEvents: 'none',
-                                                zIndex: '9999'
-            position: fixed;
-                                            document.body.appendChild(wait);
-                                            // animar hacia arriba y desvanecer durante 3s
-
-            pointer-events: none;
-            z-index: 3;
-        }
-
-        .hidden {
-            display: none !important;
-        }
-
-        .controls {
-            position: fixed;
-            bottom: calc(50% - 240px - 10px);
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            gap: 10px;
-            z-index: 20;
-            background: rgba(0, 0, 0, 0.7);
-            padding: 5px 10px;
-            border-radius: 20px;
-            backdrop-filter: blur(5px);
-        }
-
-        .theme-button {
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            background-color: rgba(0, 0, 0, 0.5);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s;
-            font-size: 14px;
-            font-weight: bold;
-        }
-
-        .theme-button:hover {
-            border-color: rgba(255, 255, 255, 1);
-            box-shadow: 0 0 20px rgba(255, 255, 255, 0.6);
-            filter: brightness(1.2);
-        }
-
-        .volume-control {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .volume-icon {
-            width: 20px;
-            height: 20px;
-            cursor: pointer;
-            display: flex;
-            color: white;
-        }
-
-        .slider {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 80px;
-            height: 5px;
-            border-radius: 5px;
-            background: rgba(255, 255, 255, 0.3);
-            outline: none;
-        }
-
-        .slider::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            background: white;
-            cursor: pointer;
-        }
-
-        .transparency-control {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .transparency-icon {
-            width: 20px;
-            height: 20px;
-            color: white;
-        }
+body {
+  font-family: 'Space Mono', monospace;
+  background: var(--background-dark);
+  color: var(--text-color);
+  overflow-x: hidden;
+  overflow-y: auto;
+  perspective: 1000px;
+  cursor: url('assets/cursor.ani'), auto;
+}
 
 
-        #profile-block {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 820px;
-            min-height: 332px;
-            background: rgba(0, 0, 0, 0.7);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            padding: 20px;
-            border-radius: 15px;
-            z-index: 20;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            backdrop-filter: blur(10px);
-            opacity: 0;
-            transform-style: preserve-3d;
-            transition: opacity 1.2s ease-out, transform 1.2s ease-out;
-            pointer-events: auto;
-            position: relative;
-            overflow: visible;
-        }
-        
-        #profile-block.show {
-            opacity: 1;
-            transform: translate(-50%, -50%);
-        }
+.custom-cursor {
+  display: none;
+  position: fixed;
+  width: 32px;
+  height: 32px;
+  background: url('assets/custom_cursor.png') no-repeat center center;
+  background-size: contain;
+  pointer-events: none;
+  z-index: 10000;
+  transition: transform 0.1s ease-out;
+  filter: hue-rotate(var(--cursor-hue, 0deg)); 
+  transform: translate(0, 0);
+}
 
-        .profile-banner {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 180px;
-            object-fit: cover;
-            object-position: center 25%;
-            border-radius: 15px 15px 0 0;
-            z-index: 1;
-            pointer-events: none;
-            display: block !important;
-            opacity: 0.6 !important;
-            filter: blur(3px);
-            -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,1) 30%, rgba(0,0,0,0) 100%);
-            mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,1) 30%, rgba(0,0,0,0) 100%);
-        }
 
-        #profile-block::before {
-            content: '';
-            position: absolute;
-            inset: -1px;
-            border-radius: 15px;
-            padding: 1px;
-            background: linear-gradient(45deg, 
-                rgba(255,102,255,0.4),
-                rgba(255,102,255,0.6),
-                rgba(255,102,255,0.4));
-            -webkit-mask: linear-gradient(#fff 0 0) content-box, 
-                          linear-gradient(#fff 0 0);
-            -webkit-mask-composite: xor;
-            mask: linear-gradient(#fff 0 0) content-box, 
-                  linear-gradient(#fff 0 0);
-            mask-composite: exclude;
-            z-index: 0;
-            animation: border-pulse 2.5s ease-in-out infinite;
-        }
+body.home-theme {
+  --primary-gradient: from-purple-400;
+  --secondary-gradient: to-pink-600;
+  --primary-color: #00CED1; 
+  --secondary-color: #FF6B9E;
+  --cursor-hue: 180deg; 
+}
 
-        @keyframes border-pulse {
-            0% {
-                opacity: 0.3;
-            }
-            50% {
-                opacity: 0.8;
-            }
-            100% {
-                opacity: 0.3;
-            }
-        }
+body.hacker-theme {
+  --primary-gradient: from-green-500;
+  --secondary-gradient: to-teal-600;
+  --primary-color: #22C55E; 
+  --secondary-color: #2DD4BF;
+  --cursor-hue: 120deg; 
+}
 
-        #profile-block::after {
-            content: '';
-            position: absolute;
-            inset: 2px;
-            border-radius: 13px;
-            z-index: -2;
-            pointer-events: none;
-            background: linear-gradient(180deg,
-                rgba(20,20,20,0.12) 0%,
-                rgba(40,40,40,0.14) 65%);
-            filter: blur(3px) brightness(0.88);
-            box-shadow: 0 8px 22px rgba(0,0,0,0.08), inset 0 -8px 22px rgba(0,0,0,0.22);
-        }
+body.rain-theme {
+  --primary-gradient: from-blue-800;
+  --secondary-gradient: to-blue-600;
+  --primary-color: #1E3A8A; 
+  --secondary-color: #2563EB;
+  --cursor-hue: 240deg; 
+}
 
-        .profile-header {
-            display: flex;
-            align-items: center;
-            gap: 35px;
-            position: relative;
-            z-index: 5;
-            margin-top: 0;
-        }
+body.anime-theme {
+  --primary-gradient: from-red-600;
+  --secondary-gradient: to-red-400;
+  --primary-color: #DC2626; 
+  --secondary-color: #F87171;
+  --cursor-hue: 0deg; 
+}
 
-        .profile-container {
-            position: relative;
-            width: 150px;
-            height: 150px;
-            z-index: 6;
-        }
+body.car-theme {
+  --primary-gradient: from-yellow-500;
+  --secondary-gradient: to-yellow-300;
+  --primary-color: #EAB308; 
+  --secondary-color: #FACC15;
+  --cursor-hue: 60deg; 
+}
 
-        .profile-container::after {
-            content: '';
-            position: absolute;
-            top: -2px;
-            left: -2px;
-            right: -2px;
-            bottom: -2px;
-            border-radius: 50%;
-            background: radial-gradient(
-                circle at 10px 10px,
-                var(--primary-color, #ff69b4) 10%,
-                transparent 15%
-            );
-            animation: orbit 3s linear infinite;
-            z-index: -1;
-            filter: blur(1px);
-            box-shadow: none;
-        }
 
-        .profile-container.fast-orbit::after {
-            animation: fast-orbit 0.5s linear forwards;
-        }
+.video-background {
+  transform: scale(1.02);
+}
 
-        .profile-picture {
-            width: 150px;
-            height: 150px;
-            border-radius: 50%;
-            object-fit: cover;
-            object-position: 30% center;
-            cursor: pointer;
-            pointer-events: auto;
-            opacity: 1 !important;
-            position: relative;
-            z-index: 7;
-        }
 
-        /* sticker overlay encima de la foto de perfil */
-        .sticker-container {
-            position: absolute;
-            width: 56px;
-            height: 56px;
-            top: -6px;
-            right: -8px;
-            transform: rotate(15deg);
-            transform-style: preserve-3d;
-            transition: transform 0.6s;
-            cursor: pointer;
-            pointer-events: auto;
-            z-index: 8;
-        }
+#hacker-overlay {
+  mix-blend-mode: screen;
+  opacity: 0.7;
+}
 
-        /* mini shake to hint interactivity */
-        @keyframes mini-shake {
-            0% { transform: rotate(15deg) translateX(0) translateY(0); }
-            15% { transform: rotate(10deg) translateX(-2px) translateY(-1px); }
-            30% { transform: rotate(20deg) translateX(2px) translateY(0); }
-            50% { transform: rotate(12deg) translateX(-1px) translateY(-1px); }
-            70% { transform: rotate(18deg) translateX(1px) translateY(0); }
-            100% { transform: rotate(15deg) translateX(0) translateY(0); }
-        }
+#snow-overlay {
+  z-index: 15;
+  opacity: 0.8;
+}
 
-        /* pulsing hint triggered from JS (single run) */
-        .sticker-container.pulse { animation: mini-shake 620ms cubic-bezier(.2,.9,.2,1) 1; }
 
-        .sticker-container.flipped {
-            transform: rotate(15deg) rotateY(180deg);
-        }
+.glitch-overlay {
+  pointer-events: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: transparent;
+  opacity: 0;
+  z-index: 20;
+  mix-blend-mode: color-dodge;
+}
 
-        .overlay-sticker {
-            position: absolute;
-            width: 56px;
-            height: 56px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 40px;
-            background: transparent;
-            border: none;
-            box-shadow: none;
-            border-radius: 0;
-            backface-visibility: hidden;
-            pointer-events: none;
-        }
 
-        .overlay-sticker-back {
-            position: absolute;
-            width: 56px;
-            height: 56px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 40px;
-            background: transparent;
-            border: none;
-            box-shadow: none;
-            border-radius: 0;
-            backface-visibility: hidden;
-            transform: rotateY(180deg);
-            pointer-events: none;
-        }
+#profile-block, #skills-block {
+  transform-style: preserve-3d;
+  transition: transform 0.5s ease-out, background 0.3s ease, border-opacity 0.3s ease, backdrop-filter 0.3s ease, opacity 0.3s ease, border-color 0.3s ease; /* Flüssigere Transition */
+  width: 640px;
+  max-width: 90vw;
+}
 
-        @media (max-width: 430px) {
-            .sticker-container {
-                width: 42px;
-                height: 42px;
-                top: -4px;
-                right: -6px;
-            }
-            .overlay-sticker,
-            .overlay-sticker-back {
-                width: 42px;
-                height: 42px;
-                font-size: 32px;
-            }
-        }
 
-        .profile-info {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-start;
-            position: relative;
-            z-index: 5;
-            padding-top: 0;
-        }
+#profile-block.profile-appear {
+  animation: slideInFade 1s ease-out forwards;
+}
 
-        .name-and-badges {
-            display: flex;
-            flex-direction: row;
-            align-items: center;
-            gap: 20px;
-            margin-bottom: 5px;
-            justify-content: flex-start;
-            min-height: 40px;
-        }
+@keyframes slideInFade {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -40%);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(-50%, -50%);
+  }
+}
 
-        @font-face {
-            font-family: 'Angel Wish';
-            src: url('assets/Angel_wish.ttf') format('truetype');
-            font-weight: normal;
-            font-style: normal;
-        }
 
-#profile-name * {
-    animation: none !important;
-    transition: none !important;
-    transform: none !important;
+.border-theme {
+  border-color: var(--primary-color);
+}
+
+
+.profile-container {
+  position: relative;
+  transform-style: preserve-3d;
+}
+
+.profile-container::after {
+  content: '';
+  position: absolute;
+  top: -6px;
+  left: -6px;
+  right: -6px;
+  bottom: -6px;
+  border-radius: 50%;
+  /* aura rosada más amplia */
+  background: radial-gradient(
+    circle at 20% 20%,
+    rgba(255,102,255,0.65) 0%,
+    rgba(198,77,182,0.32) 28%,
+    rgba(160,52,160,0.12) 55%,
+    transparent 75%
+  );
+  animation: orbit 6s linear infinite; /* más lenta */
+  z-index: -1;
+  filter: blur(10px); /* más difusa para efecto de aura */
+  box-shadow: 0 8px 36px rgba(198,77,182,0.22), 0 0 48px rgba(255,102,255,0.18);
+}
+
+.profile-container.fast-orbit::after {
+  animation: fast-orbit 0.5s linear forwards;
+}
+
+
+.social-links {
+  display: flex;
+  gap: 12px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 20px;
+  padding: 8px 12px;
+  backdrop-filter: blur(5px);
+}
+
+.social-icon {
+  display: inline-block;
+  position: relative;
+  overflow: hidden;
+  border-radius: 50%;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  pointer-events: auto;
+  transition: transform 0.3s ease;
+}
+
+.social-icon:hover,
+.social-icon:active {
+  transform: scale(1.4) rotateY(15deg);
+}
+
+.social-icon::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    0deg, 
+    transparent, 
+    rgba(255,102,255,0.8), 
+    rgba(198,77,182,0.8)
+  );
+  transform-origin: bottom right;
+  animation: shine 3s linear infinite;
+  opacity: 0;
+  transition: opacity 0.5s;
+}
+
+.social-icon:hover::before,
+.social-icon:active::before {
+  opacity: 0.3;
+}
+
+
+.animated-border {
+  position: relative;
+}
+
+.animated-border::before {
+  content: '';
+  position: absolute;
+  top: -4px;
+  left: -4px;
+  right: -4px;
+  bottom: -4px;
+  border: 2px solid transparent;
+  border-radius: inherit;
+  background: conic-gradient(
+    from 0deg,
+    var(--primary-color) 0.8,
+    var(--secondary-color) 0.8,
+    var(--primary-color) 0.8
+  );
+  animation: border-spin 2s linear infinite;
+  z-index: -1;
+}
+
+
+.led-border {
+  position: relative;
+  border: 2px solid transparent;
+}
+
+.led-border::before {
+  content: '';
+  position: absolute;
+  top: -4px;
+  left: -4px;
+  right: -4px;
+  bottom: -4px;
+  border-radius: inherit;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    var(--primary-color) 20%,
+    var(--secondary-color) 40%,
+    transparent 60%
+  );
+  background-size: 400%;
+  animation: led-glow 4s ease-in-out infinite;
+  z-index: -1;
+}
+
+
+#home-theme, #hacker-theme, #rain-theme, #anime-theme, #car-theme {
+  background-image: linear-gradient(to bottom right, var(--primary-color), var(--secondary-color));
+  touch-action: manipulation;
+}
+
+/* botón de resultados: borde arcoíris + fondo rojo pulsante */
+#results-theme {
+  border: 3px solid transparent;
+  background:
+    linear-gradient(180deg, #8B0000 0%, #FF0000 100%) padding-box,
+    conic-gradient(from var(--gradient-angle), #ff0000, #ff7a00, #ffef00, #00ff6a, #00caff, #4b00ff, #ff00d4, #ff0000) border-box;
+  animation:
+    heartbeat 1.2s ease-in-out infinite,
+    border-rainbow-spin 4s linear infinite;
+  touch-action: manipulation;
+}
+
+#results-theme:hover {
+  background:
+    linear-gradient(180deg, #8B0000 0%, #FF0000 100%) padding-box,
+    #ff66ff border-box;
+  animation: heartbeat 1.2s ease-in-out infinite;
+}
+
+
+.name-gradient {
+  background-image: linear-gradient(to right, var(--primary-color), var(--secondary-color));
 }
 
 #profile-name {
-    font-family: 'Alfa Slab One', sans-serif;
-    font-size: 38px;
-    font-weight: normal;
-    letter-spacing: 3px;
-    color: #000;
-    position: relative;
-    margin: 0;
-    line-height: 1.2;
-    text-shadow: none;
-    filter: none;
-    overflow: visible;
+  font-family: 'Orbitron', sans-serif !important;
+  font-weight: 700;
+  font-size: 32px;
+  text-align: center;
+  letter-spacing: 3px;
+  color: #fff;
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.7), 0 0 20px rgba(255, 255, 255, 0.4);
 }
 
-#profile-name::before {
-    content: 'fracpre';
-    position: absolute;
-    top: 0;
-    left: 0;
-    font-family: 'Alfa Slab One', sans-serif;
-    font-size: 38px;
-    font-weight: normal;
-    letter-spacing: 3px;
-    /* láser rosa/púrpura — ampliado para una franja más larga */
-    background: linear-gradient(90deg, 
-        transparent 0%,
-        transparent 20%,
-        rgba(198, 77, 182, 0.03) 22%,
-        rgba(198, 77, 182, 0.06) 26%,
-        rgba(198, 77, 182, 0.12) 30%,
-        rgba(198, 77, 182, 0.2) 35%,
-        rgba(198, 77, 182, 0.35) 40%,
-        rgba(198, 77, 182, 0.55) 45%,
-        rgba(255,102,255,0.85) 50%,
-        rgba(198, 77, 182, 0.55) 55%,
-        rgba(198, 77, 182, 0.35) 60%,
-        rgba(198, 77, 182, 0.2) 65%,
-        rgba(198, 77, 182, 0.12) 70%,
-        rgba(198, 77, 182, 0.06) 74%,
-        rgba(198, 77, 182, 0.03) 76%,
-        transparent 80%,
-        transparent 100%);
-    /* mayor tamaño de fondo para que la franja recorra más área y se vea más ancha */
-    background-size: 350% 100%;
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-    animation: laser-sweep 8s ease-in-out infinite;
+
+#profile-bio {
+  font-family: 'Courier New', monospace;
 }
 
-@keyframes laser-sweep {
-    0% {
-        background-position: -10% 0;
-    }
-    100% {
-        background-position: 110% 0;
-    }
+
+.profilschein {
+  background-image: linear-gradient(to bottom right, var(--primary-color), var(--secondary-color));
 }
 
-        .verified-badge {
-            width: 30px;
-            height: 30px;
-            margin-left: -3px;
-            vertical-align: middle;
-            display: inline-block;
-        }
-
-        .badge-group {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-
-        .badge-container {
-            position: relative;
-            pointer-events: auto;
-            opacity: 1 !important;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transform-style: preserve-3d;
-            transition: transform 0.6s;
-        }
-
-        /* badge tooltips removed */
-
-        .badge-box {
-            background: rgba(255, 255, 255, 0.15);
-            padding: 3px;
-            border-radius: 18px;
-            display: inline-flex;
-            align-items: center;
-            margin-top: 3px;
-        }
-
-        .badge-box-inner {
-            background: rgba(0, 0, 0, 0.5);
-            padding: 7px;
-            border-radius: 15px;
-            display: flex;
-            gap: 10px;
-            box-shadow: inset 0 0 10px rgba(255, 255, 255, 0.2);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .badge {
-            width: 28px;
-            height: 28px;
-            transition: filter 0.3s ease;
-            pointer-events: auto;
-            opacity: 1 !important;
-            display: block;
-            backface-visibility: hidden;
-        }
-
-        /* (tito tooltip removed) */
-
-        .badge-back {
-            position: absolute;
-            width: 28px;
-            height: 28px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 14px;
-            font-weight: bold;
-            color: #fff;
-            backface-visibility: hidden;
-            transform: rotateY(180deg);
-            pointer-events: none;
-        }
-
-        .badge:hover {
-            filter: brightness(1.3) drop-shadow(0 0 10px rgba(255, 255, 255, 0.8));
-        }
-
-        img[src="assets/owner.png"]:hover {
-            filter: brightness(1.3) drop-shadow(0 0 10px rgba(255, 215, 0, 0.8)) !important;
-        }
-
-        img[src="assets/developer.png"]:hover {
-            filter: brightness(1.3) drop-shadow(0 0 10px rgba(0, 0, 139, 0.8)) !important;
-        }
-
-        img[src="assets/boy.png"]:hover {
-            filter: brightness(1.3) drop-shadow(0 0 10px rgba(0, 255, 255, 0.8)) !important;
-        }
-
-        img[src="assets/ascendant.png"]:hover {
-            filter: brightness(1.3) drop-shadow(0 0 10px rgba(0, 255, 0, 0.8)) !important;
-        }
-
-        img[src="assets/tito.png"]:hover {
-            filter: brightness(1.3) drop-shadow(0 0 10px rgba(255, 105, 180, 0.9)) !important;
-        }
-
-        /* Spain egg aura: show only on hover (no zoom, just glow like other badges) */
-        #espanaEgg {
-            position: relative;
-            border-radius: 6px;
-            transition: filter 180ms ease;
-            filter: none;
-        }
-
-        #espanaEgg::after {
-            content: '';
-            position: absolute;
-            left: -8px;
-            top: -8px;
-            right: -8px;
-            bottom: -8px;
-            border-radius: 10px;
-            background: radial-gradient(circle at 30% 30%, rgba(255,223,0,0.95) 0%, rgba(255,223,0,0.6) 25%, rgba(178,34,34,0.55) 55%, rgba(178,34,34,0.25) 80%, transparent 100%);
-            filter: blur(6px) saturate(120%);
-            pointer-events: none;
-            z-index: -1;
-            opacity: 0;
-            transition: opacity 220ms ease, filter 220ms ease;
-        }
-
-        /* on hover, show glow but DO NOT scale/transform the badge */
-        #espanaEgg:hover {
-            filter: brightness(1.3) drop-shadow(0 0 12px rgba(255, 215, 0, 0.95)) drop-shadow(0 0 18px rgba(178, 34, 34, 0.6));
-        }
-
-        #espanaEgg:hover::after {
-            opacity: 1;
-        }
-
-            #profile-bio {
-            color: rgba(255, 255, 255, 0.8);
-            font-size: 18px;
-            line-height: 1.5;
-            margin-top: 5px;
-            margin-bottom: 10px;
-            opacity: 1 !important;
-            font-family: 'Josefin Sans', sans-serif;
-            min-height: 27px;
-        }        .bio-separator {
-            width: 100%;
-            height: 1px;
-            background: rgba(255, 255, 255, 0.2);
-            margin: 20px 0;
-            opacity: 1 !important;
-        }
-
-        .profile-footer {
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-            width: 100%;
-            margin-top: auto;
-        }
-
-        .footer-bottom {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            width: 100%;
-            gap: 10px;
-        }
-
-        .visitor-counter {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            background: rgba(255, 255, 255, 0.1);
-            padding: 8px 15px;
-            border-radius: 20px;
-            font-size: 14px;
-            align-self: flex-start;
-            position: relative;
-            pointer-events: auto;
-            opacity: 1 !important;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            margin-top: 15px;
-            transition: all 0.3s;
-        }
-
-        .visitor-counter:hover {
-            background: rgba(255, 255, 255, 0.2);
-            box-shadow: 0 5px 20px rgba(255, 255, 255, 0.3);
-            border-color: rgba(255, 255, 255, 0.5);
-            filter: brightness(1.2);
-        }
-
-        .visitor-icon {
-            width: 18px;
-            height: 18px;
-            color: white;
-            opacity: 1 !important;
-        }
-
-        /* visitor-counter tooltip removed */
-
-        #visitor-count {
-            opacity: 1 !important;
-        }
-
-        .mini-player {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            background: rgba(255, 255, 255, 0.1);
-            padding: 8px 15px;
-            border-radius: 20px;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            pointer-events: auto;
-            align-self: flex-end;
-        }
-
-        .play-pause-btn {
-            width: 35px;
-            height: 35px;
-            background: rgba(255, 255, 255, 0.15);
-            border: none;
-            border-radius: 50%;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s;
-            color: white;
-        }
-
-        .play-pause-btn:hover {
-            background: rgba(255, 255, 255, 0.25);
-            box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
-            filter: brightness(1.3);
-        }
-
-        .play-pause-btn svg {
-            width: 18px;
-            height: 18px;
-            fill: white;
-        }
-
-        .volume-slider-mini {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 80px;
-            height: 5px;
-            border-radius: 5px;
-            background: rgba(255, 255, 255, 0.3);
-            outline: none;
-            cursor: pointer;
-        }
-
-        .volume-slider-mini::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            background: white;
-            cursor: pointer;
-        }
-
-        .volume-slider-mini::-moz-range-thumb {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            background: white;
-            cursor: pointer;
-            border: none;
-        }
-
-        .social-links {
-            display: flex;
-            justify-content: center;
-            gap: 12px;
-            margin-top: 0;
-            pointer-events: auto;
-            opacity: 1 !important;
-        }
-
-        .social-icon {
-            width: 36px;
-            height: 36px;
-            transition: filter 0.3s ease;
-            filter: none;
-            pointer-events: auto;
-            opacity: 1 !important;
-        }
-
-        .social-icon:hover {
-            filter: drop-shadow(0 0 20px rgba(255, 105, 180, 1)) drop-shadow(0 0 15px rgba(255, 20, 147, 0.8)) drop-shadow(0 0 10px rgba(255, 182, 193, 0.6)) brightness(1.3);
-        }
-
-        /* social tooltips removed */
-        .copied-notice {
-            position: absolute;
-            bottom: -34px;
-            left: 50%;
-            transform: translateX(-50%) translateY(6px);
-            background: rgba(0,0,0,0.8);
-            color: #fff;
-            padding: 5px 8px;
-            border-radius: 6px;
-            font-size: 12px;
-            white-space: nowrap;
-            pointer-events: none;
-            opacity: 0;
-            transition: opacity 0.25s ease, transform 0.25s ease;
-            backdrop-filter: blur(6px);
-            border: 1px solid rgba(255,255,255,0.06);
-            z-index: 80;
-            box-shadow: 0 6px 18px rgba(0,0,0,0.22);
-        }
-        /* Discord handle: hidden by default, appears above icon on hover/focus */
-        .social-icon-container { position: relative; display: inline-flex; align-items: center; }
-        .discord-handle {
-            position: absolute;
-            left: 50%;
-            bottom: calc(100% + 8px);
-            transform: translateX(-50%) translateY(6px) scale(0.99);
-            background: rgba(12,12,14,0.9);
-            color: #fff;
-            padding: 10px 14px; /* Aumentado el padding */
-            border-radius: 12px; /* Ligeramente más grande */
-            font-family: 'Courier New', monospace;
-            font-size: 14px; /* Aumentado el tamaño de fuente general */
-            line-height: 1.2;
-            white-space: nowrap;
-            opacity: 0;
-            visibility: hidden;
-            pointer-events: none;
-            transition: opacity 160ms ease, transform 160ms ease, visibility 160ms;
-            box-shadow: 0 8px 22px rgba(0,0,0,0.36);
-            backdrop-filter: blur(6px);
-            border: 1px solid rgba(255,255,255,0.04);
-            z-index: 60;
-            transform-origin: center bottom;
-            display: flex;
-            align-items: center;
-            gap: 12px; /* Aumentado el espacio entre elementos */
-            min-width: 200px; /* Ancho mínimo para que sea más largo */
-        }
-
-        .discord-handle .handle-inner { display:flex; align-items:center; gap:10px; /* Aumentado el espacio interno */ }
-        .handle-avatar-wrap { position: relative; width: 48px; height: 48px; flex: 0 0 48px; /* Avatar más grande */ }
-        .handle-avatar { width: 48px; height: 48px; border-radius: 50%; object-fit: cover; display:block; }
-        .handle-status { position: absolute; bottom: -2px; right: -2px; width: 14px; height: 14px; border-radius: 50%; border: 3px solid rgba(12,12,14,0.9); box-sizing: content-box; /* Punto de estado más grande y borde ajustado */ }
-        .handle-status.online { background: #3ba55d; }
-        .handle-status.idle { background: #faa61a; }
-        .handle-status.dnd { background: #ed4245; }
-        .handle-status.offline { background: #747f8d; }
-
-        .handle-name { font-weight: 700; color: #fff; font-size: 16px; /* Nombre más grande */ }
-        /* Nuevos estilos para el contenido de texto dentro del handle de Discord */
-        .discord-handle .handle-text-content {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            line-height: 1.3; /* Ajuste para espacio entre nombre y actividad */
-        }
-        /* Nuevos estilos para la actividad dentro del handle de Discord */
-        .discord-handle .handle-activity {
-            font-size: 13px; /* Tamaño de fuente más grande para la actividad */
-            color: rgba(255,255,255,0.7);
-            margin-top: 4px; /* Más espacio */
-            max-width: 220px; /* Limitar ancho para que sea más largo */
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-
-        .social-icon-container:hover .discord-handle,
-        .social-icon-container:focus-within .discord-handle {
-            opacity: 1;
-            visibility: visible;
-            pointer-events: auto;
-            transform: translateX(-50%) translateY(0) scale(1);
-        }
-
-        /* Force-hide any legacy Discord elements so only the hover handle is visible */
-        .discord-avatar,
-        .discord-name,
-        .discord-activity,
-        .status-dot,
-        .discord-card {
-            display: none !important;
-            visibility: hidden !important;
-            pointer-events: none !important;
-        }
-
-        /* JS-controlled show class fallback (for environments where :hover is overridden) */
-        .discord-handle.show {
-            opacity: 1 !important;
-            visibility: visible !important;
-            pointer-events: auto !important;
-            transform: translateX(-50%) translateY(0) scale(1) !important;
-        }
-
-        #discord-status-indicator.offline { background-color: #747f8d; }
-
-        #discord-status-indicator-badge {
-            position: absolute;
-            bottom: 0px;
-            right: 0px;
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            background-color: #747f8d; /* offline by default */
-            border: 2px solid rgba(0, 0, 0, 0.5);
-            z-index: 11;
-            transition: background-color 0.5s ease;
-        }
-
-        #discord-status-indicator-badge.online { background-color: #3ba55d; }
-        #discord-status-indicator-badge.idle { background-color: #faa61a; }
-        #discord-status-indicator-badge.dnd { background-color: #ed4245; }
-        #discord-status-indicator-badge.offline { background-color: #747f8d; }
-
-        #discord-status-text-badge {
-            font-family: 'Courier New', monospace;
-            font-size: 13px;
-            color: rgba(255, 255, 255, 0.75);
-            padding: 0 5px;
-            line-height: 28px; /* Approx height of a badge */
-        }
-
-        /* keep visible while in 'copied' state */
-        .social-icon-container.discord-copied .discord-handle {
-            opacity: 1 !important;
-            transform: translateX(-50%) translateY(0) !important;
-        }
-        /* Anonymous question modal styles */
-        .anon-modal {
-            position: fixed;
-            inset: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: rgba(0,0,0,0.55);
-            z-index: 2000;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 220ms ease;
-        }
-        .anon-modal.visible { opacity: 1; pointer-events: auto; }
-        .anon-modal-content {
-            width: min(540px, 92%);
-            background: rgba(8,8,10,0.94);
-            padding: 18px;
-            border-radius: 12px;
-            box-shadow: 0 12px 40px rgba(0,0,0,0.6);
-            border: 1px solid rgba(255,255,255,0.04);
-            color: #fff;
-        }
-        .anon-modal-content h3 { margin: 0 0 8px 0; font-family: 'Courier New', monospace; }
-        .anon-modal-content textarea { width: 100%; resize: vertical; min-height: 110px; margin-top:8px; padding:10px; border-radius:8px; border:1px solid rgba(255,255,255,0.06); background: rgba(0,0,0,0.45); color:#fff; }
-        .anon-actions { display:flex; gap:8px; justify-content:flex-end; margin-top:10px; }
-        .anon-status { margin-top:8px; font-size:13px; opacity:0.95 }
-        .anon-close { position:absolute; right:12px; top:8px; background:transparent; border:none; color:#fff; font-size:20px; cursor:pointer }
-        /* social tooltips fully removed */
-
-        #skills-block {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 820px;
-            min-height: 332px;
-            background: rgba(0, 0, 0, 0.7);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            padding: 20px;
-            border-radius: 15px;
-            z-index: 20;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            backdrop-filter: blur(10px);
-            transform-style: preserve-3d;
-            transition: transform 0.5s ease-out;
-        }
-
-        .skills-title {
-            text-align: center;
-            font-size: 24px;
-            margin-bottom: 15px;
-        }
-
-        .skill {
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-        }
-
-        .skill-name {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .skill-icon {
-            width: 22px;
-            height: 22px;
-            margin-right: 8px;
-        }
-
-        .skill-bar-container {
-            height: 10px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 5px;
-            overflow: hidden;
-        }
-
-        .skill-bar {
-            height: 100%;
-            border-radius: 5px;
-            width: 0%;
-            transition: width 2s;
-        }
-
-        #python-bar {
-            background: linear-gradient(90deg, #ff6b6b, #ff9f9f);
-        }
-
-        #cpp-bar {
-            background: linear-gradient(90deg, #4facfe, #00f2fe);
-        }
-
-        #csharp-bar {
-            background: linear-gradient(90deg, #43e97b, #38f9d7);
-        }
-
-        #results-button-container {
-            position: fixed;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 20;
-        }
-
-        #results-theme {
-            background: rgba(0, 0, 0, 0.7);
-            color: white;
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            padding: 8px 15px;
-            border-radius: 20px;
-            cursor: pointer;
-            font-family: 'Courier New', monospace;
-            font-size: 14px;
-            backdrop-filter: blur(5px);
-            transition: all 0.3s;
-        }
-
-        #results-theme:hover {
-            background: rgba(0, 0, 0, 0.9);
-            border-color: rgba(255, 255, 255, 0.8);
-        }
-
-        #results-hint {
-            position: absolute;
-            background: rgba(0, 0, 0, 0.8);
-            color: white;
-            padding: 8px 12px;
-            border-radius: 10px;
-            font-size: 12px;
-            width: 180px;
-            text-align: center;
-            pointer-events: none;
-            z-index: 25;
-            backdrop-filter: blur(5px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-
-        #results-hint::before {
-            content: '';
-            position: absolute;
-            top: -10px;
-            left: 50%;
-            transform: translateX(-50%);
-            border-width: 0 10px 10px 10px;
-            border-style: solid;
-            border-color: transparent transparent rgba(0, 0, 0, 0.8) transparent;
-        }
-
-        .home-theme #skills-block {
-            border-color: transparent;
-            overflow: hidden;
-        }
-        .home-theme #profile-block {
-            border-color: transparent;
-            overflow: visible;
-        }        .home-theme #profile-block::before,
-        .home-theme #skills-block::before {
-            content: '';
-            position: absolute;
-            inset: -2px;
-            border-radius: 17px;
-            z-index: -2;
-            pointer-events: none;
-
-            background: linear-gradient(90deg,
-                #ff1493 0%,
-                #ffb6c1 25%,
-                #ffc0cb 50%,
-                #ff69b4 75%,
-                #ff1493 100%);
-            background-size: 300% 100%;
-            background-position: 0% 50%;
-
-            -webkit-mask: linear-gradient(#000 0 0) content-box;
-                    mask: linear-gradient(#000 0 0) content-box;
-            -webkit-mask-composite: xor;
-                    mask-composite: exclude;
-            padding: 2px;
-
-            filter: saturate(120%) contrast(105%) brightness(0.95);
-            will-change: background-position, filter;
-
-            animation: border-move 18s linear infinite, border-pulse 2.8s cubic-bezier(.25,.46,.45,.94) infinite;
-        }
-
-        @keyframes border-move {
-            0%   { background-position: 0% 50%; }
-            50%  { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        @keyframes border-pulse {
-            0%   { filter: brightness(0.92); }
-            12%  { filter: brightness(1.08); }
-            28%  { filter: brightness(1.18); }
-            60%  { filter: brightness(1.02); }
-            100% { filter: brightness(0.92); }
-        }
-
-        .glitch {
-            animation: glitch 0.2s ease-in-out;
-        }
-
-        @keyframes glitch {
-            0% {
-                transform: translate(0);
-            }
-            20% {
-                transform: translate(-2px, 2px);
-            }
-            40% {
-                transform: translate(-2px, -2px);
-            }
-            60% {
-                transform: translate(2px, 2px);
-            }
-            80% {
-                transform: translate(2px, -2px);
-            }
-            100% {
-                transform: translate(0);
-            }
-        }
-
-        @keyframes orbit {
-            0% {
-                transform: rotate(0deg);
-            }
-            100% {
-                transform: rotate(360deg);
-            }
-        }
-
-        @keyframes fast-orbit {
-            0% {
-                transform: rotate(0deg);
-            }
-            100% {
-                transform: rotate(360deg);
-            }
-        }
-
-        .cursor-trail {
-            position: fixed;
-            pointer-events: none;
-            z-index: 9999;
-        }
-
-        .cursor-trail-dot {
-            position: absolute;
-            width: 6px;
-            height: 6px;
-            background-color: rgba(255, 255, 255, 0.8);
-            border-radius: 50%;
-            transform: translate(-50%, -50%);
-            transition: opacity 0.3s ease;
-        }
-
-        #intro-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100vh;
-            background: #000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 10000;
-            cursor: pointer;
-            user-select: none;
-            transition: opacity 1.2s ease-out;
-        }
-        
-        #intro-overlay.hiding {
-            opacity: 0;
-            pointer-events: none;
-        }
-
-        #intro-text {
-            font-family: 'Courier New', monospace;
-            font-size: 28px;
-            color: #fff;
-            text-align: center;
-            text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
-            padding: 15px 25px;
-            border: 3px solid transparent;
-            border-radius: 20px;
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(5px);
-            pointer-events: auto;
-            cursor: pointer;
-            transition: opacity 1.2s ease-out, transform 1.2s ease-out, background 0.3s ease, box-shadow 0.3s ease;
-            position: relative;
-        }
-        
-        #intro-text:hover {
-            box-shadow: 0 0 20px rgba(255, 105, 180, 0.8), 0 0 40px rgba(255, 105, 180, 0.5);
-        }
-
-        @property --gradient-angle {
-          syntax: '<angle>';
-          initial-value: 0deg;
-          inherits: false;
-        }
-
-        @keyframes rainbow-border-flow {
-          to {
-            --gradient-angle: 360deg;
-          }
-        }
-
-        #intro-text::after {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: calc(100% + 6px);
-            height: calc(100% + 6px);
-            z-index: -1;
-            
-            background: conic-gradient(from var(--gradient-angle), red, yellow, lime, aqua, blue, magenta, red);
-            border-radius: 20px;
-            
-            animation: rainbow-border-flow 3s linear infinite;
-
-            -webkit-mask: linear-gradient(#fff 0 0) content-box, 
-                          linear-gradient(#fff 0 0);
-            -webkit-mask-composite: destination-out;
-            mask: linear-gradient(#fff 0 0) content-box, 
-                  linear-gradient(#fff 0 0);
-            mask-composite: subtract;
-            padding: 3px;
-        }
-        
-        #intro-text:hover::after {
-            animation: none;
-            background: rgba(255, 102, 255, 0.8);
-        }
-        
-        #intro-overlay.hiding #intro-text {
-            opacity: 0;
-            transform: scale(0.95);
-        }
-
-        * {
-            caret-color: transparent !important;
-        }
-        [contenteditable] {
-            caret-color: transparent !important;
-        }
-
-            @media (max-width: 430px) {
-            #profile-block, #skills-block {
-                width: 90vw;
-                max-width: 350px;
-                min-height: 280px;
-                padding: 15px;
-                top: 50%;
-                left: 50%;
-                transform: translate(-50%, -50%);
-            }
-
-            .profile-banner {
-                width: 100%;
-                height: 150px;
-                opacity: 0.5 !important;
-                filter: blur(2px);
-                -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,1) 30%, rgba(0,0,0,0) 100%);
-                mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,1) 30%, rgba(0,0,0,0) 100%);
-            }
-
-            .profile-header {
-                flex-direction: column;
-                align-items: center;
-                gap: 10px;
-            }            .profile-container {
-                width: 120px;
-                height: 120px;
-            }
-
-            .profile-picture {
-                width: 120px;
-                height: 120px;
-            }
-
-            .profile-info {
-                align-items: center;
-                text-align: center;
-            }
-
-            .name-and-badges {
-                flex-direction: column;
-                align-items: center;
-                gap: 10px;
-            }
-
-            #profile-name {
-                font-size: 24px;
-                letter-spacing: 2px;
-            }
-
-            .badge-group {
-                justify-content: center;
-                gap: 6px;
-            }
-
-            .badge {
-                width: 18px;
-                height: 18px;
-            }
-
-            /* badge tooltip styles removed for small screens */
-
-            #profile-bio {
-                font-size: 14px;
-                line-height: 1.4;
-            }
-
-            .bio-separator {
-                margin: 15px 0;
-            }
-
-            .social-links {
-                gap: 10px;
-                justify-content: center;
-            }
-
-            .social-icon {
-                width: 32px;
-                height: 32px;
-            }
-
-            .visitor-counter {
-                font-size: 12px;
-                padding: 6px 12px;
-                align-self: center;
-            }
-
-            .visitor-icon {
-                width: 16px;
-                height: 16px;
-            }
-
-            /* visitor-counter tooltip styles removed for small screens */
-
-            .footer-bottom {
-                flex-direction: column;
-                align-items: center;
-                gap: 8px;
-            }
-
-            .mini-player {
-                padding: 6px 12px;
-                gap: 8px;
-                align-self: center;
-            }
-
-            .play-pause-btn {
-                width: 28px;
-                height: 28px;
-            }
-
-            .play-pause-btn svg {
-                width: 14px;
-                height: 14px;
-            }
-
-            .volume-slider-mini {
-                width: 60px;
-            }
-
-            .skills-title {
-                font-size: 18px;
-                margin-bottom: 10px;
-            }
-
-            .skill-icon {
-                width: 18px;
-                height: 18px;
-            }
-
-            .skill-name span {
-                font-size: 14px;
-            }
-
-            .controls {
-                bottom: 20px;
-                gap: 8px;
-                padding: 5px 8px;
-            }
-
-            .theme-button {
-                width: 28px;
-                height: 28px;
-                font-size: 12px;
-            }
-
-            .top-controls {
-                bottom: 70px;
-                gap: 10px;
-                padding: 6px 10px;
-            }
-
-            .volume-control, .transparency-control {
-                gap: 6px;
-            }
-
-            .volume-icon, .transparency-icon {
-                width: 18px;
-                height: 18px;
-            }
-
-            .slider {
-                width: 60px;
-                height: 4px;
-            }
-
-            .slider::-webkit-slider-thumb {
-                width: 10px;
-                height: 10px;
-            }
-
-            #results-button-container {
-                top: 10px;
-            }
-
-            #results-theme {
-                padding: 6px 12px;
-                font-size: 12px;
-            }
-
-            #results-hint {
-                width: 150px;
-                font-size: 10px;
-                padding: 6px 10px;
-            }
-
-            #start-text {
-                font-size: 18px;
-                padding: 0 20px;
-            }
-        }
-
-        #profile-block::before {
-            display: none;
-            content: '';
-        }
-        /* Lyrics removed per user request */
-
-    </style>
-</head>
-<body class="home-theme" onload="initMedia()">
-    
-    <div id="intro-overlay">
-        <div id="intro-text">Click para revelar :)</div>
-    </div>
-    
-    <script>
-        // Anonymous question modal & submit (static sites: configure FORM_ENDPOINT)
-        (function(){
-            const FORM_ENDPOINT = ''; // <-- Replace with your Formspree endpoint, e.g. 'https://formspree.io/f/xxxxx'
-
-            function $(sel) { return document.querySelector(sel); }
-            document.addEventListener('DOMContentLoaded', () => {
-                const openBtn = document.getElementById('openAnonAsk');
-                if (!openBtn) return;
-
-                // build modal DOM (insert at end of body)
-                const modal = document.createElement('div');
-                modal.className = 'anon-modal';
-                modal.id = 'anonModal';
-                modal.innerHTML = `
-                    <div class="anon-modal-content" role="dialog" aria-modal="true" aria-labelledby="anonTitle">
-                        <button class="anon-close" id="closeAnon">×</button>
-                        <h3 id="anonTitle">Enviar pregunta anónima</h3>
-                        <p style="margin:6px 0 0 0; font-size:13px; color:rgba(255,255,255,0.85);">Tu pregunta será enviada anónimamente. No compartas datos personales.</p>
-                        <textarea id="anonMessage" placeholder="Escribe tu pregunta aquí..."></textarea>
-                        <div class="anon-actions">
-                            <button id="cancelAnon" class="cancel-btn" style="background:transparent; border:1px solid rgba(255,255,255,0.06); color:#fff; padding:8px 10px; border-radius:8px;">Cancelar</button>
-                            <button id="submitAnon" class="submit-btn" style="background:linear-gradient(90deg,#ff1493,#ff69b4); border:none; color:#fff; padding:8px 12px; border-radius:8px;">Enviar</button>
-                        </div>
-                        <div id="anonStatus" class="anon-status" aria-live="polite"></div>
-                        <div style="margin-top:8px; display:flex; gap:8px; align-items:center;"> 
-                            <button id="downloadAnon" style="background:transparent; border:1px solid rgba(255,255,255,0.06); color:#fff; padding:6px 8px; border-radius:8px;">Descargar JSON</button>
-                            <button id="openAdvanced" style="background:transparent; border:1px solid rgba(255,255,255,0.06); color:#fff; padding:6px 8px; border-radius:8px;">Avanzado (GitHub)</button>
-                        </div>
-                        <div id="anonAdvanced" style="margin-top:10px; display:none; border-top:1px dashed rgba(255,255,255,0.04); padding-top:10px;">
-                            <div style="font-size:13px; color:rgba(255,255,255,0.85); margin-bottom:6px;">Guardar en repo (opcional): pega un Token con scope <code>repo</code> temporalmente para que el navegador haga el commit. No guardamos el token.</div>
-                            <input id="ghOwner" placeholder="owner" style="width:30%; padding:6px; border-radius:6px; background:rgba(0,0,0,0.45); color:#fff; border:1px solid rgba(255,255,255,0.04); margin-right:6px;"> 
-                            <input id="ghRepo" placeholder="repo" style="width:30%; padding:6px; border-radius:6px; background:rgba(0,0,0,0.45); color:#fff; border:1px solid rgba(255,255,255,0.04); margin-right:6px;"> 
-                            <input id="ghPath" placeholder="anon_questions.json" value="anon_questions.json" style="width:34%; padding:6px; border-radius:6px; background:rgba(0,0,0,0.45); color:#fff; border:1px solid rgba(255,255,255,0.04); margin-top:6px;">
-                            <input id="ghToken" type="password" placeholder="GitHub Personal Access Token (repo)" style="width:100%; padding:6px; border-radius:6px; background:rgba(0,0,0,0.45); color:#fff; border:1px solid rgba(255,255,255,0.04); margin-top:6px;">
-                            <div style="display:flex; gap:8px; margin-top:8px;">
-                                <button id="pushGithub" style="background:linear-gradient(90deg,#ff1493,#ff69b4); border:none; color:#fff; padding:8px 12px; border-radius:8px;">Guardar en GitHub</button>
-                                <button id="clearStorage" style="background:transparent; border:1px solid rgba(255,255,255,0.06); color:#fff; padding:8px 12px; border-radius:8px;">Borrar almacenado</button>
-                            </div>
-                            <div id="anonPushStatus" style="margin-top:8px; font-size:13px; color:rgba(255,255,255,0.9);"></div>
-                        </div>
-                    </div>`;
-                document.body.appendChild(modal);
-
-                const closeBtn = document.getElementById('closeAnon');
-                const cancelBtn = document.getElementById('cancelAnon');
-                const submitBtn = document.getElementById('submitAnon');
-                const messageEl = document.getElementById('anonMessage');
-                const statusEl = document.getElementById('anonStatus');
-
-                function openModal(){
-                    modal.classList.add('visible');
-                    messageEl.focus();
-                }
-                function closeModal(){
-                    modal.classList.remove('visible');
-                    statusEl.textContent = '';
-                    messageEl.value = '';
-                }
-
-                openBtn.addEventListener('click', openModal);
-                closeBtn.addEventListener('click', closeModal);
-                cancelBtn.addEventListener('click', closeModal);
-
-                // close on overlay click
-                modal.addEventListener('click', (ev)=>{ if (ev.target === modal) closeModal(); });
-
-                submitBtn.addEventListener('click', async ()=>{
-                    const text = (messageEl.value || '').trim();
-                    if (!text) { statusEl.textContent = 'Escribe tu pregunta antes de enviar.'; return; }
-
-                    // If no endpoint configured, show instructions
-                    if (!FORM_ENDPOINT) {
-                        statusEl.innerHTML = 'No hay endpoint configurado. Regístrate en <a href="https://formspree.io/" target="_blank">Formspree</a> o crea un Google Form y pega aquí la URL.\n<br>Reemplaza la constante <code>FORM_ENDPOINT</code> en el código.';
-                        return;
-                    }
-
-                    submitBtn.disabled = true;
-                    statusEl.textContent = 'Enviando...';
-
-                    try {
-                        const fd = new FormData();
-                        fd.append('message', text);
-                        fd.append('_subject','Pregunta anónima desde sitio');
-
-                        const res = await fetch(FORM_ENDPOINT, { method: 'POST', body: fd, headers: { 'Accept':'application/json' } });
-                        if (res.ok) {
-                            statusEl.textContent = 'Pregunta enviada. Gracias.';
-                            setTimeout(closeModal, 1300);
-                        } else {
-                            const data = await res.json().catch(()=>null);
-                            statusEl.textContent = (data && data.error) ? ('Error: '+data.error) : 'Error al enviar. Intenta de nuevo más tarde.';
-                        }
-                    } catch (err) {
-                        statusEl.textContent = 'Error en la conexión. Intenta de nuevo.';
-                    } finally {
-                        submitBtn.disabled = false;
-                    }
-                });
-
-                // client-side submissions storage + download
-                const STORAGE_KEY = 'anon_questions_v1';
-                let submissions = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
-
-                const downloadBtn = document.getElementById('downloadAnon');
-                const openAdv = document.getElementById('openAdvanced');
-                const advPanel = document.getElementById('anonAdvanced');
-                const pushBtn = document.getElementById('pushGithub');
-                const ownerI = document.getElementById('ghOwner');
-                const repoI = document.getElementById('ghRepo');
-                const pathI = document.getElementById('ghPath');
-                const tokenI = document.getElementById('ghToken');
-                const anonPushStatus = document.getElementById('anonPushStatus');
-                const clearStorageBtn = document.getElementById('clearStorage');
-
-                function saveLocalSubmission(txt){
-                    const entry = { message: txt, ts: new Date().toISOString() };
-                    submissions.push(entry);
-                    localStorage.setItem(STORAGE_KEY, JSON.stringify(submissions));
-                    statusEl.textContent = 'Guardado localmente.';
-                }
-
-                // override submit to save locally as well
-                submitBtn.addEventListener('click', () => {
-                    const text = (messageEl.value || '').trim();
-                    if (!text) return;
-                    saveLocalSubmission(text);
-                    // enable download quickly
-                });
-
-                downloadBtn.addEventListener('click', ()=>{
-                    const data = JSON.stringify(submissions, null, 2);
-                    const blob = new Blob([data], { type: 'application/json' });
-                    const url = URL.createObjectURL(blob);
-                    const a = document.createElement('a');
-                    a.href = url;
-                    a.download = 'anon_questions.json';
-                    document.body.appendChild(a);
-                    a.click();
-                    a.remove();
-                    URL.revokeObjectURL(url);
-                });
-
-                openAdv.addEventListener('click', ()=>{
-                    advPanel.style.display = advPanel.style.display === 'none' ? 'block' : 'none';
-                });
-
-                clearStorageBtn.addEventListener('click', ()=>{
-                    submissions = [];
-                    localStorage.removeItem(STORAGE_KEY);
-                    anonPushStatus.textContent = 'Almacenamiento local borrado.';
-                });
-
-                // GitHub push implementation (requires PAT from user)
-                async function githubPutFile(owner, repo, path, token, contentStr, commitMessage){
-                    const apiBase = 'https://api.github.com';
-                    const url = `${apiBase}/repos/${owner}/${repo}/contents/${encodeURIComponent(path)}`;
-                    // check existing file to get sha
-                    const headers = { 'Authorization': 'token ' + token, 'Accept': 'application/vnd.github.v3+json' };
-                    let sha = null;
-                    try {
-                        const r = await fetch(url, { headers });
-                        if (r.ok){
-                            const j = await r.json();
-                            sha = j.sha;
-                        }
-                    } catch (e) {}
-
-                    const content = btoa(unescape(encodeURIComponent(contentStr)));
-                    const body = { message: commitMessage || 'Add anonymous questions', content };
-                    if (sha) body.sha = sha;
-
-                    const put = await fetch(url, { method: 'PUT', headers: Object.assign({ 'Content-Type': 'application/json' }, headers), body: JSON.stringify(body) });
-                    return put;
-                }
-
-                pushBtn.addEventListener('click', async ()=>{
-                    const owner = ownerI.value.trim();
-                    const repo = repoI.value.trim();
-                    const path = (pathI.value || 'anon_questions.json').trim();
-                    const token = tokenI.value.trim();
-                    if (!owner || !repo || !token) { anonPushStatus.textContent = 'Rellena owner, repo y token.'; return; }
-                    anonPushStatus.textContent = 'Subiendo a GitHub...';
-                    pushBtn.disabled = true;
-                    try {
-                        const dataStr = JSON.stringify(submissions, null, 2);
-                        const res = await githubPutFile(owner, repo, path, token, dataStr, 'anon questions update');
-                        if (res.ok) {
-                            anonPushStatus.textContent = 'Archivo guardado en GitHub.';
-                        } else {
-                            const txt = await res.text().catch(()=>null);
-                            anonPushStatus.textContent = 'Error en GitHub: ' + (txt || res.statusText);
-                        }
-                    } catch (err) {
-                        anonPushStatus.textContent = 'Error al conectar con GitHub.';
-                    } finally { pushBtn.disabled = false; }
-                });
-            });
-        })();
-        window.bioAnimationStarted = false;
-        
-        document.addEventListener('DOMContentLoaded', () => {
-            const overlay = document.getElementById('intro-overlay');
-            const introText = document.getElementById('intro-text');
-            if (!overlay || !introText) return;
-            
-            let winkInterval = null;
-            
-            // Animación de guiño al hacer hover
-            introText.addEventListener('mouseenter', () => {
-                introText.textContent = 'Click para revelar ;)';
-            });
-            
-            introText.addEventListener('mouseleave', () => {
-                introText.textContent = 'Click para revelar :)';
-            });
-            
-            // Solo el texto activa la revelación, no todo el overlay
-            introText.addEventListener('click', (e) => {
-                e.stopPropagation();
-                revealContent();
-            });
-            
-            introText.addEventListener('touchstart', (e) => { 
-                e.preventDefault();
-                e.stopPropagation();
-                revealContent(); 
-            }, { passive: false });
-        });
-
-        function revealContent() {
-            const overlay = document.getElementById('intro-overlay');
-            const container = document.querySelector('.container');
-            const bg = document.getElementById('background');
-            const music = document.getElementById('background-music');
-            const pb = document.getElementById('profile-block');
-            const cursor = document.querySelector('.custom-cursor');
-
-            // Se eliminó la petición automática de pantalla completa.
-            // Si se desea permitir pantalla completa, llamar a `requestFullscreen()`
-            // desde una acción explícita del usuario (ej. botón "Pantalla completa").
-
-            const isIOS = /iP(ad|hone|od)/.test(navigator.userAgent) ||
-                          (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-
-            if (overlay) {
-                overlay.classList.add('hiding');
-                setTimeout(() => {
-                    overlay.remove();
-                }, 1200);
-            }
-
-            if (container) {
-                container.style.visibility = 'visible';
-                container.style.display = 'block';
-                container.style.opacity = '1';
-            }
-
-            if (bg) {
-                // si es imagen (GIF) sólo mostrarla; si fuera video, mantener la lógica previa
-                if (bg.tagName === 'VIDEO') {
-                    bg.style.display = 'block';
-                } else {
-                    bg.style.display = 'block';
-                }
-            }
-
-            if (cursor) {
-                cursor.style.display = 'block';
-            }
-
-            if (pb) {
-                setTimeout(() => {
-                    pb.classList.add('show');
-                    pb.style.pointerEvents = 'auto';
-                    
-                    setTimeout(() => {
-                        if (typeof window.startBioAnimation === 'function' && !window.bioAnimationStarted) {
-                            window.bioAnimationStarted = true;
-                            console.log('Iniciando animación de bio...');
-                            window.startBioAnimation();
-                        } else {
-                            console.log('startBioAnimation no está disponible aún');
-                        }
-                    }, 100);
-                }, 900);
-            }
-
-            try {
-                if (bg) {
-                    if (bg.tagName === 'VIDEO') {
-                        bg.setAttribute('playsinline', '');
-                        bg.setAttribute('webkit-playsinline', '');
-                        bg.playsInline = true;
-
-                        if (isIOS) {
-                            // iOS: crear un fallback VIDEO (si aún quieres), pero ahora usamos GIF: crear IMG fallback
-                            bg.style.display = 'none';
-                            if (!document.getElementById('background-fallback')) {
-                                const img = document.createElement('img');
-                                img.id = 'background-fallback';
-                                img.src = 'assets/background1.gif';
-                                Object.assign(img.style, {
-                                    position: 'fixed',
-                                    top: '0',
-                                    left: '0',
-                                    width: '100%',
-                                    height: '100%',
-                                    objectFit: 'cover',
-                                    zIndex: '1',
-                                    pointerEvents: 'none',
-                                    display: 'block'
-                                });
-                                document.body.appendChild(img);
-                            }
-                        } else {
-                            bg.muted = true;
-                            bg.currentTime = 0;
-                            bg.play().catch(() => {});
-                        }
-                    } else {
-                        // si es IMG (GIF), nada que reproducir: ya lo mostramos arriba
-                    }
-                }
-            } catch (e) {}
-
-            try {
-                if (music) {
-                    music.muted = false;
-                    music.play().catch(() => {});
-                }
-            } catch (e) {}
-        }
-    </script>
-    <!-- Lyrics feature removed per user request -->
-
-    <div class="container">
-        
-        <!-- background ahora es un GIF (imagen) -->
-        <img id="background" src="assets/background1.gif" alt="" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 1; pointer-events: none; display: none;" />
-
-        
-        <div class="glitch-overlay"></div>
-        <div id="hacker-overlay" class="hidden">
-            
-        </div>
-        <div id="snow-overlay" class="hidden">
-            
-        </div>
-
-        <div id="profile-block">
-            <video src="assets/banner.mp4" class="profile-banner" autoplay loop muted playsinline></video>
-            <div class="profile-header">
-                <div class="profile-container">
-                <img src="assets/profile.gif" alt="Profile" class="profile-picture">
-                <div class="sticker-container" id="stickerContainer">
-                    <div class="overlay-sticker" id="stickerFront">🌙</div>
-                    <div class="overlay-sticker-back" id="stickerBack">❓</div>
-                </div>
-            </div>
-                                    <div class="profile-info">
-                                        <div class="name-and-badges">
-                                            <div id="profile-name">
-                                                fracpre
-                                                <img src="assets/verified.gif" alt="Verified" class="verified-badge">
-                                            </div>
-                                            <div class="badge-box">
-                                                <div class="badge-box-inner">
-                                                    <div class="badge-group">
-                                                        <div class="badge-container">
-                                                            <img src="assets/owner.png" alt="Owner" class="badge">
-                                                        </div>
-                                                        <div class="badge-container">
-                                                            <img src="assets/developer.png" alt="Developer" class="badge">
-                                                        </div>
-                                                        <div class="badge-container">
-                                                            <a href="https://instagram.com/guillevgo" target="_blank" rel="noopener noreferrer">
-                                                                <img src="assets/boy.png" alt="boy" class="badge">
-                                                            </a>
-                                                        </div>
-                                                        <div class="badge-container">
-                                                            <a href="https://tracker.gg/valorant/profile/riot/Fracpre%23ontop/overview?platform=pc&playlist=competitive&season=4c4b8cff-43eb-13d3-8f14-96b783c90cd2" target="_blank" rel="noopener noreferrer">
-                                                                <img src="assets/ascendant.png" alt="Valorant" class="badge">
-                                                            </a>
-                                                        </div>
-                                                        <div class="badge-container">
-                                                            <img src="assets/spain.png" alt="España" class="badge" id="espanaEgg">
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div id="profile-bio"></div>
-                                    </div>
-                                </div>
-                
-                                <div class="bio-separator"></div>
-
-            <div id="valorant-stats-container">
-                <!-- Las estadísticas de Valorant se cargarán aquí -->
-            </div>
-                
-                                <div class="profile-footer">
-                
-                                    <div class="social-links">
-                                         <a href="https://instagram.com/guillevgo" target="_blank">
-                                             <img src="assets/instagram.png" alt="Instagram" class="social-icon">
-                                         </a>
-                                        <div class="social-icon-container" aria-label="Discord" style="position:relative;">
-                                            <img src="assets/discord.png" alt="Discord" class="social-icon" />
-                                            <div class="discord-handle" aria-hidden="true">
-                                                <div class="handle-inner">
-                                                    <div class="handle-avatar-wrap">
-                                                        <img class="handle-avatar" src="https://cdn.discordapp.com/avatars/344060291543334914/b88a7cf857faec833d54bca98464918c.png?size=128" alt="avatar">
-                                                        <span class="handle-status idle" aria-hidden="true"></span>
-                                                    </div>
-                                                    <div class="handle-text-content"> <!-- Nuevo wrapper para nombre y actividad -->
-                                                        <div class="handle-name">fracpre</div>
-                                                        <div class="handle-activity"></div> <!-- Nuevo elemento para la actividad -->
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <!-- Lanyard card (hidden by default, shown on hover) removed per user request -->
-                                            <!--
-                                            <div class="lanyard-card-hover" aria-hidden="true">
-                                                <div class="lanyard-avatar-wrap">
-                                                    <img class="lanyard-avatar" src="" alt="avatar">
-                                                    <span class="lanyard-status-dot idle" aria-hidden="true"></span>
-                                                </div>
-                                                <div class="lanyard-info">
-                                                    <div class="lanyard-name">Usuario</div>
-                                                    <div class="lanyard-activity">Sin actividad</div>
-                                                </div>
-                                            </div>
-                                            -->
-                                            <!-- Mini menú flotante removido: ahora usamos solo el handle que aparece al hacer hover -->
-                                        </div>
-                                         <a href="https://www.roblox.com/es/users/3040315936/profile" target="_blank">
-                                             <img src="assets/roblox.png" alt="Roblox" class="social-icon">
-                                         </a>
-                                    </div>
-                <!-- anonymous question button removed per user request -->
-
-
-                <div class="footer-bottom">
-                    <div class="visitor-counter" id="visitor-counter">
-                        <svg class="visitor-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" title="views totales (doble click dentro del ojo para editar)">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
-                        </svg>
-                        <span id="visitor-count">--</span>
-                    </div>
-
-                    <div class="mini-player">
-                        <button class="play-pause-btn" id="playPauseBtn">
-                            <svg id="playIcon" viewBox="0 0 24 24">
-                                <path d="M8 5v14l11-7z"/>
-                            </svg>
-                            <svg id="pauseIcon" style="display: none;" viewBox="0 0 24 24">
-                                <path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z"/>
-                            </svg>
-                        </button>
-                        <input type="range" class="volume-slider-mini" id="volumeSliderMini" min="0" max="100" value="50">
-                        <!-- 'Letra' button removed per user request -->
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <audio id="background-music" loop>
-        <source src="" type="audio/mp3">
-    </audio>
-    <audio id="hacker-music" loop muted>
-        <source src="assets/hacker_music.mp3" type="audio/mp3">
-    </audio>
-    <audio id="rain-music" loop muted>
-        <source src="assets/rain_music.mp3" type="audio/mp3">
-    </audio>
-    <audio id="anime-music" loop muted>
-        <source src="assets/anime_music.mp3" type="audio/mp3">
-    </audio>
-    <audio id="car-music" loop muted>
-        <source src="assets/car_music.mp3" type="audio/mp3">
-    </audio>
-
-    <script>
-        (function() {
-            const songs = ['background_music.mp3', 'background_music2.mp3', 'background_music3.mp3'];
-            let availableSongs = JSON.parse(localStorage.getItem('availableSongs') || '[]');
-            
-            if (availableSongs.length === 0) {
-                availableSongs = [...songs];
-            }
-            
-            const randomIndex = Math.floor(Math.random() * availableSongs.length);
-            const selectedSong = availableSongs[randomIndex];
-            
-            availableSongs.splice(randomIndex, 1);
-            localStorage.setItem('availableSongs', JSON.stringify(availableSongs));
-            
-            const audio = document.getElementById('background-music');
-            audio.src = 'assets/' + selectedSong;
-            audio.load();
-        })();
-    </script>
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-
-
-    <script src="script.js"></script>
-
-    <script>
-        // Animación de volteo del sticker
-        document.addEventListener('DOMContentLoaded', () => {
-            const stickerContainer = document.getElementById('stickerContainer');
-            const stickerFront = document.getElementById('stickerFront');
-            const stickerBack = document.getElementById('stickerBack');
-            const titoBadge = document.getElementById('titoBadge');
-            let clickCount = 0;
-            let isAnimating = false; // Prevenir clicks múltiples durante animación
-            let isFlipped = false; // Estado actual del sticker
-            let didPostClickShake = false; // asegurar que el sacudón post-click ocurra solo una vez
-            let didReturnShake = false; // asegurar que el sacudón al volver ocurra solo una vez
-            
-            if (stickerContainer && stickerFront && stickerBack) {
-                // small periodic pulse to hint that the sticker is clickable
-                try {
-                    const startPulse = () => {
-                        if (!stickerContainer || stickerContainer.classList.contains('flipped')) return;
-                        stickerContainer.classList.add('pulse');
-                        const onEnd = () => { stickerContainer.classList.remove('pulse'); stickerContainer.removeEventListener('animationend', onEnd); };
-                        stickerContainer.addEventListener('animationend', onEnd);
-                    };
-                    // only run once: schedule pulse 2s after the profile/menu is shown
-                    (function scheduleAfterMenu(){
-                        try {
-                            const profile = document.getElementById('profile-block');
-                            if (!profile) { // fallback: schedule after 2s
-                                setTimeout(startPulse, 2000);
-                                return;
-                            }
-
-                            if (profile.classList.contains('show')) {
-                                setTimeout(startPulse, 2000);
-                                return;
-                            }
-
-                            // observe when the 'show' class is added
-                            const mo = new MutationObserver((records)=>{
-                                for (const r of records) {
-                                    if (r.type === 'attributes' && r.attributeName === 'class') {
-                                        if (profile.classList.contains('show')) {
-                                            setTimeout(startPulse, 2000);
-                                            try { mo.disconnect(); } catch(e) {}
-                                            break;
-                                        }
-                                    }
-                                }
-                            });
-                            mo.observe(profile, { attributes: true, attributeFilter: ['class'] });
-                            // safety fallback in case 'show' never appears
-                            setTimeout(()=>{ try { mo.disconnect(); } catch(e){} }, 10000);
-                        } catch (e) { setTimeout(startPulse, 2000); }
-                    })();
-                } catch (e) {}
-                stickerContainer.addEventListener('click', (e) => {
-                    e.stopPropagation();
-
-                    if (isAnimating) return; // No hacer nada si ya hay una animación en curso
-
-                    clickCount++;
-                    let duration;
-
-                    if (clickCount === 1) {
-                        duration = 2000; // 2 segundos la primera vez
-                    } else if (clickCount === 2) {
-                        duration = 6000; // 6 segundos la segunda vez
-
-                        // Crear espacio en badge-box a la derecha de ascendant.png y añadir tito.png
-                        const asc = document.querySelector('img[src="assets/ascendant.png"]');
-                        const badgeInner = document.querySelector('.badge-box-inner');
-                        if (asc && badgeInner) {
-                            const ascContainer = asc.closest('.badge-container');
-                            if (ascContainer) {
-                                // Medir ancho real de la imagen tito
-                                const meas = document.createElement('img');
-                                meas.src = 'assets/tito.png';
-                                meas.className = 'badge';
-                                Object.assign(meas.style, { position: 'absolute', left: '-9999px', top: '0px', visibility: 'hidden' });
-                                document.body.appendChild(meas);
-                                const measuredW = Math.round(meas.getBoundingClientRect().width || 28);
-                                document.body.removeChild(meas);
-
-                                // crear titoBadge pero con ancho 0 para insertar inline y expandir empujando a los vecinos
-                                if (!document.getElementById('titoBadge')) {
-                                    const tito = document.createElement('div');
-                                    tito.className = 'badge-container';
-                                    tito.id = 'titoBadge';
-                                    tito.style.display = 'inline-flex';
-                                    tito.style.alignItems = 'center';
-                                    tito.style.justifyContent = 'center';
-                                    tito.style.overflow = 'hidden';
-                                    tito.style.width = '0px';
-                                    tito.style.transform = 'translateY(20px)';
-                                    tito.style.opacity = '0';
-                                    tito.innerHTML = '<img src="assets/tito.png" alt="Tito" class="badge" style="width: ' + measuredW + 'px;">';
-
-                                    // Prefer insertar justo después del nuevo huevo 'espana', si existe;
-                                    // si no, caer al comportamiento anterior (después de ascendant).
-                                    try {
-                                        const espImg = document.querySelector('img[src="assets/spain.png"]');
-                                        if (espImg) {
-                                            const espContainer = espImg.closest('.badge-container');
-                                            if (espContainer) {
-                                                espContainer.insertAdjacentElement('afterend', tito);
-                                            } else {
-                                                ascContainer.insertAdjacentElement('afterend', tito);
-                                            }
-                                        } else {
-                                            ascContainer.insertAdjacentElement('afterend', tito);
-                                        }
-                                    } catch (e) {
-                                        try { ascContainer.insertAdjacentElement('afterend', tito); } catch (e) {}
-                                    }
-
-                                    // Animar ancho del contenedor tito para que empuje a los hermanos sin dejar huecos
-                                    gsap.to(tito, { width: measuredW + 'px', duration: 0.45, ease: 'power2.out' });
-                                    // Animar aparición vertical y opacidad de la imagen
-                                    gsap.to(tito, { y: 0, opacity: 1, duration: 0.9, ease: 'power2.out', delay: 0.05, onComplete: () => {
-                                        try {
-                                            // Limpiar estilos para que quede natural en el flujo
-                                            tito.style.width = '';
-                                            tito.style.overflow = '';
-                                            tito.style.transform = '';
-                                            tito.style.opacity = '';
-                                        } catch (e) {}
-
-                                        // Mostrar texto temporal ubicado encima de la imagen tito cuando la animación termine
-                                        try {
-                                            const prev = document.getElementById('titoWaiting');
-                                            if (prev) prev.remove();
-
-                                            // localizar la imagen dentro de tito
-                                            const imgEl = tito.querySelector('img') || tito.querySelector('.badge');
-                                            let left = window.innerWidth / 2;
-                                            let top = 0;
-                                            if (imgEl) {
-                                                const r = imgEl.getBoundingClientRect();
-                                                left = r.left + r.width / 2;
-                                                top = r.top;
-                                            } else {
-                                                const r = tito.getBoundingClientRect();
-                                                left = r.left + r.width / 2;
-                                                top = r.top;
-                                            }
-
-                                            // Mostrar el texto tras un retraso de 3s desde que tito apareció
-                                            setTimeout(() => {
-                                                // switch background music to algocontigo when Tito appears
-                                                try {
-                                                    const bgAudio = document.getElementById('background-music');
-                                                    if (bgAudio) {
-                                                        // cross-fade: fade out current, switch src, fade in
-                                                        const newSrc = 'assets/algocontigo.mp3';
-                                                        const duration = 500; // ms for fade out and fade in
-                                                        const steps = 20;
-                                                        const stepTime = Math.max(10, Math.round(duration / steps));
-                                                        const startVol = (typeof bgAudio.volume === 'number' && !isNaN(bgAudio.volume)) ? bgAudio.volume : 0.2;
-
-                                                        // fade out
-                                                        let outStep = 0;
-                                                        const outInt = setInterval(() => {
-                                                            outStep++;
-                                                            const v = Math.max(0, startVol * (1 - outStep / steps));
-                                                            try { bgAudio.volume = v; } catch (e) {}
-                                                            if (outStep >= steps) {
-                                                                clearInterval(outInt);
-                                                                try { bgAudio.pause(); } catch (e) {}
-                                                                // switch source
-                                                                bgAudio.src = newSrc;
-                                                                bgAudio.load();
-                                                                const playPromise = bgAudio.play();
-                                                                // fade in once playback starts (or immediately)
-                                                                const startFadeIn = () => {
-                                                                    let inStep = 0;
-                                                                    const inInt = setInterval(() => {
-                                                                        inStep++;
-                                                                        const vv = Math.min(startVol, startVol * (inStep / steps));
-                                                                        try { bgAudio.volume = vv; } catch (e) {}
-                                                                        if (inStep >= steps) clearInterval(inInt);
-                                                                    }, stepTime);
-                                                                };
-                                                                if (playPromise && typeof playPromise.then === 'function') {
-                                                                    playPromise.then(startFadeIn).catch(startFadeIn);
-                                                                } else {
-                                                                    startFadeIn();
-                                                                }
-                                                            }
-                                                        }, stepTime);
-                                                    }
-                                                } catch (e) {}
-
-                                                const wait = document.createElement('div');
-                                                wait.id = 'titoWaiting';
-                                                wait.textContent = 'im still waiting.. right? :/';
-
-                                                Object.assign(wait.style, {
-                                                    position: 'fixed',
-                                                    left: left + 'px',
-                                                    top: top + 'px',
-                                                    // empezar cerca de la imagen y animar hacia arriba para quedar más alto
-                                                    transform: 'translate(-50%, -100%)',
-                                                    fontFamily: 'Courier New, monospace',
-                                                    fontSize: '13px',
-                                                    color: '#ffb6c1',
-                                                    background: 'rgba(0,0,0,0.45)',
-                                                    padding: '4px 8px',
-                                                    borderRadius: '8px',
-                                                    opacity: '0',
-                                                    // aparición rápida (0.3s)
-                                                    transition: 'opacity 300ms linear, transform 300ms ease',
-                                                    pointerEvents: 'none',
-                                                    zIndex: '9999'
-                                                });
-
-                                                document.body.appendChild(wait);
-                                                // animar hacia arriba y desvanecer rápidamente
-                                                requestAnimationFrame(() => {
-                                                    wait.style.opacity = '1';
-                                                    wait.style.transform = 'translate(-50%, -220%)';
-                                                });
-
-                                                // Remover 4s después de que el texto se haya mostrado
-                                                setTimeout(() => {
-                                                    wait.style.opacity = '0';
-                                                    wait.style.transform = 'translate(-50%, -260%)';
-                                                    setTimeout(() => { try { wait.remove(); } catch (e) {} }, 260);
-                                                }, 4000);
-                                            } catch (e) { /* no bloquear si algo falla */ }
-                                    }});
-
-                                    // Tooltip for tito removed per user request
-                                }
-                            }
-                        }
-                    } else {
-                        duration = 2000; // Para clicks adicionales, usar 2 segundos
-                    }
-
-                    // Siempre mostrar ❓ al voltear
-                    if (!isFlipped) {
-                        stickerBack.textContent = '❓';
-                        stickerContainer.classList.add('flipped');
-                        isFlipped = true;
-
-                        // Removed immediate post-click shake. We'll schedule a one-time
-                        // shake after the sticker RETURNS for the first click specifically.
-
-                        // Desired behavior: first click flips and returns (with post-return shake),
-                        // the NEXT click (i.e. clickCount === 2) should leave the sticker
-                        // flipped permanently showing '❓'. Subsequent clicks do nothing special.
-                        if (clickCount === 1) {
-                            // Primer click: volver automáticamente y disparar la sacudida única 1s
-                            // después de que haya vuelto (comportamiento previo).
-                            setTimeout(() => {
-                                stickerContainer.classList.remove('flipped');
-                                isFlipped = false;
-                                // Limpiar después de la animación
-                                setTimeout(() => {
-                                    stickerBack.textContent = '❓';
-                                }, 600);
-
-                                // Una vez haya vuelto, esperar 1s y disparar la sacudida única
-                                try {
-                                    if (!didReturnShake && typeof startPulse === 'function') {
-                                        setTimeout(() => {
-                                            try { startPulse(); } catch (e) {}
-                                            didReturnShake = true;
-                                        }, 1000);
-                                    }
-                                } catch (e) { /* noop */ }
-                            }, duration);
-                        } else if (clickCount === 2) {
-                            // Segundo click (después del primero): dejarlo volteado estático
-                            try {
-                                // Ensure back shows the question mark and keep flipped
-                                stickerBack.textContent = '❓';
-                                // keep isFlipped true and class 'flipped' present (we already added it)
-                                isFlipped = true;
-                            } catch (e) {}
-                        } else if (clickCount > 2) {
-                            // Más clicks no cambian el estado: mantener ❓
-                            try { stickerBack.textContent = '❓'; } catch (e) {}
-                        }
-                    }
-                });
-            }
-        });
-    </script>
-
-    <script>
-        (function(){
-            const bioMessages = [
-                "Que buscas pillin? sigueme en ig anda ;)",
-                "Beny Jr Lover",
-                "A lonely person never goes gonna be betrayed",
-                "Beny Jr Lover",
-                "#benyvuelveyaporfavor :(",
-                "guillevgo on ig ;)",
-                "Que buscas pillin? sigueme en ig anda ;)",
-                "Beny Jr Lover",
-                "A lonely person never goes gonna be betrayed",
-                "Beny Jr Lover",
-                "#benyvuelveyaporfavor :(",
-                "A lonely person never goes gonna be betrayed",
-                "I want to feel that I am in love... :/",
-                "#benyvuelveyaporfavor :(",
-                "If it was good for you, why did you leave me?",
-                "A lonely person never goes gonna be betrayed",
-                "I miss you but is okay"
-            ];
-            
-            let bioText = '';
-            let bioIndex = 0;
-            let bioMessageIndex = 0;
-            let isBioDeleting = false;
-            let bioCursorVisible = true;
-            let bioElement = null;
-            let bioStarted = false;
-
-            function typeWriterBio() {
-                if (!bioElement) return;
-                
-                if (!isBioDeleting && bioIndex < bioMessages[bioMessageIndex].length) {
-                    bioText = bioMessages[bioMessageIndex].slice(0, bioIndex + 1);
-                    bioIndex++;
-                } else if (isBioDeleting && bioIndex > 0) {
-                    bioText = bioMessages[bioMessageIndex].slice(0, bioIndex - 1);
-                    bioIndex--;
-                } else if (bioIndex === bioMessages[bioMessageIndex].length) {
-                    isBioDeleting = true;
-                    setTimeout(typeWriterBio, 2000);
-                    return;
-                } else if (bioIndex === 0 && isBioDeleting) {
-                    isBioDeleting = false;
-                    bioMessageIndex = (bioMessageIndex + 1) % bioMessages.length;
-                }
-                bioElement.textContent = bioText + (bioCursorVisible ? '|' : ' ');
-                setTimeout(typeWriterBio, isBioDeleting ? 40 : 80); // Más rápido: 80ms escribir, 40ms borrar
-            }
-
-            setInterval(() => {
-                bioCursorVisible = !bioCursorVisible;
-                if (bioElement) {
-                    bioElement.textContent = bioText + (bioCursorVisible ? '|' : ' ');
-                }
-            }, 500);
-
-            window.startBioAnimation = function() {
-                if (bioStarted) return;
-                bioStarted = true;
-                bioElement = document.getElementById('profile-bio');
-                if (bioElement) {
-                    console.log('Iniciando animación de bio...');
-                    typeWriterBio();
-                }
-            };
-        })();
-    </script>
-
-    <script>
-        document.addEventListener('contextmenu', function(e) {
-            e.preventDefault();
-            return false;
-        });
-
-        document.addEventListener('keydown', function(e) {
-            if (e.keyCode === 123) {
-                e.preventDefault();
-                return false;
-            }
-            if (e.ctrlKey && e.shiftKey && e.keyCode === 73) {
-                e.preventDefault();
-                return false;
-            }
-            if (e.ctrlKey && e.shiftKey && e.keyCode === 74) {
-                e.preventDefault();
-                return false;
-            }
-            if (e.ctrlKey && e.keyCode === 85) {
-                e.preventDefault();
-                return false;
-            }
-            if (e.ctrlKey && e.keyCode === 83) {
-                e.preventDefault();
-                return false;
-            }
-        });
-
-        document.addEventListener('keydown', function(e) {
-            if (e.metaKey && e.shiftKey && e.keyCode === 73) {
-                e.preventDefault();
-                return false;
-            }
-            if (e.metaKey && e.shiftKey && e.keyCode === 74) {
-                e.preventDefault();
-                return false;
-            }
-            if (e.metaKey && e.keyCode === 85) {
-                e.preventDefault();
-                return false;
-            }
-        });
-    </script>
-
-    <script>
-        (function(){
-            const messages = [
-                'guillevgo on ig ;)',
-                'guillevgo on ig ;)',
-                'guillevgo on ig ;)',
-                'guillevgo on ig ;)',
-                'guillevgo on ig ;)',
-                'I am #notlikehim #lol'
-            ];
-            const baseType = 120;      // base ms por carácter al escribir (aumentado para más fluidez)
-            const baseErase = 80;      // base ms por carácter al borrar (aumentado)
-            const pauseAfterFull = 3800;   // ms que permanece el texto completo
-            const pauseAfterErase = 700;   // pausa antes de siguiente mensaje
-            let idx = 0;
-
-            const easeInOutQuad = t => t < 0.5 ? 2*t*t : -1 + (4 - 2*t)*t;
-
-            function typeMessage(msg, i = 0){
-                if (i <= msg.length) {
-                    // caret mientras escribe
-                    document.title = msg.slice(0, i) + (i < msg.length ? '|' : '');
-                    // delay con easing según progreso del mensaje (más lento al inicio/fin)
-                    const progress = i / Math.max(1, msg.length);
-                    const delay = Math.max(18, Math.round(baseType * (1 - 0.45 * easeInOutQuad(progress))));
-                    setTimeout(() => typeMessage(msg, i + 1), delay);
-                } else {
-                    document.title = msg; // texto completo sin caret
-                    setTimeout(() => eraseMessage(msg, msg.length - 1), pauseAfterFull);
-                }
-            }
-
-            function eraseMessage(msg, i){
-                if (i >= 1) {
-                    // borrado más fluido: ralentiza al final usando easing inverso
-                    document.title = msg.slice(0, i);
-                    const progress = 1 - (i / Math.max(1, msg.length)); // from 0 -> 1 as we erase
-                    const delay = Math.max(16, Math.round(baseErase * (1 + 0.9 * easeInOutQuad(progress))));
-                    setTimeout(() => eraseMessage(msg, i - 1), delay);
-                } else {
-                    // Dejar un carácter invisible
-                    document.title = 'ㅤ';
-                    idx = (idx + 1) % messages.length;
-                    setTimeout(() => typeMessage(messages[idx], 0), pauseAfterErase);
-                }
-            }
-
-            if (document.readyState === 'loading') {
-                document.addEventListener('DOMContentLoaded', () => setTimeout(() => typeMessage(messages[idx], 0), 300));
-            } else {
-                setTimeout(() => typeMessage(messages[idx], 0), 300);
-            }
-        })();
-    </script>
-
-    <script>
-        /* Contador manual de visitas */
-        (function(){
-            const MANUAL_COUNT = 151; // <- Cambia este número manualmente para actualizar las views
-            document.addEventListener('DOMContentLoaded', () => {
-                const span = document.getElementById('visitor-count');
-                if(span) span.textContent = MANUAL_COUNT.toLocaleString();
-            });
-        })();
-    </script>
-
-    <script>
-        // Mini reproductor de música
-        document.addEventListener('DOMContentLoaded', () => {
-            const playPauseBtn = document.getElementById('playPauseBtn');
-            const playIcon = document.getElementById('playIcon');
-            const pauseIcon = document.getElementById('pauseIcon');
-            const volumeSlider = document.getElementById('volumeSliderMini');
-            const music = document.getElementById('background-music');
-            
-            let isPlaying = true; // Iniciar como true porque la música ya está sonando
-            let targetVolume = 0.2; // Volumen objetivo (20%)
-            let fadeInterval = null;
-
-            // Configurar volumen inicial
-            music.volume = targetVolume;
-            // reflect initial value on slider if present
-            try { if (volumeSlider) volumeSlider.value = Math.round(targetVolume * 100); } catch (e) {}
-            
-            // Mostrar el icono de pausa al inicio (porque está reproduciéndose)
-            playIcon.style.display = 'none';
-            pauseIcon.style.display = 'block';
-            
-            // Función para fade out (bajar volumen gradualmente)
-            function fadeOut(callback) {
-                if (fadeInterval) clearInterval(fadeInterval);
-                const startVolume = music.volume;
-                const step = startVolume / 20; // 20 pasos para el fade
-                let currentStep = 0;
-                
-                fadeInterval = setInterval(() => {
-                    currentStep++;
-                    if (currentStep <= 20) {
-                        const v = Math.max(0, startVolume * (1 - currentStep / 20));
-                        try { music.volume = v; } catch (e) {}
-                    } else {
-                        clearInterval(fadeInterval);
-                        if (callback) callback();
-                    }
-                }, 25); // 25ms * 20 = 500ms total (medio segundo)
-            }
-            
-            // Función para fade in (subir volumen gradualmente)
-            function fadeIn() {
-                if (fadeInterval) clearInterval(fadeInterval);
-                music.volume = 0;
-                const step = targetVolume / 20;
-                let currentStep = 0;
-                
-                fadeInterval = setInterval(() => {
-                    currentStep++;
-                    if (currentStep <= 20) {
-                        const v = Math.min(targetVolume, targetVolume * (currentStep / 20));
-                        try { music.volume = v; } catch (e) {}
-                    } else {
-                        music.volume = targetVolume;
-                        clearInterval(fadeInterval);
-                    }
-                }, 25);
-            }
-            
-            // Control de play/pause
-            playPauseBtn.addEventListener('click', () => {
-                if (isPlaying) {
-                    // Fade out antes de pausar
-                    fadeOut(() => {
-                        music.pause();
-                    });
-                    playIcon.style.display = 'block';
-                    pauseIcon.style.display = 'none';
-                } else {
-                    // Reproducir y hacer fade in
-                    music.play();
-                    fadeIn();
-                    playIcon.style.display = 'none';
-                    pauseIcon.style.display = 'block';
-                }
-                isPlaying = !isPlaying;
-            });
-            
-            // Control de volumen
-            volumeSlider.addEventListener('input', (e) => {
-                targetVolume = e.target.value / 100;
-                if (isPlaying) {
-                    music.volume = targetVolume;
-                }
-            });
-            
-            // Sincronizar con el estado real de la música
-            music.addEventListener('play', () => {
-                isPlaying = true;
-                playIcon.style.display = 'none';
-                pauseIcon.style.display = 'block';
-            });
-            
-            music.addEventListener('pause', () => {
-                isPlaying = false;
-                playIcon.style.display = 'block';
-                pauseIcon.style.display = 'none';
-            });
-        });
-    </script>
-
-    <script>
-        // Copiar Discord al portapapeles y cambiar texto del handle a "copiado!" durante 2s
-        (function(){
-            document.addEventListener('DOMContentLoaded', () => {
-                const discordImg = document.querySelector('img[src="assets/discord.png"]');
-                if (!discordImg) return;
-
-                discordImg.style.cursor = 'pointer';
-
-                const container = discordImg.closest('.social-icon-container') || discordImg.parentElement;
-                if (!container) return;
-                // asegurar positioning para el tooltip absoluto
-                if (window.getComputedStyle(container).position === 'static') container.style.position = 'relative';
-
-                const handle = container.querySelector('.discord-handle');
-                if (handle && !handle.dataset.original) handle.dataset.original = (handle.textContent || '@fracpre').trim();
-
-                discordImg.addEventListener('click', async (e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-
-                    const textToCopy = (handle && handle.dataset.original) ? handle.dataset.original : '@fracpre';
-                    try {
-                        if (navigator.clipboard && navigator.clipboard.writeText) {
-                            await navigator.clipboard.writeText(textToCopy);
-                        } else {
-                            const ta = document.createElement('textarea');
-                            ta.value = textToCopy;
-                            ta.style.position = 'absolute';
-                            ta.style.left = '-9999px';
-                            document.body.appendChild(ta);
-                            ta.select();
-                            document.execCommand('copy');
-                            document.body.removeChild(ta);
-                        }
-                    } catch (err) {
-                        // ignore
-                    }
-
-                    // clear any previous pending revert
-                    if (container._discordCopiedTimeout) {
-                        clearTimeout(container._discordCopiedTimeout);
-                        container._discordCopiedTimeout = null;
-                    }
-
-                    // add class to force visible during copied state
-                    container.classList.add('discord-copied');
-
-                    if (handle) {
-                        const original = handle.dataset.original || '@fracpre';
-                        // animated swap: shrink+fade out -> swap -> expand+fade in
-                        gsap.to(handle, { scale: 0.88, opacity: 0, duration: 0.14, ease: 'power2.in', onComplete() {
-                            handle.textContent = 'copiado!';
-                            gsap.to(handle, { scale: 1, opacity: 1, duration: 0.28, ease: 'back.out(1.2)'});
-                        }});
-
-                        // schedule revert
-                        container._discordCopiedTimeout = setTimeout(() => {
-                            gsap.to(handle, { scale: 0.9, opacity: 0, duration: 0.12, ease: 'power2.in', onComplete() {
-                                handle.textContent = original;
-                                gsap.to(handle, { scale: 1, opacity: 1, duration: 0.28, ease: 'back.out(1.2)', onComplete() {
-                                    // cleanup: remove forced-visible class so hover controls visibility again
-                                    container.classList.remove('discord-copied');
-                                    // clear any inline GSAP props so CSS resumes control
-                                    try { gsap.set(handle, { clearProps: 'all' }); } catch (e) {}
-                                }});
-                            }});
-                            container._discordCopiedTimeout = null;
-                        }, 2000);
-                    } else {
-                        // no handle found: remove the copied class after 2s
-                        container._discordCopiedTimeout = setTimeout(() => {
-                            container.classList.remove('discord-copied');
-                            container._discordCopiedTimeout = null;
-                        }, 2000);
-                    }
-                });
-
-                // Use the fixed Discord ID provided by the user and populate handle/status
-                (function useFixedDiscordId(){
-                    const fixedId = '344060291543334914';
-                    // Elementos para el handle de Discord (hover pequeño/directo)
-                    const handleAvatar = container.querySelector('.discord-handle .handle-avatar');
-                    const handleStatus = container.querySelector('.discord-handle .handle-status');
-                    const handleName = container.querySelector('.discord-handle .handle-name');
-                    const handleActivity = container.querySelector('.discord-handle .handle-activity');
-                    
-                    // fetch small info via Lanyard REST and update handle/status
-                    fetch(`https://api.lanyard.rest/v1/users/${fixedId}`).then(r => r.json()).then(json => {
-                        const payload = json.data || {};
-                        const discordUser = payload.discord_user || {};
-                        const discordStatus = payload.discord_status || 'offline';
-                        const activities = payload.activities || [];
-
-                        // --- Actualizar el handle de Discord (hover pequeño/directo) ---
-                        // Update handle avatar
-                        if (handleAvatar && discordUser.id && discordUser.avatar) {
-                            handleAvatar.src = `https://cdn.discordapp.com/avatars/${discordUser.id}/${discordUser.avatar}.png?size=128`;
-                        } else if (handleAvatar) {
-                            // Fallback for no avatar (e.g., default Discord avatar)
-                            handleAvatar.src = `https://cdn.discordapp.com/embed/avatars/${discordUser.discriminator % 5}.png`;
-                        }
-
-                        // Update handle name (mantener "fracpre" como deseado)
-                        if (handleName) {
-                            handleName.textContent = '@fracpre'; // Mantener el nick personalizado
-                            if (handleName.dataset) handleName.dataset.original = '@fracpre';
-                        }
-                        
-                        // Update handle status dot
-                        if (handleStatus) {
-                            handleStatus.className = 'handle-status ' + discordStatus;
-                        }
-
-                        // Update handle activity
-                        if (handleActivity) {
-                            const customActivity = activities.find(a => a.type === 4); // Custom status
-                            const playingActivity = activities.find(a => a.type === 0 && a.name !== 'Spotify'); // Playing a game, exclude Spotify
-                            const spotifyActivity = activities.find(a => a.name === 'Spotify' && a.type === 2); // Spotify
-
-                            if (customActivity && customActivity.state) {
-                                handleActivity.textContent = customActivity.state;
-                            } else if (playingActivity && playingActivity.name) {
-                                handleActivity.textContent = `Jugando ${playingActivity.name}`;
-                            } else if (spotifyActivity && spotifyActivity.details && spotifyActivity.state) {
-                                handleActivity.textContent = `Escuchando ${spotifyActivity.details} by ${spotifyActivity.state}`;
-                            } else {
-                                handleActivity.textContent = ''; // Limpiar si no hay actividad
-                            }
-                        }
-
-                    }).catch((error)=>{
-                        console.error('Error fetching Lanyard data:', error);
-                        // Fallback for handle
-                        if (handleName) handleName.textContent = '@fracpre';
-                        if (handleStatus) handleStatus.className = 'handle-status offline';
-                        if (handleActivity) handleActivity.textContent = 'Error al cargar';
-                    });
-                })();
-            });
-        })();
-    </script>
-</body>
-</html>
 
+.social-border {
+  border-color: var(--primary-color);
+}
 
+
+.profile-border {
+  border-color: var(--primary-color);
+}
+
+
+.visitor-icon {
+  stroke: var(--primary-color);
+}
+
+
+.visitor-count {
+  color: var(--primary-color);
+}
+
+
+.volume-icon {
+  stroke: var(--primary-color);
+}
+
+.volume-icon:hover,
+.volume-icon:active {
+  stroke: var(--secondary-color);
+}
+
+
+.volume-slider {
+  background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+}
+
+.volume-slider::-webkit-slider-thumb {
+  border-color: var(--primary-color);
+}
+
+
+.transparency-icon {
+  stroke: var(--primary-color);
+}
+
+.transparency-icon:hover,
+.transparency-icon:active {
+  stroke: var(--secondary-color);
+}
+
+
+.transparency-slider {
+  background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+}
+
+.transparency-slider::-webkit-slider-thumb {
+  border-color: var(--primary-color);
+}
+
+
+.skill-title {
+  background-image: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+}
+
+
+.skill-bar {
+  background-image: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+}
+
+
+.cursor-trail {
+  background: radial-gradient(circle, var(--primary-color) 20%, var(--secondary-color) 80%);
+  opacity: 0.8;
+  border-radius: 50%;
+  pointer-events: none;
+  position: fixed;
+  z-index: 10000;
+}
+
+
+.controls {
+  position: fixed;
+  bottom: calc(50% - 280px - 10px);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 25;
+  display: flex;
+  gap: 6px;
+  /* fondo rojo oscuro -> rojo vivo con pulso */
+  background-image: linear-gradient(180deg, #8B0000 0%, #FF0000 100%);
+  padding: 6px 10px;
+  border-radius: 16px;
+  backdrop-filter: blur(5px);
+  border: 3px solid transparent;
+  -webkit-border-image: conic-gradient(from 0deg, #ff0000, #ff7a00, #ffef00, #00ff6a, #00caff, #4b00ff, #ff00d4, #ff0000) 1;
+  border-image: conic-gradient(from 0deg, #ff0000, #ff7a00, #ffef00, #00ff6a, #00caff, #4b00ff, #ff00d4, #ff0000) 1;
+  animation: heartbeat 1.2s ease-in-out infinite;
+}
+
+.theme-button {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  background-color: rgba(0, 0, 0, 0.5);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.theme-button:hover {
+  transform: scale(1.1);
+  border-color: rgba(255, 255, 255, 0.8);
+}
+
+
+.top-controls {
+  position: fixed;
+  bottom: calc(50% - 280px - 60px);
+  left: 50%;
+  transform: translateX(-50%);
+  /* fondo rojo pulsante */
+  background-image: linear-gradient(180deg, #8B0000 0%, #FF0000 100%);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  padding: 6px 10px;
+  display: flex;
+  gap: 12px;
+  z-index: 25;
+  border: 3px solid transparent;
+  -webkit-border-image: conic-gradient(from 0deg, #ff0000, #ff7a00, #ffef00, #00ff6a, #00caff, #4b00ff, #ff00d4, #ff0000) 1;
+  border-image: conic-gradient(from 0deg, #ff0000, #ff7a00, #ffef00, #00ff6a, #00caff, #4b00ff, #ff00d4, #ff0000) 1;
+  animation: heartbeat 1.2s ease-in-out infinite;
+}
+
+
+.volume-control, .transparency-control {
+  z-index: 25;
+  background: none;
+  padding: 0;
+}
+
+
+.volume-slider, .transparency-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+  outline: none;
+  width: 80px;
+  height: 6px;
+  border-radius: 3px;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.volume-slider::-webkit-slider-thumb, .transparency-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 12px;
+  height: 12px;
+  background: white;
+  cursor: grab;
+  border-radius: 50%;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+}
+
+.volume-slider::-webkit-slider-thumb:hover, .transparency-slider::-webkit-slider-thumb:hover,
+.volume-slider::-webkit-slider-thumb:active, .transparency-slider::-webkit-slider-thumb:active {
+  background: #E0E0FF;
+}
+
+
+.badge-container {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+  transition: transform 0.6s;
+  transform-style: preserve-3d;
+  touch-action: manipulation;
+  width: 22px;
+  height: 22px;
+}
+
+.badge-container img {
+  image-rendering: pixelated;
+}
+
+
+.badge {
+  width: 22px;
+  height: 22px;
+  backface-visibility: hidden;
+}
+
+.badge-back {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.7);
+  color: #fff;
+  font-size: 14px;
+  transform: rotateY(180deg);
+  backface-visibility: hidden;
+}
+
+.badge-container:hover,
+.badge-container:active {
+  transform: rotateY(180deg);
+}
+
+
+.badge-group {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  padding: 8px 12px;
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+
+@media (max-width: 768px) {
+
+  #profile-block, #skills-block {
+    width: 85vw;
+    max-width: 360px;
+    padding: 15px;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+
+  .profile-picture {
+    width: 80px;
+    height: 80px;
+  }
+
+  .accesory-picture {
+    width: 20px;
+    height: 20px;
+  }
+
+  #profile-name {
+    font-size: 18px;
+  }
+
+  #profile-bio {
+    font-size: 12px;
+  }
+
+
+  .badge-group {
+    gap: 4px;
+    padding: 6px 8px;
+  }
+
+  .badge {
+    width: 16px;
+    height: 16px;
+  }
+
+
+  .social-links {
+    gap: 8px;
+    padding: 6px 8px;
+  }
+
+  .social-icon {
+    width: 20px;
+    height: 20px;
+  }
+
+
+  .visitor-counter {
+    font-size: 10px;
+    padding: 6px 10px;
+    bottom: 8px;
+    left: 10px;
+    transform: none;
+  }
+
+  .visitor-icon {
+    width: 14px;
+    height: 14px;
+  }
+
+
+  .skills-title {
+    font-size: 16px;
+  }
+
+  .skill-icon {
+    width: 16px;
+    height: 16px;
+  }
+
+
+  .controls {
+    bottom: calc(50% - 200px - 10px);
+    padding: 4px 8px;
+    left: 50%;
+    transform: translateX(-50%);
+    /* mantener el pulso y borde arcoíris en móviles */
+    background-image: linear-gradient(180deg, #8B0000 0%, #FF0000 100%);
+    border: 2px solid transparent;
+    -webkit-border-image: conic-gradient(from 0deg, #ff0000, #ff7a00, #ffef00, #00ff6a, #00caff, #4b00ff, #ff00d4, #ff0000) 1;
+    border-image: conic-gradient(from 0deg, #ff0000, #ff7a00, #ffef00, #00ff6a, #00caff, #4b00ff, #ff00d4, #ff0000) 1;
+    animation: heartbeat 1.2s ease-in-out infinite;
+  }
+
+  .theme-button {
+    width: 25px;
+    height: 25px;
+    font-size: 12px;
+  }
+
+
+  .top-controls {
+    bottom: calc(50% - 200px - 60px);
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 6px 8px;
+    gap: 10px;
+  }
+
+  .volume-slider, .transparency-slider {
+    width: 60px;
+  }
+
+  .volume-icon, .transparency-icon {
+    width: 16px;
+    height: 16px;
+  }
+
+
+  #results-button-container {
+    top: calc(50% + 200px - 20px);
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  #results-theme {
+    font-size: 10px;
+    padding: 6px 10px;
+  }
+
+  #results-hint {
+    font-size: 8px;
+    width: 140px;
+  }
+
+
+  #start-text {
+  /* 1. SOLUCIÓN AL ERROR DE SINTAXIS: Elimina la llave final flotante si no es necesaria. */
+  
+  /* 2. SOLUCIÓN AL PROBLEMA DE VISIBILIDAD: Define un color CLARO para el texto. */
+  color: #00ff00; /* Color verde brillante, muy común para efectos "hacker" */
+  
+  /* O un color simple que contraste con el fondo. */
+  /* color: white; */ 
+  
+  font-size: 18px;
+  
+  /* Esto asegura que el texto no se vea hasta que el JS lo "escribe" */
+  white-space: nowrap; 
+  
+  /* Esto asegura que solo se vea el texto a medida que se escribe */
+  overflow: hidden; 
+  }
+
+@keyframes border-rainbow-spin {
+  from {
+    --gradient-angle: 0deg;
+  }
+  to {
+    --gradient-angle: 360deg;
+  }
+}
+
+@keyframes led-glow {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 400% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes orbit {
+  0% {
+    transform: rotate(0deg) translateZ(0) scale(1);
+  }
+  50% {
+    transform: rotate(180deg) translateZ(0) scale(1.02);
+  }
+  100% {
+    transform: rotate(360deg) translateZ(0) scale(1);
+  }
+}
+
+@keyframes fast-orbit {
+  0% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(180deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* animación de latido: escala sutil y cambio de brillo para simular pulso rojo oscuro -> rojo vivo */
+@keyframes heartbeat {
+  0% {
+    transform: scale(1);
+    filter: brightness(0.85);
+    box-shadow: 0 6px 18px rgba(139,0,0,0.25);
+  }
+  25% {
+    transform: scale(1.02);
+    filter: brightness(1.05);
+    box-shadow: 0 10px 28px rgba(255,0,0,0.22);
+  }
+  50% {
+    transform: scale(1.03);
+    filter: brightness(1.15);
+    box-shadow: 0 14px 36px rgba(255,0,0,0.28);
+  }
+  100% {
+    transform: scale(1);
+    filter: brightness(0.85);
+    box-shadow: 0 6px 18px rgba(139,0,0,0.25);
+  }
+}
+
+@keyframes shine {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes glitch {
+  0% {
+    clip: rect(35px, 9999px, 14px, 0);
+  }
+  5% {
+    clip: rect(88px, 9999px, 40px, 0);
+  }
+  10% {
+    clip: rect(60px, 9999px, 50px, 0);
+  }
+  15% {
+    clip: rect(55px, 9999px, 53px, 0);
+  }
+  20% {
+    clip: rect(89px, 9999px, 65px, 0);
+  }
+  25% {
+    clip: rect(52px, 9999px, 43px, 0);
+  }
+  30% {
+    clip: rect(28px, 9999px, 15px, 0);
+  }
+  35% {
+    clip: rect(40px, 9999px, 60px, 0);
+  }
+  40% {
+    clip: rect(80px, 9999px, 45px, 0);
+  }
+  45% {
+    clip: rect(90px, 9999px, 55px, 0);
+  }
+}
+
+@keyframes glitch-anim {
+  0% {
+    clip: rect(39px, 9999px, 15px, 0);
+  }
+  5% {
+    clip: rect(29px, 9999px, 10px, 0);
+  }
+  10% {
+    clip: rect(50px, 9999px, 20px, 0);
+  }
+  15% {
+    clip: rect(35px, 9999px, 25px, 0);
+  }
+  20% {
+    clip: rect(45px, 9999px, 30px, 0);
+  }
+  25% {
+    clip: rect(55px, 9999px, 40px, 0);
+  }
+  30% {
+    clip: rect(60px, 9999px, 45px, 0);
+  }
+  35% {
+    clip: rect(65px, 9999px, 50px, 0);
+  }
+  40% {
+    clip: rect(70px, 9999px, 55px, 0);
+  }
+  45% {
+    clip: rect(75px, 9999px, 60px, 0);
+  }
+}
+
+@keyframes glitch-anim2 {
+  0% {
+    clip: rect(25px, 9999px, 10px, 0);
+  }
+  5% {
+    clip: rect(35px, 9999px, 20px, 0);
+  }
+  10% {
+    clip: rect(40px, 9999px, 25px, 0);
+  }
+  15% {
+    clip: rect(50px, 9999px, 30px, 0);
+  }
+  20% {
+    clip: rect(55px, 9999px, 35px, 0);
+  }
+  25% {
+    clip: rect(60px, 9999px, 40px, 0);
+  }
+  30% {
+    clip: rect(65px, 9999px, 45px, 0);
+  }
+}
+
+#accesory-sticker{
+   top:-30px;
+   right:-50px;
+}
+
+/* ajustar keyframes orbit para una rotación más suave y ligera oscilación */
+@keyframes orbit {
+  0% {
+    transform: rotate(0deg) translateZ(0) scale(1);
+  }
+  50% {
+    transform: rotate(180deg) translateZ(0) scale(1.02);
+  }
+  100% {
+    transform: rotate(360deg) translateZ(0) scale(1);
+  }
+}
+
+/* social icons glow: usar rosa en lugar de rojo */
+.social-icon:hover {
+  filter: drop-shadow(0 0 22px rgba(255, 102, 255, 0.95)) brightness(1.25);
+}
+
+/* asegurar badges específicos (si usas imágenes sueltas) también reciben resplandor rosa */
+img[src$="roblox.png"]:hover,
+img[src$="discord.png"]:hover,
+img[src$="instagram.png"]:hover {
+  filter: brightness(1.25) drop-shadow(0 0 22px rgba(255,102,255,0.95)) !important;
+}
+
+/* Lanyard replacement image styling */
+.discord-card {
+  position: absolute;
+  bottom: calc(100% + 10px); /* Posicionado arriba del ícono de Discord */
+  left: 50%;
+  transform: translateX(-50%);
+    display: flex; /* kept for layout but hidden via opacity/visibility */
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transform-origin: center bottom;
+    transition: opacity 160ms ease, transform 160ms ease, visibility 160ms;
+    transform: translateX(-50%) translateY(8px) scale(0.99);
+  flex-direction: row; /* Diseño horizontal */
+  align-items: center;
+  background-color: #2c2f33;
+  border: 1px solid #23272a;
+  border-radius: 8px;
+  padding: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  z-index: 100;
+  width: auto;
+  min-width: 200px;
+  max-width: 300px;
+}
+
+.discord-card .avatar-wrap {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-right: 10px;
+}
+
+.discord-card .discord-avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  border: 2px solid #7289da;
+}
+
+.discord-card .status-dot {
+  position: absolute;
+  bottom: 5px;
+  right: 5px;
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  border: 2px solid #2c2f33;
+}
+
+.discord-card .status-dot.online {
+  background-color: #43b581;
+}
+.discord-card .status-dot.offline {
+  background-color: #747f8d;
+}
+.discord-card .status-dot.dnd {
+  background-color: #f04747;
+}
+.discord-card .status-dot.idle {
+  background-color: #faa61a;
+}
+
+.discord-card .discord-info {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  color: #ffffff;
+}
+
+.discord-card .discord-name {
+  font-size: 16px;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.discord-card .discord-activity {
+  font-size: 14px;
+  color: #b9bbbe;
+}
+
+.social-icon-container:hover .discord-card {
+  opacity: 1 !important;
+  visibility: visible !important;
+  pointer-events: auto !important;
+  transform: translateX(-50%) translateY(0) scale(1) !important;
+}
