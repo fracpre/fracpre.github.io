@@ -185,6 +185,128 @@ body.car-theme {
   backdrop-filter: blur(5px);
 }
 
+/* Rectangle above social icons (simple header box) */
+.social-top-rect {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #23272a;
+  padding: 10px 18px;
+  border-radius: 10px;
+  border: 1px solid #36393f;
+  color: #f1f1f1;
+  font-weight: 600;
+  font-size: 15px;
+  margin-bottom: 14px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+.social-top-inner { text-align: center; }
+
+/* Visual Discord-like card (Minimalist Grey Theme) */
+.discord-visual-card {
+  width: 480px; /* More compact width */
+  max-width: calc(100% - 32px);
+  margin: 12px auto;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px;
+  border-radius: 12px;
+  /* Solid grey background, no more glass effect */
+  background-color: #2c2f33; 
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+  color: #fff;
+  transition: transform 200ms ease-out, box-shadow 200ms ease-out;
+  opacity: 0; 
+  transform: translateY(10px);
+}
+.discord-visual-card.dv-loaded { opacity: 1; transform: translateY(0); }
+.discord-visual-card:hover { 
+  transform: translateY(-4px); 
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35); 
+}
+
+.dv-left { display:flex; align-items:center; flex:0 0 auto; }
+.dv-avatar { 
+  width: 64px; 
+  height: 64px; 
+  border-radius:50%; 
+  object-fit:cover; 
+  border: 2px solid #3a3e42; /* Simple border */
+}
+
+.dv-presence-dot { 
+  width:14px; 
+  height:14px; 
+  border-radius:50%; 
+  box-shadow: 0 0 8px rgba(0,0,0,0.5); 
+  border: 2px solid #2c2f33; /* Make it look inset on the avatar */
+  position: absolute;
+  bottom: 0;
+  right: 0;
+}
+
+.dv-avatar-wrap {
+  position: relative;
+  width: 64px;
+  height: 64px;
+}
+
+.dv-presence-dot.online { background-color: #3ba55d; }
+.dv-presence-dot.idle { background-color: #faa81a; }
+.dv-presence-dot.dnd { background-color: #ed4245; }
+.dv-presence-dot.offline { background-color: #747f8d; }
+
+.dv-body { flex:1 1 auto; display:flex; flex-direction:column; gap:4px; min-width:0; }
+.dv-username-text { 
+  /* Changed from red to light grey */
+  color: #f1f1f1; 
+  font-weight:700; 
+  font-size:18px; 
+  text-shadow: 0 1px 2px rgba(0,0,0,0.4); 
+}
+
+.dv-activity { 
+  display:flex; 
+  align-items:center; 
+  gap:8px; 
+  color: #b9bbbe; /* Lighter grey for activity text */
+  font-size:14px; 
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.dv-activity-icon { opacity:0.8; }
+.dv-activity-text { text-overflow: ellipsis; overflow: hidden; }
+
+.dv-actions { flex:0 0 auto; }
+.dv-action { 
+  /* Minimalist button style */
+  background: transparent;
+  border: 1px solid #4f545c;
+  color: #b9bbbe; 
+  padding: 6px 12px; 
+  border-radius: 8px; 
+  cursor:pointer; 
+  font-weight:600; 
+  font-size:13px; 
+  transition: background-color 0.2s, color 0.2s;
+}
+.dv-action:hover { 
+  background-color: #4f545c;
+  color: #ffffff;
+}
+
+@media (max-width: 900px) {
+  .discord-visual-card { width: 100%; padding: 12px; border-radius: 10px; gap: 12px; }
+  .dv-avatar { width: 52px; height: 52px; }
+  .dv-avatar-wrap { width: 52px; height: 52px; }
+  .dv-presence-dot { width: 12px; height: 12px; }
+  .dv-username-text { font-size: 16px; }
+  .dv-activity { font-size: 12px; }
+}
+
 .social-icon {
   display: inline-block;
   position: relative;
@@ -401,6 +523,8 @@ body.car-theme {
   position: fixed;
   z-index: 10000;
 }
+
+/* Discord card styles removed */
 
 
 .controls {
@@ -902,91 +1026,31 @@ img[src$="instagram.png"]:hover {
   filter: brightness(1.25) drop-shadow(0 0 22px rgba(255,102,255,0.95)) !important;
 }
 
-/* Lanyard replacement image styling */
-.discord-card {
-  position: absolute;
-  bottom: calc(100% + 10px); /* Posicionado arriba del ícono de Discord */
-  left: 50%;
-  transform: translateX(-50%);
-    display: flex; /* kept for layout but hidden via opacity/visibility */
-    opacity: 0;
-    visibility: hidden;
-    pointer-events: none;
-    transform-origin: center bottom;
-    transition: opacity 160ms ease, transform 160ms ease, visibility 160ms;
-    transform: translateX(-50%) translateY(8px) scale(0.99);
-  flex-direction: row; /* Diseño horizontal */
-  align-items: center;
-  background-color: #2c2f33;
-  border: 1px solid #23272a;
-  border-radius: 8px;
-  padding: 10px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  z-index: 100;
-  width: auto;
-  min-width: 200px;
-  max-width: 300px;
-}
-
-.discord-card .avatar-wrap {
+.social-block {
   position: relative;
+  display: inline-block; /* shrink to the width of the icons */
+}
+
+/* Discord-related tooltip/card styles removed */
+
+/* Discord card styles removed (card deleted) */
+
+/* Top rectangular box that sits above the social links */
+.social-top-rect {
+  width: 100%;
+  max-width: 640px;
+  margin: 0 auto 12px auto;
+  background: rgba(18,18,20,0.65);
+  color: #fff;
+  padding: 10px 14px;
+  border-radius: 10px;
   display: flex;
-  justify-content: center;
   align-items: center;
-  margin-right: 10px;
-}
-
-.discord-card .discord-avatar {
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  border: 2px solid #7289da;
-}
-
-.discord-card .status-dot {
-  position: absolute;
-  bottom: 5px;
-  right: 5px;
-  width: 15px;
-  height: 15px;
-  border-radius: 50%;
-  border: 2px solid #2c2f33;
-}
-
-.discord-card .status-dot.online {
-  background-color: #43b581;
-}
-.discord-card .status-dot.offline {
-  background-color: #747f8d;
-}
-.discord-card .status-dot.dnd {
-  background-color: #f04747;
-}
-.discord-card .status-dot.idle {
-  background-color: #faa61a;
-}
-
-.discord-card .discord-info {
-  display: flex;
-  flex-direction: column;
   justify-content: center;
-  color: #ffffff;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.45);
+  border: 1px solid rgba(255,255,255,0.03);
 }
+.social-top-inner { font-weight:700; color:#fff; font-size:14px; }
 
-.discord-card .discord-name {
-  font-size: 16px;
-  font-weight: bold;
-  margin-bottom: 5px;
-}
 
-.discord-card .discord-activity {
-  font-size: 14px;
-  color: #b9bbbe;
-}
-
-.social-icon-container:hover .discord-card {
-  opacity: 1 !important;
-  visibility: visible !important;
-  pointer-events: auto !important;
-  transform: translateX(-50%) translateY(0) scale(1) !important;
-}
+.copied-notice { position:absolute; left:50%; transform:translateX(-50%) translateY(-8px); bottom: -34px; background: rgba(0,0,0,0.8); color:#fff; padding:6px 10px; border-radius:8px; font-size:12px; opacity:0; transition:opacity 160ms ease, transform 160ms ease; z-index:50; }
