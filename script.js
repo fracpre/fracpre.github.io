@@ -1,5 +1,81 @@
 let hasUserInteracted = false;
 
+// Helper: choose a display name preferring global_name when non-empty, else username
+function chooseDisplayName(discordUser) {
+  if (!discordUser) return '';
+  const g = (discordUser.global_name || '').toString().trim();
+  const u = (discordUser.username || '').toString().trim();
+  return g.length > 0 ? g : u;
+}
+
+// Offline tracking: store when the user went offline and update UI with "hace X"
+// Try to restore last offline timestamp from localStorage so visiting the page
+// later can show how long ago the user disconnected.
+let _lastOfflineAt = null;
+try {
+  const stored = localStorage.getItem('lastOfflineAt');
+  if (stored) _lastOfflineAt = parseInt(stored, 10) || null;
+} catch (e) { _lastOfflineAt = null; }
+let _offlineTickerId = null;
+
+function formatTimeAgo(ms) {
+  const s = Math.floor(ms / 1000);
+  if (s < 60) return `${s} ${s === 1 ? 'segundo' : 'segundos'}`;
+  const m = Math.floor(s / 60);
+  if (m < 60) return `${m} ${m === 1 ? 'minuto' : 'minutos'}`;
+  const h = Math.floor(m / 60);
+  if (h < 24) {
+    const remMin = m % 60;
+    if (remMin === 0) return `${h} ${h === 1 ? 'hora' : 'horas'}`;
+    return `${h} ${h === 1 ? 'hora' : 'horas'} ${remMin} ${remMin === 1 ? 'minuto' : 'minutos'}`;
+  }
+  const d = Math.floor(h / 24);
+  const remH = h % 24;
+  if (remH === 0) return `${d} ${d === 1 ? 'día' : 'días'}`;
+  return `${d} ${d === 1 ? 'día' : 'días'} ${remH} ${remH === 1 ? 'hora' : 'horas'}`;
+}
+
+function getOfflineText() {
+  if (!_lastOfflineAt) return 'Desconectado';
+  const diff = Date.now() - _lastOfflineAt;
+  return `Desconectado hace ${formatTimeAgo(diff)}`;
+}
+
+function startOfflineTicker(activityEl) {
+  if (_offlineTickerId) return; // already running
+  if (!activityEl) return;
+  // update immediately and then every 30s
+  activityEl.style.fontSize = '13px';
+  activityEl.style.fontStyle = 'normal';
+  activityEl.style.display = 'inline-flex';
+  activityEl.style.verticalAlign = 'middle';
+  activityEl.textContent = getOfflineText();
+  _offlineTickerId = setInterval(() => {
+    try {
+      activityEl.textContent = getOfflineText();
+    } catch (e) {}
+  }, 60000); // update every 1 minute
+}
+
+function stopOfflineTicker(activityEl) {
+  if (_offlineTickerId) { clearInterval(_offlineTickerId); _offlineTickerId = null; }
+  _lastOfflineAt = null;
+  try { localStorage.removeItem('lastOfflineAt'); } catch(e) {}
+  if (activityEl) {
+    // clear only if there is no other activity; caller should set appropriate text afterwards
+    try { activityEl.textContent = ''; activityEl.style.fontSize = ''; activityEl.style.fontStyle = ''; activityEl.style.display = ''; } catch (e) {}
+  }
+}
+
+// If we have a stored offline timestamp from a previous session, begin the
+// offline ticker immediately so the visitor sees "Desconectado hace X" on load.
+try {
+  if (_lastOfflineAt) {
+    const initialActivityEl = document.querySelector('.handle-activity');
+    if (initialActivityEl) startOfflineTicker(initialActivityEl);
+  }
+} catch (e) {}
+
 function initMedia() {
   console.log("initMedia called");
   const backgroundMusic = document.getElementById('background-music');
@@ -735,13 +811,26 @@ document.addEventListener('DOMContentLoaded', () => {
           } catch(e) {}
           // activity: prefer a 'playing' / game activity or the first activity
           const activities = presence.activities || d.activities || [];
-          let activity = activities.find(a => a.type === 0) || activities[0] || null;
+          let activity = activities.find(a => a.type === 0 && a.name) || activities[0] || null;
           if (activity && activity.name) {
             const text = activity.state ? `${activity.name} — ${activity.state}` : activity.name;
             if (activityEl) activityEl.textContent = text;
           } else {
             if (activityEl) activityEl.textContent = '';
           }
+          // Offline timer: if status is offline and there is no activity, show how long ago
+          try {
+            if (status === 'offline') {
+              if (!_lastOfflineAt) {
+                _lastOfflineAt = Date.now();
+                try { localStorage.setItem('lastOfflineAt', String(_lastOfflineAt)); } catch(e) {}
+              }
+              startOfflineTicker(activityEl);
+            } else {
+              // clear any offline timer when back online/away/dnd
+              if (_offlineTickerId) stopOfflineTicker(activityEl);
+            }
+          } catch (e) {}
         }
       } catch (err) {
         console.error('Lanyard WS message parse error', err);
@@ -804,9 +893,15 @@ socket.addEventListener("message", (event) => {
           handleAvatar.src = `https://cdn.discordapp.com/avatars/${DISCORD_ID}/${discordData.discord_user.avatar}.png`;
         }
 
-        // Actualizar nombre en handle
+        // Actualizar nombre en handle (usar global_name si tiene contenido, sino username)
         if (handleName && discordData.discord_user) {
-          handleName.textContent = discordData.discord_user.global_name || '';
+          try {
+            console.debug('WS received discord_user:', discordData.discord_user);
+          } catch(e) {}
+          const display = chooseDisplayName(discordData.discord_user);
+          if (display && display.length) {
+            handleName.textContent = display;
+          } // si display está vacío, no sobreescribimos el nombre existente
         }
 
         // Actualizar estado (cambia la clase del punto de status) en handle
@@ -821,7 +916,8 @@ socket.addEventListener("message", (event) => {
             lanyardAvatar.src = `https://cdn.discordapp.com/avatars/${DISCORD_ID}/${discordData.discord_user.avatar}.png`;
         }
         if (lanyardName && discordData.discord_user) {
-          lanyardName.textContent = discordData.discord_user.global_name || '';
+          const display2 = chooseDisplayName(discordData.discord_user);
+          if (display2 && display2.length) lanyardName.textContent = display2;
         }
         if (lanyardActivity) {
             if (discordData.activities && discordData.activities.length > 0) {
@@ -830,6 +926,31 @@ socket.addEventListener("message", (event) => {
                 lanyardActivity.textContent = 'Sin actividad';
             }
         }
+        // If the API returned an activities array, prefer a 'playing' (type 0)
+        // activity to show what game/app is being played. If none, fall back
+        // to the first activity. When we show an API activity, remove Spotify
+        // visuals to avoid conflicting UI.
+        try {
+          const activityElHandle = document.querySelector('.handle-activity');
+          if (activityElHandle && discordData.activities && discordData.activities.length > 0) {
+            const activitiesArr = discordData.activities;
+            const playing = activitiesArr.find(a => a.type === 0 && a.name);
+            const chosen = playing || activitiesArr[0];
+            const text = chosen.state ? `${chosen.name} — ${chosen.state}` : chosen.name;
+            activityElHandle.textContent = text;
+            // remove Spotify album art / note / small icon to avoid conflicting UI
+            const existingAlbum = document.querySelector('.handle-album-art');
+            if (existingAlbum) try { existingAlbum.remove(); } catch(e){}
+            const existingNote = document.querySelector('.global-name-note');
+            if (existingNote) try { existingNote.remove(); } catch(e){}
+            const existingSpotifyImg = document.querySelector('.handle-spotify-img');
+            if (existingSpotifyImg) try { existingSpotifyImg.remove(); } catch(e){}
+            // Reset inline styles so CSS controls the appearance
+            activityElHandle.style.fontSize = '';
+            activityElHandle.style.fontStyle = '';
+            activityElHandle.style.display = '';
+          }
+        } catch(e) { /* non-fatal */ }
         if (lanyardStatusDot) {
             const st2 = discordData.discord_status || 'offline';
             lanyardStatusDot.classList.remove('online','idle','dnd','offline');
@@ -863,6 +984,16 @@ socket.addEventListener("message", (event) => {
             avatarImg.src = apiAvatar;
           }
         }
+        // Log discord_user for debugging
+        try { console.debug('Railway response discord_user:', data.discord_user); } catch(e) {}
+        // Ensure handle name uses global_name when present, otherwise username
+        try {
+          const nameEl = document.querySelector('.handle-name');
+          if (nameEl && data.discord_user) {
+            const display = chooseDisplayName(data.discord_user);
+            if (display && display.length) nameEl.textContent = display;
+          }
+        } catch(e) {}
         // If API provides an avatar_decoration_url, insert/update it above the avatar
         try {
           const decoUrl = data.discord_user && data.discord_user.avatar_decoration_url ? data.discord_user.avatar_decoration_url : null;
@@ -885,93 +1016,159 @@ socket.addEventListener("message", (event) => {
         } catch (e) { /* non-fatal */ }
       } catch (e) { /* non-fatal */ }
 
-      // If Spotify is active, show the song under the name in a smaller font
+      // If the API provides any activities, prefer those for the handle display
+      // (prefer a 'playing' activity type 0). Only when no activities exist do
+      // we fall back to showing Spotify song info. This ensures "a lo que juegas"
+      // from the API appears immediately and isn't overwritten by Spotify.
       try {
         const activityEl = document.querySelector('.handle-activity');
         const nameEl = document.querySelector('.handle-name');
-        // Spotify icon/link we will inject next to the name
-        const spotifyLinkHref = 'https://emoji.gg/emoji/35248-spotify';
-        const spotifyImgSrc = 'spotify.png';
 
-        if (data.listening_to_spotify === true && data.spotify && data.spotify.song) {
+        if (data.activities && data.activities.length > 0) {
+          const activitiesArr = data.activities;
+          const playing = activitiesArr.find(a => a.type === 0 && a.name);
+          const chosen = playing || activitiesArr[0];
+          const text = chosen.state ? `${chosen.name} — ${chosen.state}` : chosen.name;
           if (activityEl) {
-            activityEl.textContent = data.spotify.song;
-            activityEl.style.fontSize = '12px';
-            activityEl.style.fontStyle = 'italic';
-            activityEl.style.display = 'inline-block';
-            activityEl.style.verticalAlign = 'middle';
-          }
-
-          // ensure a small local spotify image exists next to the name
-          try {
-            if (nameEl && nameEl.parentElement) {
-              // remove any legacy element first
-              const existingImg = nameEl.parentElement.querySelector('.handle-spotify-img');
-              if (existingImg) existingImg.remove();
-
-              const img = document.createElement('img');
-              img.className = 'handle-spotify-img';
-              img.src = 'spotify.png';
-              img.onerror = function() {
-                console.warn('spotify.png failed to load; removing element');
-                try { this.remove(); } catch(e){}
-              };
-              img.alt = 'Spotify';
-              img.style.width = '14px';
-              img.style.height = '14px';
-              img.style.objectFit = 'contain';
-              img.style.marginLeft = '6px';
-              img.style.verticalAlign = 'middle';
-              img.style.display = 'inline-block';
-
-              nameEl.parentElement.appendChild(img);
-            }
-          } catch (e) { /* non-fatal */ }
-
-          // Insert or update album art next to the activity text
-          try {
-            if (data.spotify.album_art_url) {
-              // remove previous album art if any
-              let album = document.querySelector('.handle-album-art');
-              if (!album) {
-                album = document.createElement('img');
-                album.className = 'handle-album-art';
-                // append into the discord-handle card so it's always anchored to the card's right
-                const handleCard = document.getElementById('discord-handle-global') || document.querySelector('.discord-handle');
-                if (handleCard) {
-                  handleCard.appendChild(album);
-                } else if (activityEl && activityEl.parentElement) {
-                  activityEl.parentElement.appendChild(album);
-                }
-              }
-              album.src = data.spotify.album_art_url;
-              album.alt = 'Album art';
-              album.onerror = function() { try { this.remove(); } catch(e){} };
-            } else {
-              // if there's no album_art_url, remove any existing element
-              const existing = document.querySelector('.handle-album-art');
-              if (existing) try { existing.remove(); } catch(e){}
-            }
-          } catch (e) { /* non-fatal */ }
-
-        } else {
-          // Reset any inline sizing so default CSS / Lanyard can manage the activity text
-          if (activityEl) {
+            activityEl.textContent = text;
             activityEl.style.fontSize = '';
             activityEl.style.fontStyle = '';
+            activityEl.style.display = '';
           }
-          // hide/remove spotify icon if present
-          try {
-            const nameEl2 = document.querySelector('.handle-name');
-            if (nameEl2) {
-              const link = nameEl2.parentElement.querySelector('.handle-spotify-link');
-              if (link) {
-                // remove the element to keep DOM clean
-                link.remove();
-              }
+          // remove any Spotify-specific visuals to avoid conflict
+          const existingAlbum = document.querySelector('.handle-album-art');
+          if (existingAlbum) try { existingAlbum.remove(); } catch(e){}
+          const existingNote = document.querySelector('.global-name-note');
+          if (existingNote) try { existingNote.remove(); } catch(e){}
+          const existingSpotifyImg = document.querySelector('.handle-spotify-img');
+          if (existingSpotifyImg) try { existingSpotifyImg.remove(); } catch(e){}
+        } else {
+          // No activities: fall back to Spotify display if present
+          const spotifyLinkHref = 'https://emoji.gg/emoji/35248-spotify';
+          const spotifyImgSrc = 'spotify.png';
+
+          if (data.listening_to_spotify === true && data.spotify && data.spotify.song) {
+            if (activityEl) {
+              activityEl.style.fontSize = '12px';
+              activityEl.style.fontStyle = 'normal';
+              activityEl.style.display = 'inline-flex';
+              activityEl.style.verticalAlign = 'middle';
+              activityEl.textContent = '';
+              activityEl.appendChild(document.createTextNode(data.spotify.song));
             }
-          } catch (e) { /* non-fatal */ }
+
+            try {
+              if (nameEl && nameEl.parentElement) {
+                const existingImg = nameEl.parentElement.querySelector('.handle-spotify-img');
+                if (existingImg) existingImg.remove();
+
+                const img = document.createElement('img');
+                img.className = 'handle-spotify-img';
+                img.src = 'spotify.png';
+                img.onerror = function() { try { this.remove(); } catch(e){} };
+                img.alt = 'Spotify';
+                img.style.width = '14px';
+                img.style.height = '14px';
+                img.style.objectFit = 'contain';
+                img.style.marginLeft = '6px';
+                img.style.verticalAlign = 'middle';
+                img.style.display = 'inline-block';
+                nameEl.parentElement.appendChild(img);
+              }
+            } catch (e) { /* non-fatal */ }
+
+            try {
+              const prevNoteGlobal = document.querySelector('.global-name-note');
+              if (prevNoteGlobal) prevNoteGlobal.remove();
+
+              const note = document.createElement('span');
+              note.className = 'global-name-note';
+              note.innerHTML = '<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M12 3v10.55A4 4 0 1 0 14 17V7h4V3h-6z"/></svg>';
+
+              if (activityEl) {
+                const prev = activityEl.querySelector('.global-name-note');
+                if (prev) prev.remove();
+                activityEl.insertBefore(note, activityEl.firstChild);
+              } else if (activityEl && activityEl.parentElement) {
+                activityEl.parentElement.insertBefore(note, activityEl);
+              } else if (nameEl && nameEl.parentElement) {
+                if (nameEl.nextSibling) nameEl.parentElement.insertBefore(note, nameEl.nextSibling);
+                else nameEl.parentElement.appendChild(note);
+              }
+            } catch (e) { /* non-fatal */ }
+
+            try {
+              if (data.spotify.album_art_url) {
+                let album = document.querySelector('.handle-album-art');
+                if (!album) {
+                  album = document.createElement('img');
+                  album.className = 'handle-album-art';
+                  const handleCard = document.getElementById('discord-handle-global') || document.querySelector('.discord-handle');
+                  if (handleCard) handleCard.appendChild(album);
+                  else if (activityEl && activityEl.parentElement) activityEl.parentElement.appendChild(album);
+                }
+                album.src = data.spotify.album_art_url;
+                album.alt = 'Album art';
+                album.onerror = function() { try { this.remove(); } catch(e){} };
+              } else {
+                const existing = document.querySelector('.handle-album-art');
+                if (existing) try { existing.remove(); } catch(e){}
+              }
+            } catch (e) { /* non-fatal */ }
+          } else {
+            if (activityEl) {
+              activityEl.style.fontSize = '';
+              activityEl.style.fontStyle = '';
+            }
+            try {
+              const nameEl2 = document.querySelector('.handle-name');
+              if (nameEl2) {
+                const link = nameEl2.parentElement.querySelector('.handle-spotify-link');
+                if (link) link.remove();
+                try {
+                  const activityEl2 = document.querySelector('.handle-activity');
+                  let note = null;
+                  if (activityEl2) note = activityEl2.querySelector('.global-name-note');
+                  if (!note) note = nameEl2.querySelector('.global-name-note');
+                  if (note) note.remove();
+                } catch(e) {}
+              }
+            } catch (e) { /* non-fatal */ }
+          }
         }
+        // --- tiempo de desconexión usando timestamp proporcionado por la API ---
+        try {
+          const timeDisplay = document.getElementById('tiempo-desconectado');
+          if (timeDisplay) {
+            if (data.discord_status === 'offline' && data.last_seen_timestamp) {
+              // Asumimos que data.last_seen_timestamp está en ms desde epoch
+              const ahora = Date.now();
+              const desconexion = Number(data.last_seen_timestamp) || 0;
+              const diferencia = Math.max(0, ahora - desconexion);
+
+              const segundos = Math.floor(diferencia / 1000);
+              const minutos = Math.floor(segundos / 60);
+              const horas = Math.floor(minutos / 60);
+              const dias = Math.floor(horas / 24);
+
+              let texto = '';
+              if (dias > 0) texto = `Desconectado hace ${dias} ${dias === 1 ? 'día' : 'días'}`;
+              else if (horas > 0) texto = `Desconectado hace ${horas} ${horas === 1 ? 'hora' : 'horas'}`;
+              else if (minutos > 0) texto = `Desconectado hace ${minutos} ${minutos === 1 ? 'minuto' : 'minutos'}`;
+              else texto = 'Desconectado hace unos segundos';
+
+              timeDisplay.innerText = texto;
+              timeDisplay.style.display = 'block';
+            } else if (data.discord_status && data.discord_status !== 'offline') {
+              // Don't show the 'online' green message — hide the time display when online
+              timeDisplay.style.display = 'none';
+            } else {
+              // Si estamos offline pero no hay timestamp
+              timeDisplay.innerText = 'Desconectado';
+              timeDisplay.style.display = 'block';
+            }
+          }
+        } catch (e) { /* non-fatal */ }
       } catch (e) { /* non-fatal */ }
 
       // Precedence: if active_on_discord_desktop === false -> consider 'offline' (gray)
@@ -998,6 +1195,16 @@ socket.addEventListener("message", (event) => {
         // to allow the Lanyard WS or fallback HTML/CSS to manage the dot.
         statusDot.classList.remove('online','idle','dnd','offline');
       }
+      // Show offline elapsed time when user is offline (and no other activity)
+      try {
+        const activityEl = document.querySelector('.handle-activity');
+        if (status === 'offline') {
+          if (!_lastOfflineAt) _lastOfflineAt = Date.now();
+          startOfflineTicker(activityEl);
+        } else {
+          if (_offlineTickerId) stopOfflineTicker(activityEl);
+        }
+      } catch (e) {}
     } catch (e) {
       console.warn('Railway poll failed:', e);
     }
