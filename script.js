@@ -1,60 +1,3 @@
-// Discord status: cargar lo primero posible
-document.addEventListener('DOMContentLoaded', () => {
-  // Selector robusto para el rectángulo
-  const rect = document.querySelector('.social-top-rect') || document.querySelector('div[style*="background:#23272a"]');
-  if (rect) {
-    rect.innerHTML = '<span style="color:#aaa;font-size:15px;">Cargando datos de Discord...</span>';
-  }
-  // Primero obtenemos nombre/avatar
-  fetch('https://api.lanyard.rest/v1/users/644169213107503107')
-    .then(res => res.json())
-    .then(data => {
-      const username = data?.data?.discord_user?.username || 'Desconocido';
-      const avatar = data?.data?.discord_user?.avatar || null;
-      const userId = data?.data?.discord_user?.id || '344060291543334914';
-      let avatarUrl = '';
-      if (avatar) {
-        const isAnim = avatar.startsWith('a_');
-        const ext = isAnim ? 'gif' : 'png';
-        avatarUrl = `https://cdn.discordapp.com/avatars/${userId}/${avatar}.${ext}?size=64`;
-      } else {
-        avatarUrl = `https://cdn.discordapp.com/embed/avatars/0.png`;
-      }
-      const status = data?.data?.discord_status || 'offline';
-      let color = '#747f8d';
-      if (status === 'online') color = '#3ba55d';
-      else if (status === 'idle') color = '#faa81a';
-      else if (status === 'dnd') color = '#ed4245';
-      const punto = `<span style="display:inline-block;width:13px;height:13px;border-radius:50%;background:${color};margin-right:8px;vertical-align:middle;border:2px solid #23272a;"></span>`;
-      if (rect) {
-        rect.innerHTML = `
-          <div style="display:flex;align-items:center;gap:12px;">
-            <img src="${avatarUrl}" alt="avatar" style="width:44px;height:44px;border-radius:50%;border:2px solid #23272a;object-fit:cover;box-shadow:0 2px 8px #0002;">
-            <div>
-              ${punto}<span style="font-family: 'Press Start 2P', monospace; font-size: 18px;">${username}</span><br>
-              <span style="font-size: 15px; color: #aaa;">Estado: ${
-                status === 'dnd' ? 'No molestar' :
-                status === 'idle' ? 'Ausente' :
-                status === 'online' ? 'Conectado' :
-                'Desconectado'
-              }</span>
-            </div>
-          </div>
-        `;
-      }
-    })
-    .catch(() => {
-      if (rect) rect.innerHTML = `
-        <div style="display:flex;align-items:center;gap:12px;">
-          <div>
-            <span style="display:inline-block;width:13px;height:13px;border-radius:50%;background:#747f8d;margin-right:8px;vertical-align:middle;border:2px solid #23272a;"></span>
-            <span style="font-family: 'Press Start 2P', monospace; font-size: 18px;">Desconocido</span><br>
-            <span style="font-size: 15px; color: #aaa;">Estado: desconocido</span>
-          </div>
-        </div>
-      `;
-    });
-});
 let hasUserInteracted = false;
 
 function initMedia() {
@@ -551,40 +494,40 @@ document.addEventListener('DOMContentLoaded', () => {
 
   profilePicture.addEventListener('mouseenter', () => {
     glitchOverlay.style.opacity = '1';
-    .then(data => {
-      const username = data?.data?.discord_user?.username || 'Desconocido';
-      const avatar = data?.data?.discord_user?.avatar || null;
-      const userId = data?.data?.discord_user?.id || '344060291543334914';
-      let avatarUrl = '';
-      if (avatar) {
-        const isAnim = avatar.startsWith('a_');
-        const ext = isAnim ? 'gif' : 'png';
-        avatarUrl = `https://cdn.discordapp.com/avatars/${userId}/${avatar}.${ext}?size=64`;
-      } else {
-        avatarUrl = `https://cdn.discordapp.com/embed/avatars/0.png`;
-      }
-      const status = typeof data?.data?.discord_status === 'string' ? data.data.discord_status : 'desconocido';
-      let color = '#747f8d';
-      if (status === 'online') color = '#3ba55d';
-      else if (status === 'idle') color = '#faa81a';
-      else if (status === 'dnd') color = '#ed4245';
-      const punto = `<span style=\"display:inline-block;width:13px;height:13px;border-radius:50%;background:${color};margin-right:8px;vertical-align:middle;border:2px solid #23272a;\"></span>`;
-      if (rect) {
-        rect.innerHTML = `
-          <div style=\"display:flex;align-items:center;gap:12px;\">
-            <img src=\"${avatarUrl}\" alt=\"avatar\" style=\"width:44px;height:44px;border-radius:50%;border:2px solid #23272a;object-fit:cover;box-shadow:0 2px 8px #0002;\">
-            <div>
-              ${punto}<span style=\"font-family: 'Press Start 2P', monospace; font-size: 18px;\">${username || 'Desconocido'}</span><br>
-              <span style=\"font-size: 15px; color: #aaa;\">Estado: ${
-                status === 'dnd' ? 'No molestar' :
-                status === 'idle' ? 'Ausente' :
-                status === 'online' ? 'Conectado' :
-                'Desconocido'
-              }</span>
-            </div>
-          </div>
-        `;
-      }
+    setTimeout(() => {
+      glitchOverlay.style.opacity = '0';
+    }, 500);
+  });
+
+
+  profilePicture.addEventListener('click', () => {
+    profileContainer.classList.remove('fast-orbit');
+    profileContainer.classList.remove('orbit');
+    void profileContainer.offsetWidth;
+    profileContainer.classList.add('fast-orbit');
+    setTimeout(() => {
+      profileContainer.classList.remove('fast-orbit');
+      void profileContainer.offsetWidth;
+      profileContainer.classList.add('orbit');
+    }, 500);
+  });
+
+  profilePicture.addEventListener('touchstart', (e) => {
+    e.preventDefault();
+    profileContainer.classList.remove('fast-orbit');
+    profileContainer.classList.remove('orbit');
+    void profileContainer.offsetWidth;
+    profileContainer.classList.add('fast-orbit');
+    setTimeout(() => {
+      profileContainer.classList.remove('fast-orbit');
+      void profileContainer.offsetWidth;
+      profileContainer.classList.add('orbit');
+    }, 500);
+  });
+
+ 
+  let isShowingSkills = false;
+  resultsButton.addEventListener('click', () => {
     if (!isShowingSkills) {
       gsap.to(profileBlock, {
         x: -100,
@@ -671,169 +614,398 @@ document.addEventListener('DOMContentLoaded', () => {
   typeWriterStart();
 });
 
-// Discord card logic removed per user request
-
-// Discord card/handle removed — presence positioning logic omitted.
-
-// Discord presence & live-updates removed to avoid referencing deleted DOM nodes.
-
-// Test fetch snippet removed (ID: 398423836951052291)
-
-// Click-to-copy and REST update for Discord card removed
-// Lightweight visual card population + copy behavior
+// Fallback: ensure the Discord handle is only visible on hover using JS toggle
 document.addEventListener('DOMContentLoaded', () => {
   try {
-    const vcard = document.getElementById('discord-visual-card');
-    if (!vcard) return;
-    const uid = vcard.dataset.userId || '';
-    const avatarImg = vcard.querySelector('.dv-avatar');
-    const nameEl = vcard.querySelector('.dv-username');
-    const actEl = vcard.querySelector('.dv-activity');
+    const discordContainer = document.querySelector('.social-icon-container[aria-label="Discord"]');
+    if (discordContainer) {
+      const globalHandle = document.getElementById('discord-handle-global');
+      if (globalHandle) {
+        // Ensure the global handle is visible by default (always shown below the social icons)
+        globalHandle.classList.add('show');
+        // No hover/toggle listeners: the handle stays visible at all times.
+        // Position the handle centered under the Discord icon (not the whole group)
+        function positionDiscordHandle() {
+          try {
+            const socialBlock = document.querySelector('.social-block');
+            if (!socialBlock) return;
+            const discordRect = discordContainer.getBoundingClientRect();
+            const socialRect = socialBlock.getBoundingClientRect();
+            const centerX = discordRect.left + discordRect.width / 2;
+            // left relative to socialBlock
+            const leftPx = Math.round(centerX - socialRect.left);
+            globalHandle.style.left = leftPx + 'px';
+            // keep translateX(-50%) so left Px becomes the center
+            globalHandle.style.transform = 'translateX(-50%) translateY(0)';
+          } catch (e) { /* ignore */ }
+        }
 
-    // copy on click: copy username if present
-    vcard.addEventListener('click', (e) => {
-      e.preventDefault();
-      const txt = nameEl ? nameEl.textContent.trim() : '';
-      if (!txt) return;
-      const toCopy = txt;
-      try {
-        if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(toCopy);
-        else {
-          const ta = document.createElement('textarea'); ta.value = toCopy; ta.style.position = 'absolute'; ta.style.left='-9999px'; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta);
-        }
-      } catch (err) { /* ignore */ }
-    });
-
-    // Try a single REST fetch to populate avatar/name/activity (non-blocking)
-    if (uid) {
-      fetch(`https://api.lanyard.rest/v1/users/${uid}`).then(r => r.ok ? r.json() : null).then(json => {
-        if (!json || !json.data) return;
-        const data = json.data || {};
-        const du = data.discord_user || {};
-        if (du && du.avatar) {
-          const isAnim = du.avatar.startsWith('a_');
-          const ext = isAnim ? 'gif' : 'png';
-          avatarImg.src = `https://cdn.discordapp.com/avatars/${du.id}/${du.avatar}.${ext}?size=128`;
-        }
-        if (du && (du.username || du.discriminator)) {
-          const nameText = du.username + (du.discriminator ? ('#' + du.discriminator) : '');
-          const usernameTextEl = vcard.querySelector('.dv-username-text');
-          if (usernameTextEl) usernameTextEl.textContent = nameText;
-        }
-        const activities = data.activities || [];
-        if (activities && activities.length) {
-          const playing = activities.find(a => a.type === 0 && a.name);
-          const listening = activities.find(a => /spotify/i.test(a.name || '') || a.type === 2);
-          const custom = activities.find(a => a.type === 4 && (a.state || a.emoji));
-          const activityTextEl = vcard.querySelector('.dv-activity-text');
-          if (custom && custom.state) activityTextEl.textContent = custom.state;
-          else if (listening && (listening.details || listening.state)) activityTextEl.textContent = `Listening to ${listening.details || listening.state}`;
-          else if (playing && playing.name) activityTextEl.textContent = `Playing ${playing.name}`;
-        }
-        // presence: update dot
-        if (data && data.discord_status) {
-          const dot = vcard.querySelector('.dv-presence-dot');
-          if (dot) {
-            dot.classList.remove('online','idle','dnd','offline');
-            dot.classList.add(data.discord_status || 'offline');
-          }
-        }
-      }).catch(()=>{});
+        // initial position and on resize
+        positionDiscordHandle();
+        window.addEventListener('resize', positionDiscordHandle);
+      }
     }
-    // --- Live updates: Lanyard WebSocket (subscribe to user presence) ---
-    (function attachLanyardWS() {
-      if (!uid) return;
-      const LANYARD_WS = 'wss://api.lanyard.rest/socket';
-      let ws = null;
-      let heartbeatIntervalId = null;
-      let reconnectTimeout = null;
-
-      function safeUpdateFromLanyard(d) {
-        try {
-          const presence = d || {};
-          const discord_user = presence.discord_user || {};
-          const uidLocal = (discord_user && discord_user.id) ? discord_user.id : uid;
-
-          // avatar
-          if (discord_user && discord_user.avatar) {
-            const isAnim = discord_user.avatar.startsWith('a_');
-            const ext = isAnim ? 'gif' : 'png';
-            avatarImg.src = `https://cdn.discordapp.com/avatars/${uidLocal}/${discord_user.avatar}.${ext}?size=128`;
-          }
-
-          // username
-          const usernameTextEl = vcard.querySelector('.dv-username-text');
-          if (usernameTextEl && discord_user && discord_user.username) {
-            usernameTextEl.textContent = discord_user.username + (discord_user.discriminator ? ('#' + discord_user.discriminator) : '');
-          }
-
-          // activity
-          const activityTextEl = vcard.querySelector('.dv-activity-text');
-          const activities = presence.activities || [];
-          if (activityTextEl) {
-            let text = '';
-            if (activities && activities.length) {
-              const custom = activities.find(a => a.type === 4 && (a.state || a.emoji));
-              const listening = activities.find(a => /spotify/i.test(a.name || '') || a.type === 2);
-              const playing = activities.find(a => a.type === 0 && a.name);
-              if (custom && custom.state) text = custom.state;
-              else if (listening && (listening.details || listening.state)) text = `Listening to ${listening.details || listening.state}`;
-              else if (playing && playing.name) text = `Playing ${playing.name}`;
-            }
-            activityTextEl.textContent = text || (presence.discord_status === 'offline' ? 'Offline' : 'Online');
-          }
-
-          // presence dot
-          if (presence && presence.discord_status) {
-            const dot = vcard.querySelector('.dv-presence-dot');
-            if (dot) {
-              dot.classList.remove('online','idle','dnd','offline');
-              dot.classList.add(presence.discord_status || 'offline');
-            }
-          }
-        } catch (e) { /* ignore parse errors */ }
-      }
-
-      function connect() {
-        try {
-          ws = new WebSocket(LANYARD_WS);
-          ws.addEventListener('open', () => {});
-          ws.addEventListener('message', (ev) => {
-            try {
-              const payload = JSON.parse(ev.data);
-              if (payload.d && payload.d.heartbeat_interval) {
-                const interval = payload.d.heartbeat_interval;
-                if (heartbeatIntervalId) clearInterval(heartbeatIntervalId);
-                heartbeatIntervalId = setInterval(() => {
-                  if (ws && ws.readyState === WebSocket.OPEN) ws.send(JSON.stringify({ op: 3 }));
-                }, interval);
-                if (ws && ws.readyState === WebSocket.OPEN) ws.send(JSON.stringify({ op: 2, d: { subscribe_to_id: uid } }));
-                return;
-              }
-              if (payload.op === 0 && payload.d) {
-                safeUpdateFromLanyard(payload.d || {});
-              }
-            } catch (err) { /* parse error */ }
-          });
-          ws.addEventListener('close', () => {
-            if (heartbeatIntervalId) { clearInterval(heartbeatIntervalId); heartbeatIntervalId = null; }
-            if (reconnectTimeout) clearTimeout(reconnectTimeout);
-            reconnectTimeout = setTimeout(connect, 5000);
-          });
-          ws.addEventListener('error', () => { try { ws.close(); } catch(e){} });
-        } catch (e) {
-          if (reconnectTimeout) clearTimeout(reconnectTimeout);
-          reconnectTimeout = setTimeout(connect, 5000);
-        }
-      }
-
-      connect();
-      window.addEventListener('beforeunload', () => { try { if (heartbeatIntervalId) clearInterval(heartbeatIntervalId); if (ws) ws.close(); } catch(e){} });
-    })();
-    // small entrance animation
-    requestAnimationFrame(() => vcard.classList.add('dv-loaded'));
-  } catch(e) { /* ignore */ }
+  } catch (e) { /* no bloquear si algo falla */ }
 });
 
+// --- Lanyard WebSocket: real-time Discord presence ---
+document.addEventListener('DOMContentLoaded', () => {
+  const LANYARD_WS = 'wss://api.lanyard.rest/socket';
+  const USER_ID = '344060291543334914';
+  const container = document.querySelector('.social-icon-container[aria-label="Discord"]');
+  const globalHandle = document.getElementById('discord-handle-global');
+  if (!container || !globalHandle) return;
+
+  const handleStatusTextEl = globalHandle.querySelector('.handle-status-text');
+  const avatarImg = globalHandle.querySelector('.handle-avatar');
+  const nameEl = globalHandle.querySelector('.handle-name');
+  const activityEl = globalHandle.querySelector('.handle-activity');
+  const statusDot = globalHandle.querySelector('.handle-status');
+
+  let ws;
+  let heartbeatIntervalId = null;
+
+  function connect() {
+    ws = new WebSocket(LANYARD_WS);
+    ws.addEventListener('open', () => {
+      console.log('Lanyard WS connected');
+    });
+
+    ws.addEventListener('message', (ev) => {
+      try {
+        const payload = JSON.parse(ev.data);
+
+        // Handle HELLO / heartbeat info (Lanyard may use op 1 or 2 for hello; accept both)
+        if ((payload.op === 2 && payload.d && payload.d.heartbeat_interval) || (payload.d && payload.d.heartbeat_interval)) {
+          const interval = payload.d.heartbeat_interval;
+          if (heartbeatIntervalId) clearInterval(heartbeatIntervalId);
+          heartbeatIntervalId = setInterval(() => {
+            if (ws && ws.readyState === WebSocket.OPEN) {
+              ws.send(JSON.stringify({ op: 3 }));
+            }
+          }, interval);
+
+          // subscribe to the user's presence
+          if (ws && ws.readyState === WebSocket.OPEN) {
+            ws.send(JSON.stringify({ op: 2, d: { subscribe_to_id: USER_ID } }));
+          }
+          return;
+        }
+
+        // Event dispatches
+        if (payload.op === 0 && payload.t) {
+          // payload.d may contain presence info directly or under 'presence'
+          const d = payload.d || {};
+          const presence = d.presence || d;
+
+          // Discord user info
+          const discordUser = presence.discord_user || d.discord_user || {};
+          const uid = discordUser.id || USER_ID;
+          const avatarHash = discordUser.avatar;
+          if (avatarHash && avatarImg) {
+            const isAnimated = avatarHash.startsWith('a_');
+            const ext = isAnimated ? 'gif' : 'png';
+            avatarImg.src = `https://cdn.discordapp.com/avatars/${uid}/${avatarHash}.${ext}?size=128`;
+          }
+
+          // global_name (use raw global_name for the card; keep visible handle text unchanged elsewhere)
+          if (discordUser && discordUser.global_name && nameEl) {
+            nameEl.textContent = discordUser.global_name;
+          }
+
+          // status (online/idle/dnd/offline)
+          const status = presence.discord_status || d.discord_status || 'offline';
+          if (statusDot) {
+            statusDot.classList.remove('online','idle','dnd','offline');
+            statusDot.classList.add(status || 'offline');
+          }
+          // Actualizar texto de estado junto al nombre (misma convención en español)
+          try {
+            const statusMap = {
+              online: 'En línea',
+              idle: 'Ausente',
+              dnd: 'No molestar',
+              offline: ''
+            };
+            const label = (status && statusMap[status]) ? statusMap[status] : '';
+            if (handleStatusTextEl) {
+              handleStatusTextEl.textContent = label;
+              handleStatusTextEl.style.display = label ? 'inline-block' : 'none';
+            }
+          } catch(e) {}
+          // activity: prefer a 'playing' / game activity or the first activity
+          const activities = presence.activities || d.activities || [];
+          let activity = activities.find(a => a.type === 0) || activities[0] || null;
+          if (activity && activity.name) {
+            const text = activity.state ? `${activity.name} — ${activity.state}` : activity.name;
+            if (activityEl) activityEl.textContent = text;
+          } else {
+            if (activityEl) activityEl.textContent = '';
+          }
+        }
+      } catch (err) {
+        console.error('Lanyard WS message parse error', err);
+      }
+    });
+
+    ws.addEventListener('close', () => {
+      console.log('Lanyard WS closed, reconnecting in 5s');
+      if (heartbeatIntervalId) { clearInterval(heartbeatIntervalId); heartbeatIntervalId = null; }
+      setTimeout(connect, 5000);
+    });
+    ws.addEventListener('error', (e) => {
+      console.error('Lanyard WS error', e);
+      try { ws.close(); } catch(e){}
+    });
+  }
+
+  connect();
+});
+
+// Conexión al WebSocket de Lanyard
+const socket = new WebSocket("wss://api.lanyard.rest/socket");
+
+// Hover-only handle elements (avatar, name, status) shown above discord.png
+const handleAvatar = document.querySelector(".handle-avatar");
+const handleName = document.querySelector(".handle-name");
+const handleStatus = document.querySelector(".handle-status");
+// Lanyard card elements (reintroduced)
+const lanyardAvatar = document.querySelector('.lanyard-avatar');
+const lanyardName = document.querySelector('.lanyard-name');
+const lanyardActivity = document.querySelector('.lanyard-activity');
+const lanyardStatusDot = document.querySelector('.lanyard-status-dot');
+
+const DISCORD_ID = "YOUR_DISCORD_ID"; // Reemplaza con tu ID de Discord
+
+const heartbeat = () => {
+    socket.send(JSON.stringify({ op: 3 }));
+};
+
+socket.addEventListener("open", () => {
+    socket.send(
+        JSON.stringify({
+            op: 2,
+            d: {
+                subscribe_to_id: DISCORD_ID,
+            },
+        })
+    );
+    setInterval(heartbeat, 30000);
+});
+
+socket.addEventListener("message", (event) => {
+    const data = JSON.parse(event.data);
+
+    if (data.op === 0) {
+        const discordData = data.d;
+
+        // Actualizar avatar (si existe el elemento en el hover handle)
+        if (handleAvatar && discordData.discord_user && discordData.discord_user.avatar) {
+          handleAvatar.src = `https://cdn.discordapp.com/avatars/${DISCORD_ID}/${discordData.discord_user.avatar}.png`;
+        }
+
+        // Actualizar nombre en handle
+        if (handleName && discordData.discord_user) {
+          handleName.textContent = discordData.discord_user.global_name || '';
+        }
+
+        // Actualizar estado (cambia la clase del punto de status) en handle
+        if (handleStatus) {
+          const st = discordData.discord_status || 'offline';
+          handleStatus.classList.remove('online','idle','dnd','offline');
+          handleStatus.classList.add(st);
+        }
+
+        // También actualizar la tarjeta Lanyard si está presente
+        if (lanyardAvatar && discordData.discord_user && discordData.discord_user.avatar) {
+            lanyardAvatar.src = `https://cdn.discordapp.com/avatars/${DISCORD_ID}/${discordData.discord_user.avatar}.png`;
+        }
+        if (lanyardName && discordData.discord_user) {
+          lanyardName.textContent = discordData.discord_user.global_name || '';
+        }
+        if (lanyardActivity) {
+            if (discordData.activities && discordData.activities.length > 0) {
+                lanyardActivity.textContent = discordData.activities[0].name || 'Sin actividad';
+            } else {
+                lanyardActivity.textContent = 'Sin actividad';
+            }
+        }
+        if (lanyardStatusDot) {
+            const st2 = discordData.discord_status || 'offline';
+            lanyardStatusDot.classList.remove('online','idle','dnd','offline');
+            lanyardStatusDot.classList.add(st2);
+        }
+    }
+});
+
+// Railway polling: only update the hover status dot to `dnd` when API reports dnd
+// Railway polling: map API status to the status dot classes
+(function startRailwayPoll(){
+  const STATUS_API = 'https://api-discord-status-production.up.railway.app/';
+  const statusDot = document.querySelector('.handle-status');
+  if (!statusDot) return;
+
+  async function checkRailway() {
+    try {
+      const res = await fetch(STATUS_API, { cache: 'no-store' });
+      if (!res.ok) return;
+      const json = await res.json();
+      const data = json && json.data ? json.data : null;
+      if (!data) return;
+
+      // If API provides an avatar_url, update the hover handle avatar image
+      try {
+        const avatarImg = document.querySelector('.handle-avatar');
+        const apiAvatar = data.discord_user && data.discord_user.avatar_url ? data.discord_user.avatar_url : null;
+        if (apiAvatar && avatarImg) {
+          // Only change if different to avoid unnecessary reflows
+          if (avatarImg.src !== apiAvatar) {
+            avatarImg.src = apiAvatar;
+          }
+        }
+        // If API provides an avatar_decoration_url, insert/update it above the avatar
+        try {
+          const decoUrl = data.discord_user && data.discord_user.avatar_decoration_url ? data.discord_user.avatar_decoration_url : null;
+          const avatarWrap = document.querySelector('.handle-avatar-wrap');
+          if (decoUrl && avatarWrap) {
+            let deco = avatarWrap.querySelector('.handle-avatar-decoration');
+            if (!deco) {
+              deco = document.createElement('img');
+              deco.className = 'handle-avatar-decoration';
+              // insert it as the first child so it sits above the avatar visually
+              avatarWrap.insertBefore(deco, avatarWrap.firstChild);
+            }
+            deco.src = decoUrl;
+            deco.alt = 'Avatar decoration';
+            deco.onerror = function() { try { this.remove(); } catch(e){} };
+          } else if (avatarWrap) {
+            const existing = avatarWrap.querySelector('.handle-avatar-decoration');
+            if (existing) try { existing.remove(); } catch(e){}
+          }
+        } catch (e) { /* non-fatal */ }
+      } catch (e) { /* non-fatal */ }
+
+      // If Spotify is active, show the song under the name in a smaller font
+      try {
+        const activityEl = document.querySelector('.handle-activity');
+        const nameEl = document.querySelector('.handle-name');
+        // Spotify icon/link we will inject next to the name
+        const spotifyLinkHref = 'https://emoji.gg/emoji/35248-spotify';
+        const spotifyImgSrc = 'spotify.png';
+
+        if (data.listening_to_spotify === true && data.spotify && data.spotify.song) {
+          if (activityEl) {
+            activityEl.textContent = data.spotify.song;
+            activityEl.style.fontSize = '12px';
+            activityEl.style.fontStyle = 'italic';
+            activityEl.style.display = 'inline-block';
+            activityEl.style.verticalAlign = 'middle';
+          }
+
+          // ensure a small local spotify image exists next to the name
+          try {
+            if (nameEl && nameEl.parentElement) {
+              // remove any legacy element first
+              const existingImg = nameEl.parentElement.querySelector('.handle-spotify-img');
+              if (existingImg) existingImg.remove();
+
+              const img = document.createElement('img');
+              img.className = 'handle-spotify-img';
+              img.src = 'spotify.png';
+              img.onerror = function() {
+                console.warn('spotify.png failed to load; removing element');
+                try { this.remove(); } catch(e){}
+              };
+              img.alt = 'Spotify';
+              img.style.width = '14px';
+              img.style.height = '14px';
+              img.style.objectFit = 'contain';
+              img.style.marginLeft = '6px';
+              img.style.verticalAlign = 'middle';
+              img.style.display = 'inline-block';
+
+              nameEl.parentElement.appendChild(img);
+            }
+          } catch (e) { /* non-fatal */ }
+
+          // Insert or update album art next to the activity text
+          try {
+            if (data.spotify.album_art_url) {
+              // remove previous album art if any
+              let album = document.querySelector('.handle-album-art');
+              if (!album) {
+                album = document.createElement('img');
+                album.className = 'handle-album-art';
+                // append into the discord-handle card so it's always anchored to the card's right
+                const handleCard = document.getElementById('discord-handle-global') || document.querySelector('.discord-handle');
+                if (handleCard) {
+                  handleCard.appendChild(album);
+                } else if (activityEl && activityEl.parentElement) {
+                  activityEl.parentElement.appendChild(album);
+                }
+              }
+              album.src = data.spotify.album_art_url;
+              album.alt = 'Album art';
+              album.onerror = function() { try { this.remove(); } catch(e){} };
+            } else {
+              // if there's no album_art_url, remove any existing element
+              const existing = document.querySelector('.handle-album-art');
+              if (existing) try { existing.remove(); } catch(e){}
+            }
+          } catch (e) { /* non-fatal */ }
+
+        } else {
+          // Reset any inline sizing so default CSS / Lanyard can manage the activity text
+          if (activityEl) {
+            activityEl.style.fontSize = '';
+            activityEl.style.fontStyle = '';
+          }
+          // hide/remove spotify icon if present
+          try {
+            const nameEl2 = document.querySelector('.handle-name');
+            if (nameEl2) {
+              const link = nameEl2.parentElement.querySelector('.handle-spotify-link');
+              if (link) {
+                // remove the element to keep DOM clean
+                link.remove();
+              }
+            }
+          } catch (e) { /* non-fatal */ }
+        }
+      } catch (e) { /* non-fatal */ }
+
+      // Precedence: if active_on_discord_desktop === false -> consider 'offline' (gray)
+      if (data.active_on_discord_desktop === false) {
+        statusDot.classList.remove('online','idle','dnd');
+        statusDot.classList.add('offline');
+        return;
+      }
+
+      const status = data.discord_status || null;
+
+      // Map statuses explicitly per your request
+      if (status === 'dnd') {
+        statusDot.classList.remove('online','idle','offline');
+        statusDot.classList.add('dnd');
+      } else if (status === 'idle') {
+        statusDot.classList.remove('online','dnd','offline');
+        statusDot.classList.add('idle');
+      } else if (status === 'online') {
+        statusDot.classList.remove('idle','dnd','offline');
+        statusDot.classList.add('online');
+      } else {
+        // If API doesn't provide a known status, remove API-controlled classes
+        // to allow the Lanyard WS or fallback HTML/CSS to manage the dot.
+        statusDot.classList.remove('online','idle','dnd','offline');
+      }
+    } catch (e) {
+      console.warn('Railway poll failed:', e);
+    }
+  }
+
+  // initial check and periodic polling
+  checkRailway();
+  setInterval(checkRailway, 15000); // poll every 15s
+})();
 
 
