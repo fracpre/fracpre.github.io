@@ -11,6 +11,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
     <!-- Science Gothic from Google Fonts (used for the Discord handle name) -->
     <link href="https://fonts.googleapis.com/css2?family=Science+Gothic:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Rubik+Spray+Paint&display=swap" rel="stylesheet">
+    <!-- (originally no Inter link) -->
     <style>
         * {
             margin: 0;
@@ -786,10 +788,10 @@
         }
           /* Social block wrapper so the handle can be positioned relative to the icons
               Moved visually down with transform so no extra layout space is created. */
-          .social-block { position: relative; display: inline-block; margin-top: 40px; will-change: transform; }
-        .social-icon-container { position: relative; display: inline-flex; align-items: center; }
-        /* Force the social icons to sit lower so we get a visible gap above */
-        .social-links { display:flex; gap:20px; justify-content:center; margin-top:80px; padding:8px 40px; max-width:780px; margin-left:auto; margin-right:auto; }
+                    .social-block { position: relative; display: inline-block; margin-top: 16px; will-change: transform; }
+                .social-icon-container { position: relative; display: inline-flex; align-items: center; }
+                /* Force the social icons to sit lower so we get a visible gap above */
+                .social-links { display:flex; gap:20px; justify-content:center; margin-top:36px; padding:8px 40px; max-width:780px; margin-left:auto; margin-right:auto; }
         /* Discord handle: positioned above the icons (just over them) */
         .discord-handle {
             position: absolute;
@@ -803,8 +805,8 @@
             text-rendering: optimizeLegibility;
             background: rgba(12,12,14,0.9);
             color: #fff;
-            /* Reserve space on the right so album art can sit inside the card */
-            padding: 10px 84px 10px 14px;
+            /* Reserve only a small space on the right so text doesn't collide with edges */
+            padding: 10px 18px 10px 14px;
             border-radius: 12px;
             font-family: 'Courier New', monospace;
             font-size: 14px;
@@ -881,16 +883,46 @@
             .discord-handle { padding-right: 14px; }
         }
 
-        .handle-name { font-weight: 700; color: #fff; font-size: 16px; /* Nombre más grande */ font-family: 'Science Gothic', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; }
+        .handle-name { display: inline-flex; align-items: center; gap: 2px; font-weight: 700; color: #fff; font-size: 16px; /* Nombre más grande */ font-family: 'Science Gothic', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; }
+        /* Ajustar verticalmente el nombre para que quede a la misma altura que el mando */
+        .discord-handle .handle-name { transform: translateY(4px); }
+        @media (max-width: 430px) {
+            .discord-handle .handle-name { transform: translateY(2px); }
+        }
         /* Nuevos estilos para el contenido de texto dentro del handle de Discord */
         .discord-handle .handle-text-content {
             display: flex;
             flex-direction: column;
-            justify-content: center;
+            justify-content: flex-start; /* don't re-center when activity appears */
             line-height: 1.3; /* Ajuste para espacio entre nombre y actividad */
+            min-height: 32px; /* reserve space so activity doesn't push the name */
         }
+        /* Small white note placed to the right of the global name */
+        .global-name-note {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 4px;
+            padding: 0;
+            vertical-align: middle;
+            width: 12px;
+            height: 12px;
+            font-size: 0; /* remove any inline text spacing */
+            transform: none; /* align via baseline instead of manual translate */
+        }
+
+        .global-name-note svg {
+            display: block;
+            width: 100%;
+            height: 100%;
+            fill: #fff;
+        }
+        /* Controller removed — related styles cleaned up */
         /* Nuevos estilos para la actividad dentro del handle de Discord */
         .discord-handle .handle-activity {
+            display: inline-flex; /* allow note + song on same line */
+            align-items: baseline; /* align note with song baseline */
+            gap: 2px;
             font-size: 13px; /* Tamaño de fuente más grande para la actividad */
             color: rgba(255,255,255,0.7);
             margin-top: 4px; /* Más espacio */
@@ -1012,13 +1044,14 @@
 
         .skills-title {
             text-align: center;
-            font-size: 24px;
-            margin-bottom: 15px;
-        }
-
-        .skill {
-            display: flex;
-            flex-direction: column;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.7);
+            margin-top: 4px;
+            max-width: 220px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
             gap: 5px;
         }
 
@@ -1244,7 +1277,7 @@
         }
 
         #intro-text {
-            font-family: 'Courier New', monospace;
+            font-family: 'Rubik Spray Paint', cursive, 'Courier New', monospace;
             font-size: 28px;
             color: #fff;
             text-align: center;
@@ -1861,8 +1894,8 @@
 
     <div class="container">
         
-        <!-- background ahora es un GIF (imagen) -->
-        <img id="background" src="assets/background1.gif" alt="" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 1; pointer-events: none; display: none;" />
+        <!-- background ahora es un video -->
+        <video id="background" src="assets/background1.mp4" autoplay loop muted playsinline aria-hidden="true" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 1; pointer-events: none; display: none;"></video>
 
         
         <div class="glitch-overlay"></div>
@@ -1949,7 +1982,9 @@
                                                 </div>
                                                 <div class="handle-text-content">
                                                     <div class="handle-name">fracpre</div>
-                                                    <div class="handle-activity"></div>
+                                                        <div class="handle-activity"></div>
+                                                        <!-- Tiempo desde la última desconexión (p. ej. "Desconectado hace 40 minutos") -->
+                                                        <div id="tiempo-desconectado" style="display:none; font-size:13px; color:rgba(255,255,255,0.75); margin-top:2px;"></div>
                                                 </div>
                                             </div>
                                         </div>
@@ -2331,8 +2366,7 @@
                 "I want to feel that I am in love... :/",
                 "#benyvuelveyaporfavor :(",
                 "If it was good for you, why did you leave me?",
-                "A lonely person never goes gonna be betrayed",
-                "I miss you but is okay"
+                "A lonely person never goes gonna be betrayed"
             ];
             
             let bioText = '';
@@ -2436,7 +2470,7 @@
                 'guillevgo on ig ;)',
                 'guillevgo on ig ;)',
                 'guillevgo on ig ;)',
-                'I am #notlikehim #lol'
+                '#lol'
             ];
             const baseType = 120;      // base ms por carácter al escribir (aumentado para más fluidez)
             const baseErase = 80;      // base ms por carácter al borrar (aumentado)
