@@ -118,8 +118,18 @@ body.car-theme {
 #profile-block, #skills-block {
   transform-style: preserve-3d;
   transition: transform 0.5s ease-out, background 0.3s ease, border-opacity 0.3s ease, backdrop-filter 0.3s ease, opacity 0.3s ease, border-color 0.3s ease; /* Flüssigere Transition */
-  width: 640px;
-  max-width: 90vw;
+  /* Stretch the main panel toward the sides while keeping side gutters for spacing */
+  width: calc(100% - 120px);
+  max-width: none;
+  margin: 0 60px; /* creates space at left/right */
+}
+
+/* Responsive: keep a small gutter on narrow screens */
+@media (max-width: 640px) {
+  #profile-block, #skills-block {
+    width: calc(100% - 24px);
+    margin: 0 12px;
+  }
 }
 
 
@@ -185,7 +195,7 @@ body.car-theme {
   max-width: 780px;
   margin-left: auto;
   margin-right: auto;
-  margin-top: 80px; /* reduce space above the block */
+  margin-top: 36px; /* moved icons slightly lower than before (user requested a bit lower) */
   backdrop-filter: blur(5px);
 }
 
@@ -998,15 +1008,17 @@ img[src$="instagram.png"]:hover {
   display: flex;
   align-items: center;
   gap: 12px;
-  min-width: 200px;
-  max-width: 360px;
+  /* Make the discord handle wider/horizontal as requested */
+  min-width: 320px;
+  width: min(80vw, 900px);
+  max-width: 900px;
   opacity: 1;
   visibility: visible;
   pointer-events: auto;
   transition: opacity 160ms ease, transform 160ms ease, visibility 160ms;
   background: rgba(12,12,14,0.95);
   color: #fff;
-  padding: 10px 14px;
+  padding: 12px 28px;
   border-radius: 12px;
   box-shadow: 0 8px 22px rgba(0,0,0,0.36);
   backdrop-filter: blur(6px);
